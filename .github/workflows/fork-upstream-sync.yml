@@ -1,0 +1,46 @@
+# Fork-only: keeps dev mirrored from laurent22/joplin, opens dev -> main sync PRs, and files issues for new upstream releases. See FORK.md.
+name: Fork - Upstream sync
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: 'Open issues for upstream GitHub releases published within this many days'
+        default: '14'
+      dry_run:
+        description: 'Only print what would happen'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: fork-upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository != 'laurent22/joplin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/fork
+          persist-credentials: false
+
+      - name: Sync upstream and track releases
+        env:
+          # FORK_SYNC_TOKEN (fine-grained PAT) is needed because GITHUB_TOKEN cannot push upstream commits that touch .github/workflows.
+          GH_TOKEN: ${{ secrets.FORK_SYNC_TOKEN || github.token }}
+          UPSTREAM_REPO: laurent22/joplin
+          SYNC_BRANCH: dev
+          INTEGRATION_BRANCH: main
+          RELEASE_LOOKBACK_DAYS: ${{ inputs.lookback_days || '14' }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: bash .github/fork/upstream-sync.sh
