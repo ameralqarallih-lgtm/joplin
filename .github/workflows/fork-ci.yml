@@ -55,4 +55,5 @@ jobs:
             --include '@joplin/lib' \
             --include '@joplin/app-desktop' \
             --include '@joplin/app-mobile' \
+            --include '@joplin/app-cli' \
             run test-ci

@@ -55,7 +55,7 @@ Upstream's CI only runs in `laurent22/joplin`, so the fork has its own, in [.git
 
 1. `yarn install`. This builds every package and runs `yarn tsc`, so it also type-checks the code.
 2. ESLint on the files the PR changes.
-3. Tests for `utils`, `renderer`, `editor`, `lib`, `app-desktop` and `app-mobile`.
+3. Tests for `utils`, `renderer`, `editor`, `lib`, `app-desktop`, `app-mobile` and `app-cli`. The `app-cli` tests include the HTML-to-Markdown fixtures in `packages/app-cli/tests/html_to_md`, which cover the rich-text editor's conversion.
 
 Merge a PR only when this check passes.
 
