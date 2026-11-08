@@ -266,9 +266,6 @@ function math_block(state: StateBlock, start: number, end: number, silent: boole
 	pos += 2;
 	firstLine = state.src.slice(pos, max);
 
-	if (silent) {
-		return true;
-	}
 	if (firstLine.trim().slice(-2) === '$$') {
 		// Single line expression
 		firstLine = firstLine.trim().slice(0, -2);
@@ -300,6 +297,14 @@ function math_block(state: StateBlock, start: number, end: number, silent: boole
 			lastLine = state.src.slice(pos, lastPos);
 			found = true;
 		}
+	}
+
+	// Without a closing $$ the block would swallow the rest of the note, so leave the line as text.
+	if (!found) {
+		return false;
+	}
+	if (silent) {
+		return true;
 	}
 
 	state.line = next + 1;
