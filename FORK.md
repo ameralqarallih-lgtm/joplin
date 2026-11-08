@@ -1,3 +1,5 @@
+<!-- cspell:ignore longpaths oneline automerge coderabbit -->
+
 # About this fork
 
 This is a fork of [laurent22/joplin](https://github.com/laurent22/joplin). We add our own improvements on top of upstream Joplin and keep pulling in upstream releases and fixes.
@@ -46,6 +48,16 @@ Upstream changes `.github/workflows/` often. The default `GITHUB_TOKEN` is not a
 4. Save the token as a repository secret named `FORK_SYNC_TOKEN`: Settings → Secrets and variables → Actions.
 
 Without the secret, the workflow falls back to `GITHUB_TOKEN`. Syncing then fails whenever upstream has touched a workflow file.
+
+## Continuous integration
+
+Upstream's CI only runs in `laurent22/joplin`, so the fork has its own, in [.github/workflows/fork-ci.yml](.github/workflows/fork-ci.yml). It runs on every PR into `main` and on every push to `main`:
+
+1. `yarn install`. This builds every package and runs `yarn tsc`, so it also type-checks the code.
+2. ESLint on the files the PR changes.
+3. Tests for `utils`, `renderer`, `editor`, `lib`, `app-desktop` and `app-mobile`.
+
+Merge a PR only when this check passes.
 
 ## Merging a sync PR
 
