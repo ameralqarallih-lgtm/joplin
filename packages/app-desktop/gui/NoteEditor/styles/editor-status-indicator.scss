@@ -10,7 +10,7 @@
 	}
 
 	> .button {
-		font-size: var(--joplin-font-size-small);
+		font-size: calc(var(--joplin-font-size) * 0.9);
 		background-color: var(--joplin-background-color-active3);
 		color: var(--joplin-color);
 		border: none;
