@@ -515,31 +515,17 @@ function toggleCheckboxLine(ipcMessage: string, noteBody: string): ToggleCheckbo
 		return newBody.join('\n');
 	}
 
-	let line = newBody[lineIndex];
+	const line = newBody[lineIndex];
 
-	const noCrossIndex = line.trim().indexOf('- [ ] ');
-	let crossIndex = line.trim().indexOf('- [x] ');
-	if (crossIndex < 0) crossIndex = line.trim().indexOf('- [X] ');
-
-	if (noCrossIndex < 0 && crossIndex < 0) {
+	// The first checkbox on the line is the one that was rendered, whichever bullet marker it uses.
+	const match = line.match(/[-*+] \[([ xX])\] /);
+	if (!match) {
 		reg.logger().warn('Could not find matching checkbox for message: ', ipcMessage);
 		return newBody.join('\n');
 	}
 
-	let isCrossLine = false;
-
-	if (noCrossIndex >= 0 && crossIndex >= 0) {
-		isCrossLine = crossIndex < noCrossIndex;
-	} else {
-		isCrossLine = crossIndex >= 0;
-	}
-
-	if (!isCrossLine) {
-		line = line.replace(/- \[ \] /, '- [x] ');
-	} else {
-		line = line.replace(/- \[x\] /i, '- [ ] ');
-	}
-	return [newBody, lineIndex, line];
+	const toggled = match[0].replace(/\[[ xX]\]/, match[1] === ' ' ? '[x]' : '[ ]');
+	return [newBody, lineIndex, line.slice(0, match.index) + toggled + line.slice(match.index + match[0].length)];
 }
 
 shared.toggleCheckboxRange = function(ipcMessage: string, noteBody: string) {

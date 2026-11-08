@@ -167,6 +167,16 @@ describe('prepareViewProps', () => {
 				isComplete: false,
 			},
 		},
+		{
+			label: 'recognise checklists that use * or + as the bullet marker',
+			body: '* [x] task 1\n+ [ ] task 2\n- [ ] task 3\n* [X] task 4',
+			expectedStatus: {
+				total: 4,
+				checked: 2,
+				percent: 50,
+				isComplete: false,
+			},
+		},
 	])('should $label', async ({ body, expectedStatus }) => {
 		Setting.setValue('notes.showCheckboxCompletionChart', true);
 

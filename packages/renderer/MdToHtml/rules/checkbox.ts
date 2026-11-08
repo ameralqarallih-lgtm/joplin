@@ -126,7 +126,7 @@ function checkboxPlugin(markdownIt: MarkdownIt, options: RuleOptions) {
 		const tokens = state.tokens;
 		const Token = state.Token;
 
-		const checkboxPattern = /^\[([x|X| ])\] (.*)$/;
+		const checkboxPattern = /^\[([xX ])\] (.*)$/;
 		let currentListItem = null;
 		let processedFirstInline = false;
 		const lists = [];
@@ -155,8 +155,7 @@ function checkboxPlugin(markdownIt: MarkdownIt, options: RuleOptions) {
 				continue;
 			}
 
-			// Note that we only support list items that start with "-" (not with "*")
-			if (currentListItem && currentListItem.markup === '-' && !processedFirstInline && token.type === 'inline') {
+			if (currentListItem && ['-', '*', '+'].includes(currentListItem.markup) && !processedFirstInline && token.type === 'inline') {
 				processedFirstInline = true;
 				const firstChild = token.children && token.children.length ? token.children[0] : null;
 				if (!firstChild) continue;
