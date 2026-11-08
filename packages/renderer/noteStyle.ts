@@ -460,6 +460,9 @@ export default function(theme: RendererTheme, options: Options = null) {
 		/* https://github.com/laurent22/joplin/issues/5740 */
 		pre.hljs {
 			overflow-x: auto;
+			/* The highlight.js themes pad "pre code.hljs", but our markup is <pre class="hljs"><code> */
+			padding: 0.6em 0.9em;
+			border-radius: 4px;
 		}
 
 		.joplin-table-wrapper{

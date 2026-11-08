@@ -31,7 +31,8 @@ hue-6-2: #c18401
 }
 .hljs-comment,
 .hljs-quote {
-  color: #a0a1a7;
+  /* Joplin: mono-2 instead of mono-3 (#a0a1a7), which had a 2.5:1 contrast ratio on the background */
+  color: #696c77;
   font-style: italic
 }
 .hljs-doctag,
