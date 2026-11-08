@@ -113,4 +113,12 @@ describe('markdownFrontMatterExtension', () => {
 		expect(markerNodes[1].from).toBe('---\ntitle: Test\n'.length);
 		expect(markerNodes[1].to).toBe('---\ntitle: Test\n---'.length);
 	});
+
+	it.each([
+		['---\nIntro\n\nMore', ['HorizontalRule', 'Paragraph'], 0],
+		['---\n# A comment\ntitle: Test\n---', [frontMatterTagName], 1],
+	])('should only parse FrontMatter when the line after --- looks like YAML: %j', async (documentText, expectedTags, expectedCount) => {
+		const editor = await createEditorState(documentText, expectedTags);
+		expect(findNodesWithName(editor, frontMatterTagName).length).toBe(expectedCount);
+	});
 });
