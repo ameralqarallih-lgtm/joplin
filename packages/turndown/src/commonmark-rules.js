@@ -326,7 +326,12 @@ rules.listItem = {
           // 10.  next one
           //     second line
           //
-          prefix = indexStr + '.' + ' '.repeat(3 - indexStr.length)
+          prefix = indexStr + '.' + ' '.repeat(Math.max(1, 3 - indexStr.length))
+          // From 100 the prefix is wider than the 4-space indent added above, so widen the
+          // indent to keep following lines (e.g. a second paragraph) inside the item.
+          if (node.isCode === false && prefix.length > 4) {
+            content = content.replace(/\n {4}/g, '\n' + ' '.repeat(prefix.length))
+          }
         }
       }
     }
