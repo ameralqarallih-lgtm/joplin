@@ -544,6 +544,9 @@ export default class MdToHtml implements MarkupRenderer {
 						} else {
 							if (lang && hljs.getLanguage(lang)) {
 								hlCode = hljs.highlight(trimmedStr, { language: lang, ignoreIllegals: true }).value;
+							} else if (lang) {
+								// Guessing a language the author named but we don't support colours the code arbitrarily.
+								hlCode = markdownIt.utils.escapeHtml(trimmedStr);
 							} else {
 								hlCode = hljs.highlightAuto(trimmedStr).value;
 							}
