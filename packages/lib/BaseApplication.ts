@@ -906,6 +906,8 @@ export default class BaseApplication {
 				reg.logger().info(`First start: detected locale as ${locale}`);
 			}
 			Setting.skipMigrations();
+			// Fork: the editor migration banner tells existing users that the editor changed, which a new profile has never seen.
+			Setting.setValue('editor.migration', 1);
 
 			if (Setting.value('env') === 'dev') {
 				Setting.setValue('showTrayIcon', false);

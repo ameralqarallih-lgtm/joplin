@@ -292,6 +292,8 @@ const buildStartupTasks = (
 			}
 
 			Setting.skipMigrations();
+			// Fork: the editor migration banner tells existing users that the editor changed, which a new profile has never seen.
+			Setting.setValue('editor.migration', 1);
 			Setting.setValue('firstStart', false);
 		} else {
 			await Setting.applyMigrations();
