@@ -26,6 +26,8 @@ const domOutputSpecs = {
 	sub: ['sub', 0],
 	sup: ['sup', 0],
 	mark: ['mark', 0],
+	strikethrough: ['s', 0],
+	insert: ['ins', 0],
 } satisfies Record<string, DOMOutputSpec>;
 
 type AttributeSpecs = Record<string, AttributeSpec>;
@@ -142,7 +144,16 @@ const nodes = addDefaultToplevelAttributes({
 	...tableNodes({
 		tableGroup: 'block',
 		cellContent: 'block+',
-		cellAttributes: {},
+		cellAttributes: {
+			// Keeps column alignment (from "| :---: |" in Markdown) when a table is edited.
+			textAlign: {
+				default: null,
+				getFromDOM: dom => dom.style.textAlign || dom.getAttribute('align') || null,
+				setDOMAttr: (value, attrs) => {
+					if (value) attrs.style = `${attrs.style ?? ''}text-align: ${value};`;
+				},
+			},
+		},
 	}),
 	// Override the default `table` node to include the default toplevel attributes
 	table: {
@@ -173,8 +184,16 @@ const marks = {
 		toDOM: () => domOutputSpecs.strong,
 	},
 	emphasis: {
-		parseDOM: [{ tag: 'em' }],
+		parseDOM: [{ tag: 'em' }, { tag: 'i' }],
 		toDOM: () => domOutputSpecs.emphasis,
+	},
+	strikethrough: {
+		parseDOM: [{ tag: 's' }, { tag: 'del' }, { tag: 'strike' }],
+		toDOM: () => domOutputSpecs.strikethrough,
+	},
+	insert: {
+		parseDOM: [{ tag: 'ins' }],
+		toDOM: () => domOutputSpecs.insert,
 	},
 	code: {
 		parseDOM: [{ tag: 'code' }],
