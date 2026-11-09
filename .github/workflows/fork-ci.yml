@@ -1,0 +1,59 @@
+# Fork-only CI. Upstream's CI only runs in laurent22/joplin, so this checks our own changes. See FORK.md.
+name: Fork - CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fork-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    if: github.repository != 'laurent22/joplin'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    env:
+      IS_CONTINUOUS_INTEGRATION: 1
+      BUILD_SEQUENCIAL: 1
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup build environment
+        uses: ./.github/workflows/shared/setup-build-environment
+
+      # The postinstall step builds every package and runs `yarn tsc`, so this also type-checks.
+      - name: Install, build and type-check
+        run: |
+          source .github/scripts/retry.sh
+          retry yarn install
+
+      - name: Lint changed files
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' > changed.txt
+          cat changed.txt
+          if [ -s changed.txt ]; then
+            xargs -a changed.txt yarn linter-ci --no-warn-ignored
+          fi
+
+      - name: Test
+        run: |
+          yarn workspaces foreach --all --verbose --interlaced \
+            --include '@joplin/utils' \
+            --include '@joplin/renderer' \
+            --include '@joplin/editor' \
+            --include '@joplin/lib' \
+            --include '@joplin/app-desktop' \
+            --include '@joplin/app-mobile' \
+            --include joplin \
+            run test-ci
