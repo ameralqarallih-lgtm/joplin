@@ -132,6 +132,12 @@ A notebook's colour lives in its user data under `org.inkbench` ([folderColor.ts
 
 With a Workbench theme, dragging notes or notebooks shows a tilted card under the pointer that names what is dragged and where a drop would land, and outlines the target ([DragGhost.tsx](packages/app-desktop/gui/Workbench/DragDrop/DragGhost.tsx)). The sidebar and the note list report the drag and the target through [dragFeedback.ts](packages/app-desktop/gui/Workbench/DragDrop/dragFeedback.ts). In every theme, the sidebar refuses impossible drops, such as a notebook into one of its own sub-notebooks ([dropTargets.ts](packages/app-desktop/gui/Workbench/DragDrop/dropTargets.ts)), opens a collapsed notebook when the pointer rests on it, and accepts drops on tags and on the "Notebooks" header, which upstream handled but never accepted. With a Workbench theme, dropping notes into a list that isn't in custom order switches to it without asking, since the drag preview says so.
 
+## Private information
+
+The repository is public, so its files must never contain the maintainer's personal details or anything secret. [.github/fork/check-private-info.sh](.github/fork/check-private-info.sh) checks every line the fork adds (not upstream's) for private keys, access tokens, private network addresses and email addresses other than no-reply and example ones. It also checks for personal patterns, such as the maintainer's email and server names, which are kept outside the repository: in `~/.config/inkbench/private-patterns.txt` locally, and in the `FORK_PRIVATE_PATTERNS` secret for Fork CI. A match reports only its file and line, never the text, because CI logs are public.
+
+It runs before every commit (`.husky/pre-commit`) and in Fork CI. Commits use the GitHub no-reply email address (`git config user.email`), and GitHub secret scanning with push protection is on.
+
 ## Spelling
 
 The pre-commit hook spellchecks new and changed files. Add the fork's unknown words to [packages/tools/cspell/dictionary-fork.txt](packages/tools/cspell/dictionary-fork.txt), not to upstream's `dictionary*.txt` files, which upstream appends to.

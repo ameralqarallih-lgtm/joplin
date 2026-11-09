@@ -16,6 +16,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Fails if the fork's own changes contain private information. FORK_PRIVATE_PATTERNS holds the maintainer's
+  # personal patterns; without it, only the generic checks run. See FORK.md.
+  privacy:
+    if: github.repository != 'laurent22/joplin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for private information
+        env:
+          FORK_PRIVATE_PATTERNS: ${{ secrets.FORK_PRIVATE_PATTERNS }}
+        run: |
+          git fetch --no-tags origin dev:refs/remotes/origin/dev
+          bash .github/fork/check-private-info.sh
+
   build-and-test:
     if: github.repository != 'laurent22/joplin'
     runs-on: ubuntu-22.04
