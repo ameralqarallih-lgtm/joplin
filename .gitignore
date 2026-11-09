@@ -604,6 +604,8 @@ packages/app-desktop/gui/Workbench/NoteOutline/NoteOutline.js
 packages/app-desktop/gui/Workbench/NoteTabs/NoteTabs.js
 packages/app-desktop/gui/Workbench/NoteTabs/noteTabsReducer.test.js
 packages/app-desktop/gui/Workbench/NoteTabs/noteTabsReducer.js
+packages/app-desktop/gui/Workbench/NoteTabs/persistNoteTabs.test.js
+packages/app-desktop/gui/Workbench/NoteTabs/persistNoteTabs.js
 packages/app-desktop/gui/Workbench/Shell/Rail.js
 packages/app-desktop/gui/Workbench/Shell/StatusBar.js
 packages/app-desktop/gui/Workbench/Shell/TopBar.js

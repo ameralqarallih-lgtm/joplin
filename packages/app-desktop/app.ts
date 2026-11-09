@@ -23,6 +23,7 @@ import ResourceService from '@joplin/lib/services/ResourceService';
 import ExternalEditWatcher from '@joplin/lib/services/ExternalEditWatcher';
 import appReducer, { createAppDefaultState } from './app.reducer';
 import updateNoteTabs from './gui/Workbench/NoteTabs/noteTabsReducer';
+import { restoreNoteTabs, saveNoteTabs } from './gui/Workbench/NoteTabs/persistNoteTabs';
 import Folder from '@joplin/lib/models/Folder';
 import Tag from '@joplin/lib/models/Tag';
 import { reg } from '@joplin/lib/registry';
@@ -182,6 +183,8 @@ class Application extends BaseApplication {
 
 		const result = await super.generalMiddleware(store, next, action);
 		const newState = store.getState();
+
+		saveNoteTabs(newState.noteTabs);
 
 		if (
 			action.type === 'NOTE_UPDATE_ONE' &&
@@ -619,6 +622,11 @@ class Application extends BaseApplication {
 			this.store().dispatch({
 				type: 'FOLDER_SET_COLLAPSED_ALL',
 				ids: Setting.value('collapsedFolderIds'),
+			});
+
+			this.store().dispatch({
+				type: 'WORKBENCH_TABS_SET',
+				noteTabs: await restoreNoteTabs(),
 			});
 
 			this.store().dispatch({

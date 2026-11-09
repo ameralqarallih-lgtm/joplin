@@ -1779,6 +1779,16 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			appTypes: [AppType.Desktop],
 		},
 
+		// Fork: the notes kept open in Workbench tabs, see app-desktop/gui/Workbench/NoteTabs
+		'ui.noteTabs': {
+			value: [] as string[],
+			type: SettingItemType.Array,
+			storage: SettingStorage.File,
+			isGlobal: false,
+			public: false,
+			appTypes: [AppType.Desktop],
+		},
+
 		'ui.lastSelectedPluginPanel': {
 			value: '',
 			type: SettingItemType.String,
