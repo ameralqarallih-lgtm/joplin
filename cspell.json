@@ -70,6 +70,10 @@
 	],
 	"dictionaryDefinitions": [
         {
+            "name": "dictionary-fork",
+            "path": "packages/tools/cspell/dictionary-fork.txt"
+        },
+        {
             "name": "dictionary1",
             "path": "packages/tools/cspell/dictionary1.txt"
         },
@@ -87,6 +91,7 @@
         }
 	],
 	"dictionaries": [
+        "dictionary-fork",
         "dictionary1",
         "dictionary2",
         "dictionary3",

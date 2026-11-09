@@ -1,5 +1,3 @@
-<!-- cspell:ignore longpaths oneline automerge coderabbit -->
-
 # About this fork
 
 This is a fork of [laurent22/joplin](https://github.com/laurent22/joplin). We add our own improvements on top of upstream Joplin and keep pulling in upstream releases and fixes.
@@ -88,8 +86,13 @@ The fork's look is called Workbench: cool grey surfaces, a cobalt accent, compac
 - **Themes.** [workbenchLight.ts](packages/lib/themes/workbenchLight.ts) and [workbenchDark.ts](packages/lib/themes/workbenchDark.ts), registered in `lib/theme.ts`, `Setting.ts` (IDs 1001 and 1002) and `builtInMetadata.ts`, where they are also the defaults. Mobile builds its Paper theme from these colours, so it picks them up too.
 - **Desktop layer.** [gui/Workbench/style.scss](packages/app-desktop/gui/Workbench/style.scss), loaded last from `style.scss`. Its rules sit inside `@container style(--joplin-ui-style: workbench)`, so they only apply while a Workbench theme is active. Upstream's themes look exactly as before.
 - **Tokens.** `--wb-*` CSS variables for spacing, corner radius, type sizes and shadows, at the top of the layer.
+- **Note list.** The Detailed list style ([detailedListRenderer.ts](packages/lib/services/noteList/detailedListRenderer.ts)) shows two-line rows with the date, tags and an excerpt, and is the default. Locked and encrypted notes never show an excerpt. The View menu switches back to Compact.
 
 Restyle components in the layer rather than editing upstream's files. That keeps upstream merges clean.
+
+## Spelling
+
+The pre-commit hook spellchecks new and changed files. Add the fork's unknown words to [packages/tools/cspell/dictionary-fork.txt](packages/tools/cspell/dictionary-fork.txt), not to upstream's `dictionary*.txt` files, which upstream appends to.
 
 ## Bringing upstream into next
 

@@ -1836,8 +1836,12 @@ packages/lib/services/noteList/defaultLeftToRightListRenderer.js
 packages/lib/services/noteList/defaultListRenderer.js
 packages/lib/services/noteList/defaultMultiColumnsRenderer.js
 packages/lib/services/noteList/depNameToNoteProp.js
+packages/lib/services/noteList/detailedListRenderer.test.js
+packages/lib/services/noteList/detailedListRenderer.js
 packages/lib/services/noteList/isSyncDisabledConflict.test.js
 packages/lib/services/noteList/isSyncDisabledConflict.js
+packages/lib/services/noteList/noteExcerpt.test.js
+packages/lib/services/noteList/noteExcerpt.js
 packages/lib/services/noteList/renderTemplate.test.js
 packages/lib/services/noteList/renderTemplate.js
 packages/lib/services/noteList/renderViewProps.test.js

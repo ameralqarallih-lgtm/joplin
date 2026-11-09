@@ -1420,7 +1420,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		},
 
 		'notes.listRendererId': {
-			value: 'compact',
+			value: 'detailed',
 			type: SettingItemType.String,
 			public: false,
 			appTypes: [AppType.Desktop],

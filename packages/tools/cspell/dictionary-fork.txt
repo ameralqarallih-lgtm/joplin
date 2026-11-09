@@ -1,0 +1,5 @@
+automerge
+coderabbit
+longpaths
+nums
+oneline

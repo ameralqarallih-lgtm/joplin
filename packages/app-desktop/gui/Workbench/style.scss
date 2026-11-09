@@ -37,6 +37,21 @@
 		background-color: color-mix(in srgb, var(--joplin-color4) 30%, transparent);
 	}
 
+	%selection-bar {
+		position: relative;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 25%;
+			bottom: 25%;
+			width: 3px;
+			border-radius: 0 2px 2px 0;
+			background-color: var(--joplin-color4);
+		}
+	}
+
 	.sidebar {
 		.sidebar-header-container {
 			min-height: var(--wb-row-height);
@@ -65,7 +80,7 @@
 			}
 
 			&.-selected {
-				box-shadow: inset 2px 0 0 var(--joplin-color4);
+				@extend %selection-bar;
 
 				.list-item {
 					color: var(--joplin-color4);
@@ -99,7 +114,7 @@
 		}
 
 		&.-selected {
-			box-shadow: inset 2px 0 0 var(--joplin-color4);
+			@extend %selection-bar;
 
 			.title {
 				font-weight: 600;
