@@ -164,7 +164,7 @@ function plugin(markdownIt: MarkdownIt) {
 
 	markdownIt.renderer.rules.fence = function(tokens: Token[], idx: number, options: MarkdownIt.Options, env: unknown, self: Renderer) {
 		const token = tokens[idx];
-		if (token.info !== 'fountain') return defaultRender(tokens, idx, options, env, self);
+		if (token.info.trim().split(/\s+/)[0].toLowerCase() !== 'fountain') return defaultRender(tokens, idx, options, env, self);
 		return renderFountainScript(markdownIt, token.content);
 	};
 }

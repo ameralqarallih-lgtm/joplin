@@ -50,7 +50,7 @@ const plugin = (markdownIt: MarkdownIt, ruleOptions: RuleOptions) => {
 
 	markdownIt.renderer.rules.fence = function(tokens, idx, options, env, self) {
 		const token = tokens[idx];
-		if (token.info !== 'abc') return defaultRender(tokens, idx, options, env, self);
+		if (token.info.trim().split(/\s+/)[0].toLowerCase() !== 'abc') return defaultRender(tokens, idx, options, env, self);
 
 		const escapeHtml = markdownIt.utils.escapeHtml;
 
@@ -78,7 +78,7 @@ const plugin = (markdownIt: MarkdownIt, ruleOptions: RuleOptions) => {
 				</div>
 			`;
 		} catch (error) {
-			return `<div class="inline-code">${escapeHtml(error.message)}</div}>`;
+			return `<div class="inline-code">${escapeHtml(error.message)}</div>`;
 		}
 	};
 };

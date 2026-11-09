@@ -67,7 +67,7 @@ export default {
 
 		markdownIt.renderer.rules.fence = function(tokens: Token[], idx: number, options: MarkdownIt.Options, env: unknown, self: Renderer) {
 			const token = tokens[idx];
-			if (token.info !== 'mermaid') return defaultRender(tokens, idx, options, env, self);
+			if (token.info.trim().split(/\s+/)[0].toLowerCase() !== 'mermaid') return defaultRender(tokens, idx, options, env, self);
 
 			ruleOptions.context.pluginWasUsed.mermaid = true;
 
