@@ -1301,7 +1301,8 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			label: () => _('Sort notebooks by'),
 			options: () => {
 				const Folder = require('../Folder').default;
-				const folderSortFields = ['title', 'last_note_user_updated_time'];
+				// Fork: 'order' is the custom order, see folderOrder.ts
+				const folderSortFields = ['title', 'last_note_user_updated_time', 'order'];
 				const options: Record<string, string> = {};
 				for (let i = 0; i < folderSortFields.length; i++) {
 					options[folderSortFields[i]] = toTitleCase(Folder.fieldToLabel(folderSortFields[i]));

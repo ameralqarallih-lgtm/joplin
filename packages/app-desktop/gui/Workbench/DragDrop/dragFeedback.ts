@@ -1,6 +1,8 @@
 // Fork: what is being dragged and where it would land, shown by DragGhost. The sidebar and the note list report
 // the drag source when a drag starts, and the drop target from their dragover handlers.
 
+import { FolderPlacement } from '@joplin/lib/models/utils/folderOrder';
+
 export enum DragKind {
 	Notes = 'notes',
 	Folders = 'folders',
@@ -16,6 +18,8 @@ export interface DropTarget {
 	allowed: boolean;
 	// The element to highlight, if any. The note list shows its own insertion line instead.
 	element: HTMLElement|null;
+	// Whether the drop goes before or after the element (a line), or inside it (null, outlined).
+	placement: FolderPlacement|null;
 }
 
 export interface DragFeedback {
@@ -53,8 +57,8 @@ export const draggedIds = (kind: DragKind) => {
 	return feedback.source?.kind === kind ? feedback.source.ids : [];
 };
 
-export const setDropTarget = (target: Omit<DropTarget, 'element'>|null, element: HTMLElement|null = null) => {
-	pendingTarget = target ? { ...target, element } : null;
+export const setDropTarget = (target: Omit<DropTarget, 'element' | 'placement'>|null, element: HTMLElement|null = null, placement: FolderPlacement|null = null) => {
+	pendingTarget = target ? { ...target, element, placement } : null;
 };
 
 export const resetPendingTarget = () => {
@@ -64,7 +68,7 @@ export const resetPendingTarget = () => {
 export const publishPendingTarget = () => {
 	const current = feedback.target;
 	const next = pendingTarget;
-	const same = current === next || (current && next && current.label === next.label && current.allowed === next.allowed && current.element === next.element);
+	const same = current === next || (current && next && current.label === next.label && current.allowed === next.allowed && current.element === next.element && current.placement === next.placement);
 	if (same) return;
 	feedback = { ...feedback, target: next };
 	emit();

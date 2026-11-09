@@ -1,0 +1,43 @@
+// Fork: the Home link at the top of the Workbench sidebar, see SidebarHome.tsx. Its row matches the pinned notes.
+
+.sidebar-home {
+	flex: 0 0 auto;
+	padding: var(--wb-space-2) 8px 0;
+
+	> .item {
+		display: flex;
+		align-items: center;
+		gap: var(--wb-space-3);
+		box-sizing: border-box;
+		width: 100%;
+		height: var(--wb-row-height);
+		padding: 0 8px;
+		border: 0;
+		border-radius: var(--wb-radius);
+		background: transparent;
+		color: var(--joplin-color2);
+		font: inherit;
+		font-size: var(--wb-font-size);
+		text-align: left;
+		cursor: pointer;
+
+		&:hover {
+			background-color: var(--wb-hover-bg);
+		}
+
+		&.-selected {
+			background-color: var(--joplin-selected-color2);
+			font-weight: 600;
+			color: var(--joplin-color4);
+
+			> .icon {
+				color: var(--joplin-color4);
+			}
+		}
+
+		> .icon {
+			flex: 0 0 auto;
+			color: var(--wb-icon-color);
+		}
+	}
+}

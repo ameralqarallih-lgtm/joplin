@@ -10,6 +10,7 @@ import { _, _n } from '@joplin/lib/locale';
 import Folder from '@joplin/lib/models/Folder';
 import { FolderEntity, NoteEntity } from '@joplin/lib/services/database/types';
 import { folderColor } from '@joplin/lib/models/utils/folderColor';
+import { FolderPlacement } from '@joplin/lib/models/utils/folderOrder';
 import { defaultWindowId, stateUtils } from '@joplin/lib/reducer';
 import { AppState } from '../../../app.reducer';
 import { DragKind, DragSource, endDrag, getFeedback, publishPendingTarget, resetPendingTarget, subscribe } from './dragFeedback';
@@ -38,18 +39,30 @@ const sourceSelector = (source: DragSource) => {
 	).join(', ');
 };
 
-const rectStyle = (rect: DOMRect): React.CSSProperties => ({
-	transform: `translate(${rect.left}px, ${rect.top}px)`,
-	width: rect.width,
-	height: rect.height,
-});
+interface TargetBox {
+	rect: DOMRect;
+	// Where the row's title starts, so that an insertion line lines up with the titles.
+	contentLeft: number;
+}
+
+const highlightStyle = ({ rect, contentLeft }: TargetBox, placement: FolderPlacement|null): React.CSSProperties => {
+	if (!placement) {
+		return { transform: `translate(${rect.left}px, ${rect.top}px)`, width: rect.width, height: rect.height };
+	}
+	const top = placement === FolderPlacement.Before ? rect.top : rect.bottom;
+	return { transform: `translate(${contentLeft}px, ${top - 1}px)`, width: rect.right - contentLeft - 8, height: 2 };
+};
+
+const sameBox = (a: TargetBox|null, b: TargetBox) => {
+	return a && a.contentLeft === b.contentLeft && a.rect.top === b.rect.top && a.rect.left === b.rect.left && a.rect.width === b.rect.width && a.rect.height === b.rect.height;
+};
 
 const DragGhost: React.FC<Props> = props => {
 	const feedback = useSyncExternalStore(subscribe, getFeedback);
 	const ghostRef = useRef<HTMLDivElement>(null);
 	const [positioned, setPositioned] = useState(false);
 	const [exit, setExit] = useState(Exit.None);
-	const [targetRect, setTargetRect] = useState<DOMRect|null>(null);
+	const [targetBox, setTargetBox] = useState<TargetBox|null>(null);
 	const exitRef = useRef(Exit.None);
 	const exitTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -71,7 +84,7 @@ const DragGhost: React.FC<Props> = props => {
 			exitRef.current = Exit.None;
 			setExit(Exit.None);
 			setPositioned(false);
-			setTargetRect(null);
+			setTargetBox(null);
 			endDrag();
 		}, exitDurations[kind]);
 	}, []);
@@ -89,11 +102,11 @@ const DragGhost: React.FC<Props> = props => {
 				setPositioned(true);
 			}
 			const element = getFeedback().target?.element;
-			setTargetRect(current => {
+			setTargetBox(current => {
 				if (!element) return null;
-				const rect = element.getBoundingClientRect();
-				const same = current && current.top === rect.top && current.left === rect.left && current.width === rect.width && current.height === rect.height;
-				return same ? current : rect;
+				const title = element.querySelector('.title') ?? element;
+				const box = { rect: element.getBoundingClientRect(), contentLeft: title.getBoundingClientRect().left };
+				return sameBox(current, box) ? current : box;
 			});
 		};
 
@@ -153,9 +166,10 @@ const DragGhost: React.FC<Props> = props => {
 		target ? (target.allowed ? '-over-target' : '-blocked') : '',
 	];
 
-	const highlight = targetRect && target && exit !== Exit.Cancel ? <div
-		className={`drop-highlight ${target.allowed ? '' : '-blocked'} ${exit === Exit.Drop ? '-landed' : ''}`}
-		style={rectStyle(targetRect)}
+	const isLine = !!target?.placement;
+	const highlight = targetBox && target && exit !== Exit.Cancel ? <div
+		className={`drop-highlight ${isLine ? '-line' : ''} ${target.allowed ? '' : '-blocked'} ${exit === Exit.Drop ? '-landed' : ''}`}
+		style={highlightStyle(targetBox, target.placement)}
 	/> : null;
 
 	return <>

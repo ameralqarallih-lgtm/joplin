@@ -8,6 +8,7 @@ import { Size } from '@joplin/utils/types';
 import { ItemFlow } from '@joplin/lib/services/plugins/api/noteListType';
 import { _ } from '@joplin/lib/locale';
 import { DragKind, setDropTarget, startDrag } from '../../Workbench/DragDrop/dragFeedback';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 const useDragAndDrop = (
 	parentFolderIsReadOnly: boolean,
@@ -106,7 +107,13 @@ const useDragAndDrop = (
 
 		// TODO: check that parent type is folder
 		let switchedToCustomOrder = false;
-		if (!canManuallySortNotes(notesParentType, noteSortOrder, selectedFolderInTrash)) {
+		// Fork: with a Workbench theme, the drag preview has already said that the drop switches to the custom order,
+		// so it switches without asking.
+		const switchWithoutAsking = noteSortOrder !== 'order' && notesParentType === 'Folder' && !selectedFolderInTrash && isWorkbenchTheme(Setting.value('theme'));
+		if (switchWithoutAsking) {
+			Setting.setValue('notes.sortOrder.field', 'order');
+			switchedToCustomOrder = true;
+		} else if (!canManuallySortNotes(notesParentType, noteSortOrder, selectedFolderInTrash)) {
 			// Fork: if the user has just switched to custom order, still make the move they dropped.
 			if (noteSortOrder === 'order' || Setting.value('notes.sortOrder.field') !== 'order') return;
 			switchedToCustomOrder = true;

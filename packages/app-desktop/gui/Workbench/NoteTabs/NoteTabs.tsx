@@ -1,4 +1,5 @@
-// Fork: the Workbench tab bar above the editor: a Home tab, then the open notes. See noteTabsReducer.ts.
+// Fork: the Workbench tab bar above the editor, with the open notes. See noteTabsReducer.ts. Home is opened from
+// the sidebar (SidebarHome.tsx) and the rail.
 
 import * as React from 'react';
 import { useState } from 'react';
@@ -91,18 +92,6 @@ const NoteTabs: React.FC<Props> = props => {
 	});
 
 	return <div className='note-tabs' role='tablist' aria-label={_('Open notes')}>
-		<div className={`note-tab -home ${props.homeTabActive ? '-active' : ''}`}>
-			<button
-				type='button'
-				role='tab'
-				className='label'
-				aria-selected={props.homeTabActive}
-				onClick={() => props.dispatch({ type: 'WORKBENCH_HOME_SHOW' })}
-			>
-				<i className='icon fas fa-home' aria-hidden={true}></i>
-				<span className='text'>{_('Home')}</span>
-			</button>
-		</div>
 		{tabs}
 	</div>;
 };

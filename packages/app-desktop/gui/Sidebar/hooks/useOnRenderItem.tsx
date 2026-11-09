@@ -33,7 +33,9 @@ import shim from '@joplin/lib/shim';
 import useOnItemClick from './useOnItemClick';
 import { ShareType, StateShare } from '@joplin/lib/services/share/reducer';
 import { DragKind, draggedIds, setDropTarget, startDrag } from '../../Workbench/DragDrop/dragFeedback';
-import { notebooksDropOutcome, notesDropOutcome } from '../../Workbench/DragDrop/dropTargets';
+import { folderDropPlacement, notebooksDropOutcome, notebooksPlacementOutcome, notesDropOutcome } from '../../Workbench/DragDrop/dropTargets';
+import { FolderPlacement, customFolderOrderField, placeFolders } from '@joplin/lib/models/utils/folderOrder';
+import { refreshFolders } from '@joplin/lib/folders-screen-utils';
 import folderColorMenuItem from '../../Workbench/folderColorMenu';
 import { folderColor } from '@joplin/lib/models/utils/folderColor';
 
@@ -367,14 +369,22 @@ const useOnRenderItem = (props: Props) => {
 		const folderId = event.currentTarget.getAttribute('data-folder-id') ?? '';
 		const types = event.dataTransfer.types;
 		let outcome = null;
+		let placement: FolderPlacement|null = null;
 		if (types.includes('text/x-jop-note-ids')) outcome = notesDropOutcome(folderId, foldersRef.current);
-		if (types.includes('text/x-jop-folder-ids')) outcome = notebooksDropOutcome(draggedIds(DragKind.Folders), folderId, foldersRef.current);
+		if (types.includes('text/x-jop-folder-ids')) {
+			const dragged = draggedIds(DragKind.Folders);
+			placement = folderDropPlacement(folderId, event.clientY, event.currentTarget.getBoundingClientRect());
+			const customOrder = Setting.value('folders.sortOrder.field') === customFolderOrderField;
+			outcome = placement
+				? notebooksPlacementOutcome(dragged, folderId, placement, foldersRef.current, customOrder)
+				: notebooksDropOutcome(dragged, folderId, foldersRef.current);
+		}
 		if (!outcome) return;
 		if (outcome.allowed) event.preventDefault();
-		setDropTarget(outcome, event.currentTarget);
+		setDropTarget(outcome, event.currentTarget, placement);
 
 		const hover = dragHoverRef.current;
-		if (hover.folderId !== folderId) {
+		if (hover.folderId !== folderId || placement) {
 			dragHoverRef.current = { folderId, since: Date.now() };
 		} else if (folderId && event.currentTarget.getAttribute('aria-expanded') === 'false' && Date.now() - hover.since > 700) {
 			hover.since = Infinity;
@@ -400,13 +410,29 @@ const useOnRenderItem = (props: Props) => {
 			} else if (dt.types.indexOf('text/x-jop-folder-ids') >= 0) {
 				event.preventDefault();
 				const folderIds = JSON.parse(dt.getData('text/x-jop-folder-ids'));
+
+				// Fork: dropped on the top or bottom edge of a notebook, the notebooks go above or below it, in the
+				// custom order (which this switches to).
+				const placement = folderDropPlacement(folderId ?? '', event.clientY, event.currentTarget.getBoundingClientRect());
+				if (placement) {
+					const customOrder = Setting.value('folders.sortOrder.field') === customFolderOrderField;
+					if (!notebooksPlacementOutcome(folderIds, folderId, placement, foldersRef.current, customOrder).allowed) return;
+					await placeFolders(folderIds, folderId, placement, foldersRef.current, !customOrder);
+					if (customOrder) {
+						await refreshFolders(props.dispatch, '');
+					} else {
+						Setting.setValue('folders.sortOrder.field', customFolderOrderField);
+					}
+					return;
+				}
+
 				await onFolderDrop([], folderIds, folderId);
 			}
 		} catch (error) {
 			logger.error(error);
 			await shim.showErrorDialog(error.message);
 		}
-	}, []);
+	}, [props.dispatch]);
 
 	const onFolderToggleClick_: ItemClickListener = useCallback(event => {
 		const folderId = event.currentTarget.getAttribute('data-folder-id');

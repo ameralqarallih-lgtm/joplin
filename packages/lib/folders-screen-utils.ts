@@ -3,6 +3,7 @@ import Folder from './models/Folder';
 import Setting from './models/Setting';
 import shim from './shim';
 import { FolderLoadOptions } from './models/utils/types';
+import { customFolderOrderField, sortFoldersByCustomOrder } from './models/utils/folderOrder';
 
 const refreshCalls_: boolean[] = [];
 let scheduleRefreshFoldersIID_: ReturnType<typeof shim.setTimeout> = null;
@@ -25,6 +26,11 @@ export const allForDisplay = async (options: FolderLoadOptions = {}) => {
 
 	if (Setting.value('folders.sortOrder.field') === 'last_note_user_updated_time') {
 		folders = await Folder.orderByLastModified(folders, orderDir);
+	}
+
+	// Fork: the custom order, set by dragging notebooks in the desktop sidebar.
+	if (Setting.value('folders.sortOrder.field') === customFolderOrderField) {
+		folders = sortFoldersByCustomOrder(folders);
 	}
 
 	if (Setting.value('showNoteCounts')) {

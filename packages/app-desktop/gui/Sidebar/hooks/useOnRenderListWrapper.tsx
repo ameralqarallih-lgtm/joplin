@@ -2,6 +2,9 @@ import * as React from 'react';
 import { useCallback } from 'react';
 import { _ } from '@joplin/lib/locale';
 import CommandService from '@joplin/lib/services/CommandService';
+import Setting from '@joplin/lib/models/Setting';
+import bridge from '../../../services/bridge';
+import { customFolderOrderField } from '@joplin/lib/models/utils/folderOrder';
 
 interface Props {
 	selectedIndex: number;
@@ -57,11 +60,49 @@ const NewFolderButton = () => {
 	</button>;
 };
 
+// Fork: chooses how notebooks are sorted, including the custom order that dragging notebooks sets.
+const onSortFoldersButtonClick = () => {
+	const Menu = bridge().Menu;
+	const MenuItem = bridge().MenuItem;
+	const field = Setting.value('folders.sortOrder.field');
+	const menu = new Menu();
+	const options: Record<string, string> = Setting.enumOptions('folders.sortOrder.field');
+	for (const [value, label] of Object.entries(options)) {
+		menu.append(new MenuItem({
+			label,
+			type: 'radio',
+			checked: field === value,
+			click: () => Setting.setValue('folders.sortOrder.field', value),
+		}));
+	}
+	menu.append(new MenuItem({ type: 'separator' }));
+	menu.append(new MenuItem({
+		label: Setting.settingMetadata('folders.sortOrder.reverse').label(),
+		type: 'checkbox',
+		checked: Setting.value('folders.sortOrder.reverse'),
+		enabled: field !== customFolderOrderField,
+		click: () => Setting.setValue('folders.sortOrder.reverse', !Setting.value('folders.sortOrder.reverse')),
+	}));
+	menu.popup({ window: bridge().activeWindow() });
+};
+
+const SortFoldersButton = () => {
+	const label = _('Sort notebooks');
+	return <button onClick={onSortFoldersButtonClick} className='sidebar-header-button -sort' title={label}>
+		<i
+			aria-label={label}
+			role='img'
+			className='fas fa-sort-amount-down'
+		/>
+	</button>;
+};
+
 const useOnRenderListWrapper = (props: Props) => {
 	return useCallback((listItems: React.ReactNode[]) => {
 		const listHasValidSelection = props.selectedIndex >= 0;
 		const allowContainerFocus = !listHasValidSelection;
 		return <>
+			<SortFoldersButton/>
 			<CollapseExpandAllButton allFoldersCollapsed={props.allFoldersCollapsed} hasSubFolders={props.hasSubFolders}/>
 			<NewFolderButton/>
 			<div

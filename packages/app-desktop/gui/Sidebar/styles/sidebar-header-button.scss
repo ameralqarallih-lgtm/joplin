@@ -27,6 +27,11 @@
 		right: 25px;
 	}
 
+	// Fork: see SortFoldersButton
+	&.-sort {
+		right: 50px;
+	}
+
 	&:disabled {
 		opacity: 0.3;
 	}

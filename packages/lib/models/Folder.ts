@@ -62,6 +62,8 @@ export default class Folder extends BaseItem {
 		const fieldsToLabels: Record<string, string> = {
 			title: _('title'),
 			last_note_user_updated_time: _('updated date'),
+			// Fork: see folderOrder.ts
+			order: _('custom order'),
 		};
 
 		return field in fieldsToLabels ? fieldsToLabels[field] : field;

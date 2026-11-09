@@ -62,6 +62,8 @@ const iconMap: Record<string, string> = {
 	'wb-icon-search': 'search',
 	'wb-icon-close': 'x',
 	'wb-icon-not-found': 'frown',
+	// Fork: the custom order, which upstream shows with a wrench (style.scss)
+	'wb-icon-custom-order': 'arrow-down-up',
 
 	// Font Awesome
 	'fa-adjust': 'contrast',
@@ -198,6 +200,7 @@ const iconMap: Record<string, string> = {
 	'fa-sign-in-alt': 'log-in',
 	'fa-sliders-h': 'sliders-horizontal',
 	'fa-sort': 'arrow-up-down',
+	'fa-sort-amount-down': 'arrow-down-wide-narrow',
 	'fa-spell-check': 'spell-check',
 	'fa-star': 'star',
 	'fa-sticky-note': 'sticky-note',

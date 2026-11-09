@@ -9,6 +9,7 @@
 @use 'HomeView/home-view.scss';
 @use 'Shell/workbench-shell.scss';
 @use 'SidebarPinned/sidebar-pinned.scss';
+@use 'SidebarHome/sidebar-home.scss';
 @use 'NoteOutline/note-outline.scss';
 @use 'NoteListTitle/note-list-title.scss';
 @use 'ColorPicker/color-picker.scss';
@@ -21,6 +22,7 @@
 @use 'banners';
 @use 'settings';
 @use 'sass:list';
+@use 'sass:map';
 
 // Inter, the Workbench UI font. The URL is relative to the compiled style.min.css.
 @import url('gui/Workbench/fonts/inter.css');
@@ -217,6 +219,11 @@
 				font-weight: 600;
 			}
 		}
+	}
+
+	// Upstream shows the custom note order with a wrench.
+	.sort-order-field-button .fa-wrench::before {
+		mask-image: url("#{map.get(icons.$icons, 'wb-icon-custom-order')}");
 	}
 
 	// Where dragged notes would be inserted, with a ring at its start.

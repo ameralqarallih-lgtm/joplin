@@ -156,6 +156,35 @@ body:has(.drag-ghost) .note-title-tooltip {
 	&.-landed {
 		animation: wb-drop-land 300ms ease-out;
 	}
+
+	// Above or below a row: a line with a ring at its start.
+	&.-line {
+		border: none;
+		border-radius: 1px;
+		background-color: var(--joplin-color4);
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 0;
+			box-sizing: border-box;
+			width: 8px;
+			height: 8px;
+			border: 2px solid var(--joplin-color4);
+			border-radius: 50%;
+			background-color: var(--joplin-background-color);
+			transform: translate(-6px, -50%);
+		}
+
+		&.-blocked {
+			background-color: color-mix(in srgb, var(--joplin-color) 30%, transparent);
+
+			&::before {
+				border-color: color-mix(in srgb, var(--joplin-color) 30%, transparent);
+			}
+		}
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
