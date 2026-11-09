@@ -20,6 +20,7 @@ import { DialogContext, DialogControl } from '../../DialogManager';
 import { useContext } from 'react';
 import { MenuChoice } from '../../DialogManager/types';
 import NewNoteButton from './NewNoteButton';
+import FolderNavigationBar from './FolderNavigationBar';
 import PerFolderSortOrderService from '@joplin/lib/services/sortOrder/PerFolderSortOrderService';
 import { ALL_NOTES_FILTER_ID } from '@joplin/lib/reserved-ids';
 
@@ -323,6 +324,7 @@ class NotesScreenComponent extends BaseScreenComponent<ComponentProps, State> {
 					showSearchButton={true}
 					showSideMenuButton={true}
 				/>
+				{this.props.notesParentType === 'Folder' ? <FolderNavigationBar folderId={this.props.selectedFolderId}/> : null}
 				<NoteList />
 				{actionButtonComp}
 			</AccessibleView>
