@@ -1,0 +1,245 @@
+// Fork: Workbench styles for dialogs: the modal window, button rows, prompts (including the tag picker) and
+// Goto Anything, which also serves "Link to note". Included by style.scss inside its Workbench style query.
+// These dialogs build their styles inline from lib/theme.ts, which is why many properties need !important.
+
+@use 'icons/icons';
+@use 'sass:map';
+
+@mixin dialogs {
+	.dialog-modal-layer {
+		&::backdrop {
+			background-color: rgba(12, 17, 26, 0.38);
+		}
+
+		&:not(.-fullscreen) > .content {
+			border: 1px solid var(--wb-border-color-soft);
+			border-radius: 10px;
+			box-shadow: 0 1px 3px var(--joplin-shadow-color), 0 18px 48px var(--joplin-shadow-color) !important;
+		}
+	}
+
+	.dialog-button-row {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--wb-space-3);
+		margin-top: var(--wb-space-5) !important;
+
+		> button {
+			box-sizing: border-box;
+			height: var(--wb-control-height);
+			min-height: var(--wb-control-height) !important;
+			min-width: 80px !important;
+			margin: 0 !important;
+			padding: 0 14px !important;
+			border: 1px solid var(--wb-border-color) !important;
+			border-radius: var(--wb-control-radius) !important;
+			background-color: var(--joplin-background-color) !important;
+			color: var(--joplin-color) !important;
+			font-size: var(--wb-font-size);
+			font-weight: 500;
+			cursor: pointer;
+			transition: background-color var(--wb-duration), border-color var(--wb-duration);
+
+			&:hover:not(:disabled) {
+				border-color: var(--wb-border-color-strong) !important;
+				background-color: color-mix(in srgb, var(--joplin-color) 4%, var(--joplin-background-color)) !important;
+			}
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+
+			&.-primary {
+				border-color: transparent !important;
+				background-color: var(--joplin-color4) !important;
+				color: var(--joplin-color5) !important;
+				box-shadow: var(--wb-shadow-1);
+
+				&:hover:not(:disabled) {
+					border-color: transparent !important;
+					background-color: color-mix(in srgb, var(--joplin-color4) 88%, black) !important;
+				}
+			}
+		}
+	}
+
+	// The label sits above a full-width field instead of beside it.
+	.prompt-dialog > .content {
+		box-sizing: border-box;
+		width: min(520px, calc(100vw - 40px));
+		padding: var(--wb-space-5) !important;
+		// PromptDialog sizes its fields as a fraction of this width, so 200% makes them fill the dialog.
+		--prompt-width: 200%;
+
+		> .label {
+			display: block !important;
+			margin: 0 0 var(--wb-space-3) !important;
+			font-size: var(--wb-font-size) !important;
+			font-weight: 600;
+		}
+
+		> .input {
+			display: block !important;
+			background-color: transparent !important;
+
+			> input[type=text] {
+				width: 100% !important;
+				max-width: none !important;
+			}
+		}
+	}
+
+	// react-select, used for the tag and notebook pickers. Its class names end with the part they style.
+	:is(.tag-selector, .item-selector) {
+		font-size: var(--wb-font-size);
+
+		> div[class*='-control'] {
+			min-height: 34px;
+			border: 1px solid var(--wb-border-color);
+			border-radius: var(--wb-control-radius);
+			background-color: var(--joplin-background-color);
+			box-shadow: none;
+			transition: border-color var(--wb-duration), box-shadow var(--wb-duration);
+
+			&:hover {
+				border-color: var(--wb-border-color-strong);
+			}
+
+			&:focus-within {
+				border-color: var(--joplin-color4);
+				box-shadow: var(--wb-focus-ring);
+			}
+		}
+
+		span[class*='-indicatorSeparator'] {
+			display: none;
+		}
+
+		div[class*='-indicatorContainer'] {
+			padding: 6px;
+			color: var(--wb-icon-color);
+		}
+
+		div[class$='-multiValue'] {
+			border-radius: var(--wb-radius-sm);
+			background-color: var(--wb-surface-sunken);
+		}
+
+		div[class*='-menu'] {
+			overflow: hidden;
+			border: 1px solid var(--wb-border-color-soft);
+			border-radius: var(--wb-radius-lg);
+			box-shadow: var(--wb-shadow-2);
+		}
+	}
+
+	.go-to-anything-dialog {
+		> .content {
+			box-sizing: border-box;
+			width: min(640px, calc(100vw - 40px));
+			min-width: 0 !important;
+			max-width: none !important;
+			margin-top: 8vh !important;
+			padding: var(--wb-space-3) !important;
+		}
+
+		.help-text {
+			padding: var(--wb-space-2) var(--wb-space-2) var(--wb-space-3);
+			font-size: var(--wb-font-size-sm);
+			line-height: 1.5;
+			color: var(--joplin-color-faded);
+		}
+
+		.search-row {
+			position: relative;
+			gap: var(--wb-space-2);
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 12px;
+				width: var(--wb-icon-md);
+				height: var(--wb-icon-md);
+				transform: translateY(-50%);
+				background-color: var(--wb-icon-color);
+				mask: url("#{map.get(icons.$icons, 'wb-icon-search')}") center / contain no-repeat;
+				pointer-events: none;
+			}
+
+			> input {
+				box-sizing: border-box;
+				height: 40px !important;
+				max-height: none !important;
+				padding: 0 12px 0 38px !important;
+				border: 1px solid var(--wb-border-color) !important;
+				border-radius: var(--wb-radius-lg) !important;
+				background-color: var(--joplin-background-color) !important;
+				color: var(--joplin-color) !important;
+				font-size: var(--wb-font-size-lg);
+				outline: none;
+				transition: border-color var(--wb-duration), box-shadow var(--wb-duration);
+
+				&:focus {
+					border-color: var(--joplin-color4) !important;
+					box-shadow: var(--wb-focus-ring);
+				}
+			}
+		}
+
+		[role=listbox] {
+			margin-top: var(--wb-space-3) !important;
+		}
+
+		[role=option] {
+			padding: 0 12px !important;
+			border-bottom: none !important;
+			border-radius: var(--wb-radius);
+			cursor: pointer;
+
+			&.selected {
+				background-color: color-mix(in srgb, var(--joplin-color4) 11%, transparent) !important;
+			}
+
+			> .title, > .fragments, > .path {
+				overflow: hidden;
+				margin: 0 !important;
+				text-overflow: ellipsis;
+				color: var(--joplin-color-faded) !important;
+				opacity: 1 !important;
+			}
+
+			> .title {
+				font-size: var(--wb-font-size) !important;
+				font-weight: 500;
+				color: var(--joplin-color) !important;
+			}
+
+			> .fragments {
+				margin-top: 2px !important;
+				font-size: var(--wb-font-size-sm) !important;
+			}
+
+			> .path {
+				display: flex;
+				align-items: center;
+				gap: var(--wb-space-2);
+				margin-top: 3px !important;
+				font-size: var(--wb-font-size-xs) !important;
+
+				> i {
+					margin: 0 !important;
+					font-size: var(--wb-icon-sm) !important;
+				}
+			}
+
+			.match-highlight {
+				border-radius: 2px;
+				background-color: color-mix(in srgb, var(--joplin-color4) 18%, transparent) !important;
+				color: inherit !important;
+				font-weight: 600 !important;
+			}
+		}
+	}
+}

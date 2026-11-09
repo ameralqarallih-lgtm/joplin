@@ -4,6 +4,15 @@
 	font-size: var(--joplin-font-size);
 	font-weight: bold;
 
+	// Fork: drawn here rather than in BannerContent so that the Workbench theme can remove them.
+	&.-action::before {
+		content: '[ ';
+	}
+
+	&.-action::after {
+		content: ' ]';
+	}
+
 	&.-underline {
 		font-weight: normal;
 		text-decoration: underline;

@@ -26,6 +26,7 @@ import Dialog from '@joplin/lib/components/Dialog';
 import AsyncActionQueue from '@joplin/lib/AsyncActionQueue';
 import { PluginManifest } from '@joplin/lib/services/PluginManager';
 import gotoAnythingRecentNotes from './gotoAnythingRecentNotes';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 const logger = Logger.create('GotoAnything');
 
@@ -135,6 +136,12 @@ const getResultId = (result: GotoAnythingSearchResult) => {
 
 const itemListId = 'goto-anything-item-list';
 
+// Fork: the Workbench theme lists results in compact rows, styled by gui/Workbench/dialogs.scss.
+const workbenchItemHeight = (mode: Mode, listType: number, resultsInBody: boolean) => {
+	if (mode === Mode.TitleOnly || listType === BaseModel.TYPE_COMMAND) return 36;
+	return resultsInBody ? 60 : 46;
+};
+
 class GotoAnything {
 
 	public dispatch: Dispatch;
@@ -215,6 +222,8 @@ class DialogComponent extends React.PureComponent<Props, State> {
 		if (this.state.listType === BaseModel.TYPE_COMMAND) {
 			itemHeight = 40;
 		}
+
+		if (isWorkbenchTheme(this.props.themeId)) itemHeight = workbenchItemHeight(this.mode_, this.state.listType, this.state.resultsInBody);
 
 		this.styles_[styleKey] = {
 			dialogBox: { ...theme.dialogBox, minWidth: '50%', maxWidth: '50%' },
@@ -626,8 +635,8 @@ class DialogComponent extends React.PureComponent<Props, State> {
 		const fragmentsHtml = !item.fragments ? null : wrapKeywordMatches(item.fragments);
 
 		const folderIcon = <i style={{ fontSize: theme.fontSize, marginRight: 2 }} className="fa fa-book" role='img' aria-label={_('Notebook')} />;
-		const pathComp = !item.path ? null : <div style={style.rowPath}>{folderIcon} {item.path}</div>;
-		const fragmentComp = !fragmentsHtml ? null : <div style={style.rowFragments} dangerouslySetInnerHTML={{ __html: (fragmentsHtml) }}></div>;
+		const pathComp = !item.path ? null : <div className='path' style={style.rowPath}>{folderIcon} {item.path}</div>;
+		const fragmentComp = !fragmentsHtml ? null : <div className='fragments' style={style.rowFragments} dangerouslySetInnerHTML={{ __html: (fragmentsHtml) }}></div>;
 
 		return (
 			<div
@@ -645,7 +654,7 @@ class DialogComponent extends React.PureComponent<Props, State> {
 				id={resultId}
 				aria-posinset={index + 1}
 			>
-				<div style={style.rowTitle} dangerouslySetInnerHTML={{ __html: titleHtml }}></div>
+				<div className='title' style={style.rowTitle} dangerouslySetInnerHTML={{ __html: titleHtml }}></div>
 				{this.mode_ === Mode.TitleOnly ? null : fragmentComp}
 				{this.mode_ === Mode.TitleOnly ? null : pathComp}
 			</div>
@@ -752,7 +761,7 @@ class DialogComponent extends React.PureComponent<Props, State> {
 		return (
 			<Dialog className='go-to-anything-dialog' onCancel={this.modalLayer_onDismiss} contentStyle={style.dialogBox}>
 				{helpComp}
-				<div style={style.inputHelpWrapper}>
+				<div className='search-row' style={style.inputHelpWrapper}>
 					<input
 						autoFocus
 						type='text'

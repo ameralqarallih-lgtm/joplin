@@ -5,8 +5,9 @@
 $chevron-light: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6b7c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E";
 $chevron-dark: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2395a1b1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E";
 
-// Text fields, except the note title (which reads as a heading) and fields inside the editors.
-$text-fields: 'input:is([type=text], [type=search], [type=password], [type=number], [type=email], [type=url], :not([type])):not(.title-input, .cm-editor *, .go-to-anything-dialog *)';
+// Text fields, except the note title (which reads as a heading), fields inside the editors, Goto Anything's search
+// (dialogs.scss) and react-select's inner input, which sits inside a control that already looks like a field.
+$text-fields: 'input:is([type=text], [type=search], [type=password], [type=number], [type=email], [type=url], :not([type])):not(.title-input, .cm-editor *, .go-to-anything-dialog *, [id^=react-select])';
 
 @mixin controls {
 	body {

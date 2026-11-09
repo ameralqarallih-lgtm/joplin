@@ -1,0 +1,165 @@
+// Fork: Workbench styles for the emoji picker (@joeattardi/emoji-button), used to choose notebook icons.
+// Included by style.scss inside its Workbench style query. The picker draws Font Awesome icons as inline SVGs,
+// which are replaced here by Lucide icons.
+
+@use 'icons/icons';
+@use 'sass:map';
+@use 'sass:list';
+
+// The picker's category tabs, in the order it shows them: recent emojis first, then its default categories.
+$categories: recent, smileys, people, animals, food, activities, travel, objects, symbols, flags;
+
+@mixin icon-mask($name) {
+	mask: url("#{map.get(icons.$icons, $name)}") center / contain no-repeat;
+}
+
+@mixin emoji-picker {
+	// The picker injects its own stylesheet after this one, so "body" is needed to win over its variables.
+	body .emoji-picker {
+		--font: var(--joplin-font-family);
+		--blue-color: var(--joplin-color4);
+		--focus-indicator-color: var(--joplin-color4);
+		--category-border-bottom-size: 2px;
+
+		// The picker switches to its --dark-* variables in dark mode. Both follow the Joplin theme.
+		--background-color: var(--joplin-background-color);
+		--dark-background-color: var(--joplin-background-color);
+		--popup-background-color: var(--joplin-background-color);
+		--dark-popup-background-color: var(--joplin-background-color);
+		--text-color: var(--joplin-color);
+		--dark-text-color: var(--joplin-color);
+		--secondary-text-color: var(--joplin-color-faded);
+		--dark-secondary-text-color: var(--joplin-color-faded);
+		--border-color: var(--wb-border-color);
+		--dark-border-color: var(--wb-border-color);
+		--hover-color: var(--wb-hover-bg);
+		--dark-hover-color: var(--wb-hover-bg);
+		--category-button-color: var(--wb-icon-color);
+		--dark-category-button-color: var(--wb-icon-color);
+		--search-icon-color: var(--wb-icon-color);
+		--dark-search-background-color: var(--joplin-background-color);
+		--dark-search-border-color: var(--wb-border-color);
+		--dark-search-focus-border-color: var(--joplin-color4);
+		--dark-search-placeholder-color: var(--joplin-color-faded);
+
+		border-color: var(--wb-border-color-soft);
+		border-radius: 10px;
+		box-shadow: 0 1px 3px var(--joplin-shadow-color), 0 18px 48px var(--joplin-shadow-color);
+	}
+
+	.emoji-picker__search-container {
+		margin: var(--wb-space-3);
+	}
+
+	// Styled as a text field by controls.scss. This keeps room for the search icon.
+	.emoji-picker .emoji-picker__search-container > input.emoji-picker__search {
+		padding-right: 32px !important;
+	}
+
+	.emoji-picker__search-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: var(--wb-icon-md);
+		height: var(--wb-icon-md);
+		top: calc(50% - var(--wb-icon-md) / 2);
+		right: 10px;
+
+		> * {
+			display: none;
+		}
+
+		&::before {
+			content: '';
+			width: 100%;
+			height: 100%;
+			background-color: currentColor;
+			@include icon-mask('wb-icon-search');
+		}
+	}
+
+	// While there's a query, the icon clears it.
+	.emoji-picker__search:not(:placeholder-shown) + .emoji-picker__search-icon::before {
+		@include icon-mask('wb-icon-close');
+	}
+
+	.emoji-picker__category-buttons {
+		margin: 0 var(--wb-space-3) var(--wb-space-2);
+		border-bottom: 1px solid var(--wb-border-color-soft);
+	}
+
+	.emoji-picker__category-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: -1px;
+		transition: color var(--wb-duration);
+
+		> * {
+			display: none;
+		}
+
+		&::before {
+			content: '';
+			width: var(--wb-icon-md);
+			height: var(--wb-icon-md);
+			background-color: currentColor;
+		}
+
+		&:hover:not(.active) {
+			color: var(--joplin-color);
+		}
+
+		&:focus-visible {
+			outline: 2px solid color-mix(in srgb, var(--joplin-color4) 70%, transparent);
+			outline-offset: -2px;
+		}
+	}
+
+	@each $category in $categories {
+		.emoji-picker__category-button:nth-child(#{list.index($categories, $category)})::before {
+			@include icon-mask('wb-icon-emoji-#{$category}');
+		}
+	}
+
+	.emoji-picker__category-name {
+		padding-left: var(--wb-space-2);
+		font-size: var(--wb-font-size-xs);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		color: var(--joplin-color-faded2);
+	}
+
+	// Search results otherwise overflow sideways by the width of the scrollbar.
+	.emoji-picker__container.search-results {
+		overflow-x: hidden;
+	}
+
+	.emoji-picker__emoji {
+		border-radius: var(--wb-radius);
+	}
+
+	.emoji-picker__preview {
+		border-top-color: var(--wb-border-color-soft);
+	}
+
+	.emoji-picker__preview-name {
+		font-size: var(--wb-font-size);
+		color: var(--joplin-color-faded);
+	}
+
+	.emoji-picker__search-not-found-icon {
+		> * {
+			display: none;
+		}
+
+		&::before {
+			content: '';
+			display: inline-block;
+			width: 32px;
+			height: 32px;
+			background-color: var(--wb-icon-color);
+			@include icon-mask('wb-icon-not-found');
+		}
+	}
+}

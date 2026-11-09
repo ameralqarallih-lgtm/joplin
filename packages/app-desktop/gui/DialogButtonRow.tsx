@@ -75,7 +75,7 @@ export default function DialogButtonRow(props: Props) {
 
 	if (okButtonShow) {
 		buttonComps.push(
-			<button disabled={props.okButtonDisabled} key="ok" style={buttonStyle} onClick={onOkButtonClick} ref={props.okButtonRef} onKeyDown={onKeyDown}>
+			<button disabled={props.okButtonDisabled} key="ok" className='-primary' style={buttonStyle} onClick={onOkButtonClick} ref={props.okButtonRef} onKeyDown={onKeyDown}>
 				{props.okButtonLabel ? props.okButtonLabel : _('OK')}
 			</button>,
 		);
@@ -89,5 +89,5 @@ export default function DialogButtonRow(props: Props) {
 		);
 	}
 
-	return <div style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>;
+	return <div className='dialog-button-row' style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>;
 }

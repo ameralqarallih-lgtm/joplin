@@ -68,6 +68,7 @@ import getResourceBaseUrl from './utils/getResourceBaseUrl';
 import useInitialCursorLocation from './utils/useInitialCursorLocation';
 import NotePositionService, { EditorCursorLocations } from '@joplin/lib/services/NotePositionService';
 import { blur } from '@joplin/lib/utils/focusHandler';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 const debounce = require('debounce');
 
@@ -719,7 +720,8 @@ function NoteEditorContent(props: NoteEditorProps) {
 
 	function renderSearchInfo() {
 		const theme = themeStyle(props.themeId);
-		if (formNoteFolder && ['Search', 'Tag', 'SmartFilter'].includes(props.notesParentType)) {
+		// Fork: the Workbench breadcrumb above the title already links to the note's notebook.
+		if (formNoteFolder && ['Search', 'Tag', 'SmartFilter'].includes(props.notesParentType) && !isWorkbenchTheme(props.themeId)) {
 			return (
 				<div style={{ paddingTop: 10, paddingBottom: 10, paddingLeft: theme.editorPaddingLeft }}>
 					<Button

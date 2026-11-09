@@ -331,14 +331,14 @@ export default class PromptDialog extends React.Component<Props, any> {
 		const buttonComps = [];
 		if (buttonTypes.indexOf('create') >= 0) {
 			buttonComps.push(
-				<button key="create" disabled={!this.state.answer} style={styles.button} onClick={() => onClose(true, 'create')}>
+				<button key="create" disabled={!this.state.answer} className='-primary' style={styles.button} onClick={() => onClose(true, 'create')}>
 					{_('Create')}
 				</button>,
 			);
 		}
 		if (buttonTypes.indexOf('ok') >= 0) {
 			buttonComps.push(
-				<button key="ok" disabled={!this.state.answer} style={styles.button} onClick={() => onClose(true, 'ok')}>
+				<button key="ok" disabled={!this.state.answer} className='-primary' style={styles.button} onClick={() => onClose(true, 'ok')}>
 					{_('OK')}
 				</button>,
 			);
@@ -362,12 +362,12 @@ export default class PromptDialog extends React.Component<Props, any> {
 		const isPassword = this.props.inputType === 'password';
 		return (
 			<Dialog className='prompt-dialog' contentStyle={isPassword ? { boxSizing: 'border-box', width: 500, maxWidth: '100%' } : styles.dialog} onCancel={() => onClose(false, 'cancel')}>
-				<label style={isPassword ? { ...styles.label, display: 'block', marginBottom: 10 } : styles.label}>{this.props.label ? this.props.label : ''}</label>
-				<div style={{ display: isPassword ? 'block' : 'inline-block', color: 'black', backgroundColor: theme.backgroundColor }}>
+				<label className='label' style={isPassword ? { ...styles.label, display: 'block', marginBottom: 10 } : styles.label}>{this.props.label ? this.props.label : ''}</label>
+				<div className='input' style={{ display: isPassword ? 'block' : 'inline-block', color: 'black', backgroundColor: theme.backgroundColor }}>
 					{inputComp}
 					{descComp}
 				</div>
-				<div style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>
+				<div className='dialog-button-row' style={{ textAlign: 'right', marginTop: 10 }}>{buttonComps}</div>
 			</Dialog>
 		);
 	}
