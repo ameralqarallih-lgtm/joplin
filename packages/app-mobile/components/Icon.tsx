@@ -5,6 +5,9 @@ import { TextStyle, Text, StyleProp } from 'react-native';
 import { FontAwesome5 } from '@react-native-vector-icons/fontawesome5';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Ionicons } from '@react-native-vector-icons/ionicons';
+import LucideIcon from './LucideIcon/LucideIcon';
+import lucideIcons from './LucideIcon/lucideIcons';
+import useIsWorkbenchTheme from './LucideIcon/useIsWorkbenchTheme';
 
 type IconNameProp<IconComponent> = IconComponent extends (props: { name: infer NameType })=> unknown ? NameType : never;
 
@@ -31,6 +34,10 @@ const Icon: React.FC<Props> = props => {
 
 	const namePrefix = nameMatch ? nameMatch[1] : '';
 	const nameSuffix = nameMatch ? nameMatch[2] : props.name;
+
+	// Fork: Workbench themes draw a Lucide line icon wherever one is mapped (LucideIcon/lucideIcons.ts).
+	const lucideNodes = useIsWorkbenchTheme() ? lucideIcons[props.name] : undefined;
+	if (lucideNodes) return <LucideIcon nodes={lucideNodes} style={props.style} accessibilityLabel={props.accessibilityLabel}/>;
 
 	// If there's no label, make sure that the screen reader doesn't try
 	// to read the characters from the icon font (they don't make sense
