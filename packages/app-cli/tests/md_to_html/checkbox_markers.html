@@ -1,0 +1,58 @@
+<ul data-is-checklist="1">
+<li class="md-checkbox joplin-checkbox"><div class="checkbox-wrapper"><input type="checkbox" id="md-checkbox-0" onclick="
+		try {
+			if (this.checked) {
+				this.setAttribute('checked', 'checked');
+			} else {
+				this.removeAttribute('checked');
+			}
+
+			postMessage('checkboxclick:unchecked:0');
+			const label = document.getElementById(&quot;cb-label-md-checkbox-0&quot;);
+			label.classList.remove(this.checked ? 'checkbox-label-unchecked' : 'checkbox-label-checked');
+			label.classList.add(this.checked ? 'checkbox-label-checked' : 'checkbox-label-unchecked');
+		} catch (error) {
+			console.warn('Checkbox unchecked:0 error', error);
+		}
+		return true;
+	"><label id="cb-label-md-checkbox-0" for="md-checkbox-0" class="checkbox-label-unchecked">Star marker</label></div></li>
+<li class="md-checkbox joplin-checkbox"><div class="checkbox-wrapper"><input type="checkbox" id="md-checkbox-1" onclick="
+		try {
+			if (this.checked) {
+				this.setAttribute('checked', 'checked');
+			} else {
+				this.removeAttribute('checked');
+			}
+
+			postMessage('checkboxclick:checked:1');
+			const label = document.getElementById(&quot;cb-label-md-checkbox-1&quot;);
+			label.classList.remove(this.checked ? 'checkbox-label-unchecked' : 'checkbox-label-checked');
+			label.classList.add(this.checked ? 'checkbox-label-checked' : 'checkbox-label-unchecked');
+		} catch (error) {
+			console.warn('Checkbox checked:1 error', error);
+		}
+		return true;
+	" checked="checked"><label id="cb-label-md-checkbox-1" for="md-checkbox-1" class="checkbox-label-checked">Star marker, checked</label></div></li>
+</ul>
+<ul data-is-checklist="1">
+<li class="md-checkbox joplin-checkbox"><div class="checkbox-wrapper"><input type="checkbox" id="md-checkbox-2" onclick="
+		try {
+			if (this.checked) {
+				this.setAttribute('checked', 'checked');
+			} else {
+				this.removeAttribute('checked');
+			}
+
+			postMessage('checkboxclick:unchecked:3');
+			const label = document.getElementById(&quot;cb-label-md-checkbox-2&quot;);
+			label.classList.remove(this.checked ? 'checkbox-label-unchecked' : 'checkbox-label-checked');
+			label.classList.add(this.checked ? 'checkbox-label-checked' : 'checkbox-label-unchecked');
+		} catch (error) {
+			console.warn('Checkbox unchecked:3 error', error);
+		}
+		return true;
+	"><label id="cb-label-md-checkbox-2" for="md-checkbox-2" class="checkbox-label-unchecked">Plus marker</label></div></li>
+</ul>
+<ul>
+<li>[|] Not a checkbox</li>
+</ul>

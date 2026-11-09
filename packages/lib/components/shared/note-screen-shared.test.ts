@@ -387,4 +387,16 @@ describe('note-screen-shared', () => {
 		expect(result).toBeNull();
 		expect(component.setState).toHaveBeenCalledWith(expect.objectContaining({ note: {}, isLoading: true }));
 	});
+
+	it.each([
+		['- [ ] task', '- [x] task'],
+		['* [x] task', '* [ ] task'],
+		['+ [X] task', '+ [ ] task'],
+		['  - [ ] nested with - [x] later', '  - [x] nested with - [x] later'],
+		['- [x] done with - [ ] later', '- [ ] done with - [ ] later'],
+		['- not a checkbox', '- not a checkbox'],
+	])('should toggle the first checkbox on the clicked line: %j', (line, expected) => {
+		const body = `Title\n${line}\nEnd`;
+		expect(shared.toggleCheckbox('checkboxclick:1', body)).toBe(`Title\n${expected}\nEnd`);
+	});
 });
