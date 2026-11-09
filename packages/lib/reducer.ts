@@ -213,6 +213,8 @@ export interface State extends WindowState {
 	editorNoteReloadTimeRequest: number;
 	allowSelectionInOtherFolders: boolean;
 	noteHtmlToMarkdownDone: string;
+	// Fork: notes pinned through the Workbench layout, see models/utils/pinnedNotes.ts
+	pinnedNotes: NoteEntity[];
 
 	// Extra reducer keys go here:
 	pluginService: PluginServiceState;
@@ -289,6 +291,7 @@ export const defaultState: State = {
 	editorNoteReloadTimeRequest: 0,
 	allowSelectionInOtherFolders: false,
 	noteHtmlToMarkdownDone: '',
+	pinnedNotes: [],
 
 	pluginService: pluginServiceDefaultState,
 	shareService: shareServiceDefaultState,
@@ -1641,6 +1644,10 @@ const reducer = produce((draft: Draft<State> = defaultState, action: any) => {
 			// For performance, only apply the last copy of each file.
 			draft.customChromeCssPaths = draft.customChromeCssPaths.filter(path => path !== action.filePath);
 			draft.customChromeCssPaths.push(action.filePath);
+			break;
+
+		case 'PINNED_NOTES_SET':
+			if (!fastDeepEqual(original(draft.pinnedNotes), action.notes)) draft.pinnedNotes = action.notes;
 			break;
 
 		case 'SET_NOTE_TAGS':

@@ -11,7 +11,7 @@ const maxKeyLength = 255;
 
 type SupportedEntity = NoteEntity | ResourceEntity | FolderEntity | TagEntity;
 
-const unserializeUserData = (s: string): UserData => {
+export const unserializeUserData = (s: string): UserData => {
 	if (!s) return {};
 
 	try {

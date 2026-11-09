@@ -12,6 +12,7 @@ import * as showEditorPlugin from './showEditorPlugin';
 import * as synchronize from './synchronize';
 import * as toggleAllFolders from './toggleAllFolders';
 import * as toggleEditorPlugin from './toggleEditorPlugin';
+import * as togglePinNote from './togglePinNote';
 
 const index: any[] = [
 	convertHtmlToMarkdown,
@@ -27,6 +28,7 @@ const index: any[] = [
 	synchronize,
 	toggleAllFolders,
 	toggleEditorPlugin,
+	togglePinNote,
 ];
 
 export default index;

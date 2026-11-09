@@ -1,9 +1,10 @@
-Neue
-Segoe
 automerge
 coderabbit
+inkbench
 longpaths
 lucide
+Neue
 nums
 oneline
+Segoe
 thumbtack

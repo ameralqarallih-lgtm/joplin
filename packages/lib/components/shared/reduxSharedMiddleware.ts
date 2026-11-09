@@ -11,6 +11,7 @@ import shim from '../../shim';
 import { Dispatch, Store } from 'redux';
 import { State } from '../../reducer';
 import { onRevisionServiceSettingsChanged } from '../../services/synchronizer/syncInfoUtils';
+import handlePinnedNotesAction from '../../services/pinnedNotes/handlePinnedNotesAction';
 
 let sortNoteListTimeout: ReturnType<typeof shim.setTimeout> = null;
 
@@ -19,6 +20,8 @@ export default async (store: Store<State>, _next: Dispatch, action: any, dispatc
 	const newState: State = store.getState();
 
 	eventManager.appStateEmit(newState);
+
+	handlePinnedNotesAction(newState, action, dispatch);
 
 	let refreshTags = false;
 	let sortNoteList = false;

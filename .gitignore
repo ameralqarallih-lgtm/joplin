@@ -1439,6 +1439,7 @@ packages/lib/commands/synchronize.js
 packages/lib/commands/toggleAllFolders.test.js
 packages/lib/commands/toggleAllFolders.js
 packages/lib/commands/toggleEditorPlugin.js
+packages/lib/commands/togglePinNote.js
 packages/lib/components/Dialog.js
 packages/lib/components/EncryptionConfigScreen/utils.test.js
 packages/lib/components/EncryptionConfigScreen/utils.js
@@ -1590,12 +1591,16 @@ packages/lib/models/utils/getConflictFolderId.js
 packages/lib/models/utils/isItemId.js
 packages/lib/models/utils/isJoplinServerVariant.js
 packages/lib/models/utils/itemCanBeEncrypted.js
+packages/lib/models/utils/loadHomeData.test.js
+packages/lib/models/utils/loadHomeData.js
 packages/lib/models/utils/loadNoteExcerpts.test.js
 packages/lib/models/utils/loadNoteExcerpts.js
 packages/lib/models/utils/onFolderDrop.test.js
 packages/lib/models/utils/onFolderDrop.js
 packages/lib/models/utils/paginatedFeed.js
 packages/lib/models/utils/paginationToSql.js
+packages/lib/models/utils/pinnedNotes.test.js
+packages/lib/models/utils/pinnedNotes.js
 packages/lib/models/utils/readOnly.test.js
 packages/lib/models/utils/readOnly.js
 packages/lib/models/utils/resourceUtils.test.js
@@ -1866,6 +1871,8 @@ packages/lib/services/ocr/utils/createAccessiblePdf.js
 packages/lib/services/ocr/utils/filterOcrText.test.js
 packages/lib/services/ocr/utils/filterOcrText.js
 packages/lib/services/ocr/utils/types.js
+packages/lib/services/pinnedNotes/handlePinnedNotesAction.test.js
+packages/lib/services/pinnedNotes/handlePinnedNotesAction.js
 packages/lib/services/plugins/BasePlatformImplementation.js
 packages/lib/services/plugins/BasePluginRunner.js
 packages/lib/services/plugins/EditorPluginHandler.js
