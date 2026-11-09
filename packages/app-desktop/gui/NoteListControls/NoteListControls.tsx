@@ -15,6 +15,7 @@ import { getTrashFolderId } from '@joplin/lib/services/trash';
 import { Breakpoints } from '../NoteList/utils/types';
 import { stateUtils } from '@joplin/lib/reducer';
 import { WindowIdContext } from '../NewWindowOrIFrame';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 interface Props {
 	showNewNoteButtons: boolean;
@@ -286,7 +287,8 @@ const mapStateToProps = (state: AppState, ownProps: ConnectProps) => {
 		&& windowState.selectedFolderId !== getTrashFolderId();
 
 	return {
-		showNewNoteButtons: hasFolderForNewNotes,
+		// Fork: Workbench themes have the New note buttons in the top bar
+		showNewNoteButtons: hasFolderForNewNotes && !isWorkbenchTheme(state.settings.theme),
 		newNoteButtonEnabled: CommandService.instance().isEnabled('newNote', whenClauseContext),
 		newTodoButtonEnabled: CommandService.instance().isEnabled('newTodo', whenClauseContext),
 		sortOrderButtonsVisible: state.settings['notes.sortOrder.buttonsVisible'],

@@ -39,6 +39,9 @@ import { ipcRenderer } from 'electron';
 import layoutKeyToLabel from '../utils/layout/layoutKeyToLabel';
 import MainLayoutPane from './MainLayoutPane';
 import WarningBanner from './WarningBanner';
+import WorkbenchShell from './Workbench/Shell/WorkbenchShell';
+import shellSize from './Workbench/Shell/shellSize';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 interface Props {
 	plugins: PluginStates;
@@ -299,7 +302,8 @@ class MainScreenComponent extends React.Component<Props, State> {
 	public componentDidUpdate(prevProps: Props, prevState: State) {
 		if (prevProps.style.width !== this.props.style.width ||
 			prevProps.style.height !== this.props.style.height ||
-			prevState.messageBoxVisible !== this.state.messageBoxVisible
+			prevState.messageBoxVisible !== this.state.messageBoxVisible ||
+			prevProps.themeId !== this.props.themeId
 		) {
 			this.updateRootLayoutSize();
 		}
@@ -349,14 +353,15 @@ class MainScreenComponent extends React.Component<Props, State> {
 
 	public rootLayoutSize() {
 		return {
-			width: window.innerWidth,
+			width: window.innerWidth - shellSize(this.props.themeId).left,
 			height: this.rowHeight(),
 		};
 	}
 
 	public rowHeight() {
 		if (!this.props) return 0;
-		return this.props.style.height - (this.state.messageBoxVisible ? this.messageBoxHeight() : 0);
+		const shell = shellSize(this.props.themeId);
+		return this.props.style.height - (this.state.messageBoxVisible ? this.messageBoxHeight() : 0) - shell.top - shell.bottom;
 	}
 
 	public messageBoxHeight() {
@@ -375,7 +380,8 @@ class MainScreenComponent extends React.Component<Props, State> {
 			width: width,
 		};
 
-		const rowHeight = height - (messageBoxVisible ? this.messageBoxHeight() : 0);
+		const shell = shellSize(themeId);
+		const rowHeight = height - (messageBoxVisible ? this.messageBoxHeight() : 0) - shell.top - shell.bottom;
 
 		this.styles_.rowHeight = rowHeight;
 
@@ -492,7 +498,7 @@ class MainScreenComponent extends React.Component<Props, State> {
 					toast={this.props.toast}
 				/>
 				{messageComp}
-				{layoutComp}
+				{isWorkbenchTheme(this.props.themeId) ? <WorkbenchShell>{layoutComp}</WorkbenchShell> : layoutComp}
 			</div>
 		);
 	}

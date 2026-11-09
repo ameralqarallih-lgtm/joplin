@@ -603,6 +603,14 @@ packages/app-desktop/gui/Workbench/HomeView/setTodoCompleted.js
 packages/app-desktop/gui/Workbench/NoteTabs/NoteTabs.js
 packages/app-desktop/gui/Workbench/NoteTabs/noteTabsReducer.test.js
 packages/app-desktop/gui/Workbench/NoteTabs/noteTabsReducer.js
+packages/app-desktop/gui/Workbench/Shell/Rail.js
+packages/app-desktop/gui/Workbench/Shell/StatusBar.js
+packages/app-desktop/gui/Workbench/Shell/TopBar.js
+packages/app-desktop/gui/Workbench/Shell/WorkbenchShell.js
+packages/app-desktop/gui/Workbench/Shell/formatSyncStatus.test.js
+packages/app-desktop/gui/Workbench/Shell/formatSyncStatus.js
+packages/app-desktop/gui/Workbench/Shell/shellSize.js
+packages/app-desktop/gui/Workbench/SidebarPinned/SidebarPinned.js
 packages/app-desktop/gui/Workbench/WorkbenchEditorArea.js
 packages/app-desktop/gui/dialogs.js
 packages/app-desktop/gui/hooks/useEffectDebugger.js

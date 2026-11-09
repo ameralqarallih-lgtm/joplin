@@ -1,0 +1,234 @@
+// Fork: the Workbench shell, see WorkbenchShell.tsx. The top bar height, status bar height and rail width must
+// match shellSize.ts.
+
+.workbench-shell {
+	display: flex;
+	flex-direction: column;
+
+	> .body {
+		display: flex;
+		min-height: 0;
+	}
+
+	> .body > .main {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+}
+
+.workbench-top-bar {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	box-sizing: border-box;
+	height: 48px;
+	padding: 0 12px 0 14px;
+	border-bottom: 1px solid var(--wb-border-color-soft);
+	background-color: var(--joplin-background-color);
+	color: var(--joplin-color);
+
+	> .brand {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex: 0 0 auto;
+		font-size: var(--wb-font-size-lg);
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	> .brand > .mark {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: var(--wb-radius-lg);
+		background-color: var(--joplin-color4);
+		color: var(--joplin-background-color4);
+		font-size: var(--wb-icon-md);
+	}
+
+	> .search {
+		display: flex;
+		justify-content: center;
+		flex: 1 1 320px;
+		min-width: 0;
+	}
+
+	> .search > .field {
+		display: flex;
+		align-items: center;
+		gap: var(--wb-space-3);
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 520px;
+		height: 34px;
+		padding: 0 8px 0 12px;
+		border: 1px solid var(--wb-border-color-soft);
+		border-radius: 9px;
+		background-color: var(--wb-surface-sunken);
+		color: var(--joplin-color-faded);
+		font: inherit;
+		text-align: left;
+		cursor: text;
+		transition: border-color var(--wb-duration);
+
+		&:hover {
+			border-color: var(--wb-border-color-strong);
+		}
+
+		> .placeholder {
+			flex: 1 1 auto;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		> .shortcut {
+			padding: 1px 6px;
+			border: 1px solid var(--wb-border-color-soft);
+			border-radius: 5px;
+			background-color: var(--joplin-background-color);
+			font-family: inherit;
+			font-size: var(--wb-font-size-xs);
+		}
+	}
+
+	> .note,
+	> .todo {
+		flex: 0 0 auto;
+	}
+
+	> .todo {
+		margin-right: -8px;
+	}
+}
+
+.sync-chip {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+	height: 28px;
+	padding: 0 10px;
+	border: 0;
+	border-radius: 999px;
+	background-color: var(--wb-hover-bg);
+	color: var(--joplin-color-faded);
+	font: inherit;
+	font-size: var(--wb-font-size-sm);
+	font-weight: 500;
+	cursor: pointer;
+
+	> .icon {
+		font-size: var(--wb-icon-sm);
+	}
+
+	&.-synced {
+		background-color: color-mix(in srgb, var(--joplin-color-correct) 12%, transparent);
+		color: var(--joplin-color-correct);
+	}
+
+	&.-busy {
+		background-color: color-mix(in srgb, var(--joplin-color4) 12%, transparent);
+		color: var(--joplin-color4);
+
+		> .icon {
+			animation: workbench-spin 1.2s linear infinite;
+		}
+	}
+
+	&.-error {
+		background-color: color-mix(in srgb, var(--joplin-color-error) 12%, transparent);
+		color: var(--joplin-color-error);
+	}
+}
+
+@keyframes workbench-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sync-chip.-busy > .icon {
+		animation: none;
+	}
+}
+
+.workbench-rail {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 0 0 auto;
+	gap: var(--wb-space-2);
+	box-sizing: border-box;
+	width: 56px;
+	padding: var(--wb-space-4) 0;
+	border-right: 1px solid var(--wb-border-color-soft);
+	background-color: color-mix(in srgb, var(--joplin-color) 3%, var(--joplin-background-color2));
+
+	> .spacer {
+		flex: 1 1 auto;
+	}
+}
+
+.rail-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	border-radius: 10px;
+	background: transparent;
+	color: var(--joplin-color-faded);
+	font-size: var(--wb-icon-lg);
+	cursor: pointer;
+	transition: background-color var(--wb-duration), color var(--wb-duration);
+
+	// The icon layer caps icons at the medium size, the rail draws them larger.
+	> i::before {
+		width: var(--wb-icon-lg);
+		height: var(--wb-icon-lg);
+	}
+
+	&:hover {
+		background-color: var(--wb-hover-bg);
+		color: var(--joplin-color);
+	}
+
+	&.-active {
+		background-color: color-mix(in srgb, var(--joplin-color4) 14%, transparent);
+		color: var(--joplin-color4);
+	}
+}
+
+.workbench-status-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--wb-space-5);
+	box-sizing: border-box;
+	height: 26px;
+	padding: 0 14px;
+	border-top: 1px solid var(--wb-border-color-soft);
+	background-color: var(--wb-surface-sunken);
+	color: var(--joplin-color-faded);
+	font-size: var(--wb-font-size-sm);
+
+	> .location {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	> .spacer {
+		flex: 1 1 auto;
+	}
+
+	> .item {
+		flex: 0 0 auto;
+	}
+}

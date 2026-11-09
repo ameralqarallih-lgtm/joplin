@@ -12,6 +12,8 @@ export enum UiType {
 export interface GotoAnythingOptions {
 	mode?: Mode;
 	alwaysShowHelp?: boolean;
+	// Fork: text to start with, such as "#" to list tags
+	startString?: string;
 }
 
 export const declaration: CommandDeclaration = {
@@ -42,7 +44,9 @@ export const runtime = (): CommandRuntime => {
 			};
 
 			if (uiType === UiType.GotoAnything) {
-				menuItemById('gotoAnything').click();
+				const menuItem = menuItemById('gotoAnything');
+				if (options.startString) menuItem.userData = { startString: options.startString };
+				menuItem.click();
 			} else if (uiType === UiType.CommandPalette) {
 				menuItemById('commandPalette').click();
 			} else if (uiType === UiType.ControlledApi) {

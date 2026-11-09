@@ -1,0 +1,65 @@
+// Fork: the pinned notes in the Workbench sidebar, see SidebarPinned.tsx.
+
+.sidebar-pinned {
+	flex: 0 0 auto;
+	max-height: 30%;
+	overflow-y: auto;
+	padding-bottom: var(--wb-space-2);
+
+	> .title {
+		display: flex;
+		align-items: center;
+		min-height: var(--wb-row-height);
+		margin: var(--wb-space-3) 0 0;
+		padding: 0 12px;
+		font-size: var(--wb-font-size-xs);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--joplin-color-faded2);
+	}
+
+	> .items {
+		margin: 0;
+		padding: 0 8px;
+		list-style: none;
+	}
+
+	> .items > li > .item {
+		display: flex;
+		align-items: center;
+		gap: var(--wb-space-3);
+		box-sizing: border-box;
+		width: 100%;
+		height: var(--wb-row-height);
+		padding: 0 8px;
+		border: 0;
+		border-radius: var(--wb-radius);
+		background: transparent;
+		color: var(--joplin-color2);
+		font: inherit;
+		font-size: var(--wb-font-size);
+		text-align: left;
+		cursor: pointer;
+
+		&:hover {
+			background-color: var(--wb-hover-bg);
+		}
+
+		&.-selected {
+			background-color: var(--joplin-selected-color2);
+			font-weight: 500;
+		}
+
+		> .icon {
+			flex: 0 0 auto;
+			color: var(--wb-icon-color);
+		}
+
+		> .label {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}

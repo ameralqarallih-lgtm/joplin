@@ -13,6 +13,8 @@ import { Dispatch } from 'redux';
 import FolderAndTagList from './FolderAndTagList';
 import SidebarFilter from './SidebarFilter';
 import { useState } from 'react';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
+import SidebarPinned from '../Workbench/SidebarPinned/SidebarPinned';
 
 
 interface Props {
@@ -101,15 +103,19 @@ const SidebarComponent = (props: Props) => {
 		</button>
 	);
 
+	// Fork: Workbench themes show the pinned notes here, and the sync status in the top bar.
+	const workbench = isWorkbenchTheme(props.themeId);
+
 	return (
 		<StyledRoot className='sidebar _scrollbar2' role='navigation' aria-label={_('Sidebar')}>
 			<SidebarFilter value={filter} onChange={setFilter}/>
+			{workbench ? <SidebarPinned/> : null}
 			<div style={{ flex: 1 }}><FolderAndTagList filter={filter}/></div>
-			<div style={{ flex: 0, padding: theme.mainPadding }}>
+			{workbench ? null : <div style={{ flex: 0, padding: theme.mainPadding }}>
 				{syncReportToggle}
 				{syncReportComp}
 				{syncButton}
-			</div>
+			</div>}
 		</StyledRoot>
 	);
 };

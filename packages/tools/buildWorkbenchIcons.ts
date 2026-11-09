@@ -45,6 +45,10 @@ const iconMap: Record<string, string> = {
 	'icon-sync': 'refresh-cw',
 	'icon-tags': 'tags',
 	'icon-to-do-list': 'list-checks',
+	// Fork: Workbench shell icons, no Joplin or Font Awesome equivalent
+	'wb-icon-logo': 'book-open',
+	'wb-icon-synced': 'cloud-check',
+	'wb-icon-sync-off': 'cloud-off',
 
 	// Font Awesome
 	'fa-adjust': 'contrast',
