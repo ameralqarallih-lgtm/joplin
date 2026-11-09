@@ -26,10 +26,11 @@ interface Props {
 	customChromeCssPaths: string[];
 }
 
-const editorFontFromSettings = (settingValue: string) => {
+// Fork: themes can set the default editor font (lib/themes/utils/workbenchStyle.ts).
+const editorFontFromSettings = (settingValue: string, defaultFontFamily = '\'Avenir Next\', Avenir, Arial, sans-serif') => {
 	const fontFamilies = [];
 	if (settingValue) fontFamilies.push(`"${settingValue}"`);
-	fontFamilies.push('\'Avenir Next\', Avenir, Arial, sans-serif');
+	fontFamilies.push(defaultFontFamily);
 
 	return fontFamilies;
 };
@@ -47,9 +48,9 @@ const useThemeCss = (themeId: number) => {
 	return themeCss;
 };
 
-const useEditorCss = (editorFontSetting: string) => {
+const useEditorCss = (editorFontSetting: string, defaultFontFamily: string|undefined) => {
 	return useMemo(() => {
-		const fontFamilies = editorFontFromSettings(editorFontSetting);
+		const fontFamilies = editorFontFromSettings(editorFontSetting, defaultFontFamily);
 		return `
 			/* The '*' and '!important' parts are necessary to make sure Russian text is displayed properly
 			   https://github.com/laurent22/joplin/issues/155
@@ -57,7 +58,7 @@ const useEditorCss = (editorFontSetting: string) => {
 			   Note: Be careful about the specificity here. Incorrect specificity can break monospaced fonts in tables. */
 			.CodeMirror5 *, .cm-editor .cm-content { font-family: ${fontFamilies.join(', ')} !important; }
 		`;
-	}, [editorFontSetting]);
+	}, [editorFontSetting, defaultFontFamily]);
 };
 
 const useLinkedCss = (doc: Document|null, cssPaths: string[]) => {
@@ -102,7 +103,7 @@ const StyleSheetContainer: React.FC<Props> = props => {
 	const doc = useDocument(elementRef);
 
 	const themeCss = useThemeCss(props.themeId);
-	const editorCss = useEditorCss(props.editorFontSetting);
+	const editorCss = useEditorCss(props.editorFontSetting, (themeStyle(props.themeId) as { noteFontFamily?: string }).noteFontFamily);
 
 	useAppliedCss(doc, `
 		/* Theme CSS */

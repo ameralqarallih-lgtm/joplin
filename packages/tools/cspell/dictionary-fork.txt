@@ -1,5 +1,9 @@
+Neue
+Segoe
 automerge
 coderabbit
 longpaths
+lucide
 nums
 oneline
+thumbtack

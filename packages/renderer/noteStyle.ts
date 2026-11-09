@@ -83,7 +83,8 @@ export default function(theme: RendererTheme, options: Options = null) {
 
 	theme = theme ? theme : {};
 
-	const fontFamily = options.baseFontFamily || '\'Avenir Next\', \'Avenir\', \'Arial\', sans-serif';
+	// Fork: Workbench themes set their own default note font (lib/themes/utils/workbenchStyle.ts).
+	const fontFamily = options.baseFontFamily || (theme as { noteFontFamily?: string }).noteFontFamily || '\'Avenir Next\', \'Avenir\', \'Arial\', sans-serif';
 
 	const contentWrapperTarget = options.contentWrapperSelector ?? '#rendered-md';
 	const maxWidthTarget = options.contentMaxWidthTarget ? options.contentMaxWidthTarget : contentWrapperTarget;

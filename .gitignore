@@ -2075,6 +2075,7 @@ packages/lib/themes/oledDark.js
 packages/lib/themes/solarizedDark.js
 packages/lib/themes/solarizedLight.js
 packages/lib/themes/type.js
+packages/lib/themes/utils/workbenchStyle.js
 packages/lib/themes/workbenchDark.js
 packages/lib/themes/workbenchLight.js
 packages/lib/time.js
@@ -2214,6 +2215,7 @@ packages/tools/build-translation.js
 packages/tools/build-welcome.js
 packages/tools/buildServerDocker.test.js
 packages/tools/buildServerDocker.js
+packages/tools/buildWorkbenchIcons.js
 packages/tools/checkGeneratedFiles.test.js
 packages/tools/checkGeneratedFiles.js
 packages/tools/checkIgnoredFiles.js

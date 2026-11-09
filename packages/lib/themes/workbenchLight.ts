@@ -1,9 +1,9 @@
-import { Theme, ThemeAppearance } from './type';
+import { ThemeAppearance } from './type';
+import { WorkbenchTheme, workbenchStyle } from './utils/workbenchStyle';
 
 // Fork theme: cool grey surfaces, a light sidebar and a cobalt accent. See FORK.md.
-// uiStyle becomes the --joplin-ui-style CSS variable, which switches on the desktop Workbench layer (gui/Workbench/style.scss).
-const theme: Theme & { uiStyle: string } = {
-	uiStyle: 'workbench',
+const theme: WorkbenchTheme = {
+	...workbenchStyle,
 	appearance: ThemeAppearance.Light,
 
 	backgroundColor: '#ffffff',
