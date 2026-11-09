@@ -3,6 +3,8 @@ import { TouchableOpacity, TouchableWithoutFeedback, Text, Modal, View, LayoutRe
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { _ } from '@joplin/lib/locale';
 import useSafeAreaPadding from '../utils/hooks/useSafeAreaPadding';
+import useIsWorkbenchTheme from './LucideIcon/useIsWorkbenchTheme';
+import Icon from './Icon';
 
 type ValueType = string;
 export interface DropdownListItem {
@@ -42,6 +44,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
 	const headerRef = useRef<View|null>(null);
 	const [headerLayout, setHeaderSize] = useState<LayoutRectangle>({ x: 0, y: 0, width: 0, height: 0 });
 	const [listVisible, setListVisible] = useState(false);
+	const isWorkbench = useIsWorkbenchTheme();
 
 	const headerLayoutRef = useRef(headerLayout);
 	headerLayoutRef.current = headerLayout;
@@ -156,13 +159,14 @@ const Dropdown: React.FC<DropdownProps> = props => {
 					<Text ellipsizeMode="tail" numberOfLines={1} style={styles.header}>
 						{headerLabel}
 					</Text>
-					<Text
+					{/* Fork: Workbench themes use a line chevron instead of the solid triangle. */}
+					{isWorkbench ? <Icon name='ionicon chevron-down' style={styles.headerArrow} accessibilityLabel={null}/> : <Text
 						style={styles.headerArrow}
 						aria-hidden={true}
 						importantForAccessibility='no'
 						accessibilityElementsHidden={true}
 						accessibilityRole='image'
-					>{'▼'}</Text>
+					>{'▼'}</Text>}
 				</TouchableOpacity>
 				{listVisible ? null : props.coverableChildrenRight}
 			</View>

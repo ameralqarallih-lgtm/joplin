@@ -295,6 +295,8 @@ const Button = React.forwardRef(({
 			// to the tooltip.
 			aria-label={title ? undefined : tooltip}
 			aria-disabled={disabled}
+			// Fork: lets the Workbench layer (gui/Workbench/controls.scss) style each kind of button.
+			data-button-level={level ?? ButtonLevel.Secondary}
 			{...unusedProps}
 		>
 			{renderIcon()}

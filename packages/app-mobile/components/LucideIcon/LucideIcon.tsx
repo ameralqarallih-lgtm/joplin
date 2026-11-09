@@ -16,13 +16,20 @@ const shapes: Record<string, React.ElementType> = {
 	circle: Circle, ellipse: Ellipse, line: Line, path: Path, polygon: Polygon, polyline: Polyline, rect: Rect,
 };
 
-// Text properties don't apply to the drawing, but layout properties such as margins do.
-const textOnlyKeys = ['color', 'fontSize', 'fontFamily', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'textAlign', 'textAlignVertical', 'textDecorationLine'];
+// Text properties don't apply to the drawing, but layout properties such as margins do. "flex" is also
+// dropped: on web, the "flex: 0" that some glyph styles have collapses the drawing to no width.
+const droppedKeys = ['flex', 'color', 'fontSize', 'fontFamily', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'textAlign', 'textAlignVertical', 'textDecorationLine'];
+
+// Icon fonts are sized so their glyphs nearly fill the font size, while Lucide icons are designed at 24
+// with room around them. 0.8 makes a 30px header glyph a standard 24px icon.
+const sizeRatio = 0.8;
+// Draw lines 1.5px wide at any size, which looks lighter than Lucide's default stroke.
+const strokePx = 1.5;
 
 const LucideIcon: React.FC<Props> = ({ nodes, style, accessibilityLabel }) => {
 	const flatStyle = StyleSheet.flatten(style) ?? {};
-	const size = flatStyle.fontSize ?? 24;
-	const viewStyle = Object.fromEntries(Object.entries(flatStyle).filter(([key]) => !textOnlyKeys.includes(key))) as ViewStyle;
+	const size = Math.round((flatStyle.fontSize ?? 30) * sizeRatio);
+	const viewStyle = Object.fromEntries(Object.entries(flatStyle).filter(([key]) => !droppedKeys.includes(key))) as ViewStyle;
 	const hidden = accessibilityLabel === null;
 
 	return (
@@ -32,10 +39,10 @@ const LucideIcon: React.FC<Props> = ({ nodes, style, accessibilityLabel }) => {
 			viewBox='0 0 24 24'
 			fill='none'
 			stroke={typeof flatStyle.color === 'string' ? flatStyle.color : 'black'}
-			strokeWidth={2}
+			strokeWidth={strokePx * 24 / size}
 			strokeLinecap='round'
 			strokeLinejoin='round'
-			style={viewStyle}
+			style={[viewStyle, { flexShrink: 0, width: size, height: size }]}
 			accessibilityLabel={accessibilityLabel ?? undefined}
 			accessibilityRole={hidden ? undefined : 'image'}
 			importantForAccessibility={hidden ? 'no-hide-descendants' : 'yes'}

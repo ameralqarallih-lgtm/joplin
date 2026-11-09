@@ -1,0 +1,237 @@
+// Fork: Workbench styles for buttons, toolbars, text fields, dropdowns, checkboxes and tag pills.
+// Included by style.scss inside its Workbench style query. Several controls take sizes and colours from
+// inline styles built in lib/theme.ts, which is why some properties need !important.
+
+$chevron-light: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6b7c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E";
+$chevron-dark: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2395a1b1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E";
+
+// Text fields, except the note title (which reads as a heading) and fields inside the editors.
+$text-fields: 'input:is([type=text], [type=search], [type=password], [type=number], [type=email], [type=url], :not([type])):not(.title-input, .cm-editor *, .go-to-anything-dialog *)';
+
+@mixin controls {
+	body {
+		--wb-select-chevron: url("#{$chevron-light}");
+	}
+
+	@container style(--joplin-appearance: dark) {
+		body {
+			--wb-select-chevron: url("#{$chevron-dark}");
+		}
+	}
+
+	*:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--joplin-color4) 70%, transparent);
+		outline-offset: 1px;
+	}
+
+	// Buttons from gui/Button
+	button[data-button-level] {
+		height: var(--wb-control-height);
+		min-height: var(--wb-control-height);
+		padding: 0 12px;
+		border-radius: var(--wb-control-radius);
+		font-size: var(--wb-font-size);
+		font-weight: 500;
+		transition: background-color var(--wb-duration), border-color var(--wb-duration), color var(--wb-duration), box-shadow var(--wb-duration);
+
+		.icon {
+			font-size: var(--wb-icon-md);
+		}
+
+		&:disabled, &[aria-disabled=true] {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	button:is([data-button-level=primary], [data-button-level=recommended]) {
+		border: 1px solid transparent;
+		background-color: var(--joplin-color4);
+		box-shadow: var(--wb-shadow-1);
+
+		&, .icon, span {
+			color: var(--joplin-color5);
+		}
+
+		&:hover:not(:disabled) {
+			background-color: color-mix(in srgb, var(--joplin-color4) 88%, black);
+		}
+
+		&:active:not(:disabled) {
+			background-color: color-mix(in srgb, var(--joplin-color4) 78%, black);
+			box-shadow: none;
+		}
+	}
+
+	button[data-button-level=secondary] {
+		border: 1px solid var(--wb-border-color);
+		background-color: var(--joplin-background-color);
+
+		span:not(.icon) {
+			color: var(--joplin-color);
+		}
+
+		.icon {
+			color: var(--wb-icon-color);
+		}
+
+		&:hover:not(:disabled) {
+			border-color: var(--wb-border-color-strong);
+			background-color: color-mix(in srgb, var(--joplin-color) 4%, var(--joplin-background-color));
+
+			.icon {
+				color: var(--joplin-color);
+			}
+		}
+
+		&:active:not(:disabled) {
+			background-color: color-mix(in srgb, var(--joplin-color) 9%, var(--joplin-background-color));
+		}
+	}
+
+	button[data-button-level=tertiary] {
+		border: 1px solid transparent;
+		background-color: transparent;
+
+		&:hover:not(:disabled) {
+			background-color: var(--wb-hover-bg);
+		}
+	}
+
+	button[data-button-level=sidebarSecondary] {
+		border: 1px solid color-mix(in srgb, var(--joplin-color2) 18%, transparent);
+		background-color: transparent;
+
+		&, .icon, span {
+			color: var(--joplin-color2);
+		}
+
+		&:hover:not(:disabled) {
+			background-color: color-mix(in srgb, var(--joplin-color2) 7%, transparent);
+		}
+	}
+
+	.sort-order-field-button, .sort-order-reverse-button {
+		min-width: var(--wb-control-height);
+		padding: 0;
+	}
+
+	// Search buttons inside search fields (lib/SearchInput)
+	.search-input > .button {
+		right: 4px;
+
+		> .icon {
+			color: var(--wb-icon-color);
+		}
+	}
+
+	// Icon buttons in the editor and title bar toolbars
+	.toolbar-button {
+		height: 28px;
+		min-height: 28px;
+		min-width: 28px;
+		border-radius: var(--wb-control-radius);
+		color: var(--wb-icon-color);
+		transition: background-color var(--wb-duration), color var(--wb-duration);
+
+		> .toolbar-icon {
+			font-size: var(--wb-icon-md);
+		}
+
+		&:not(:disabled) {
+			&:hover, &:focus-visible {
+				background-color: var(--wb-hover-bg);
+				color: var(--joplin-color);
+			}
+
+			&:active {
+				background-color: var(--wb-active-bg);
+			}
+		}
+	}
+
+	// Sidebar header buttons (collapse all, new notebook)
+	.sidebar-header-button {
+		border-radius: var(--wb-control-radius);
+		color: var(--wb-icon-color);
+
+		&:hover {
+			background-color: var(--wb-hover-bg);
+			color: var(--joplin-color2);
+		}
+
+		> i {
+			font-size: var(--wb-icon-md);
+		}
+	}
+
+	#{$text-fields}, select, textarea:not(.cm-editor *) {
+		box-sizing: border-box;
+		border: 1px solid var(--wb-border-color) !important;
+		border-radius: var(--wb-control-radius) !important;
+		background-color: var(--joplin-background-color) !important;
+		color: var(--joplin-color);
+		font-size: var(--wb-font-size);
+		transition: border-color var(--wb-duration), box-shadow var(--wb-duration);
+
+		&:hover:not(:focus, :disabled) {
+			border-color: var(--wb-border-color-strong) !important;
+		}
+
+		&:focus {
+			border-color: var(--joplin-color4) !important;
+			box-shadow: var(--wb-focus-ring);
+			outline: none;
+		}
+
+		&::placeholder {
+			color: var(--joplin-color-faded);
+		}
+	}
+
+	#{$text-fields} {
+		height: var(--wb-control-height) !important;
+		// lib/theme.ts's input style also caps the height.
+		max-height: none !important;
+		padding: 0 10px !important;
+	}
+
+	// Search fields keep room for their search button.
+	.search-input > input.field {
+		padding-right: 28px !important;
+	}
+
+	textarea:not(.cm-editor *) {
+		padding: 8px 10px !important;
+	}
+
+	select {
+		height: var(--wb-control-height);
+		padding: 0 30px 0 10px !important;
+		appearance: none;
+		background-image: var(--wb-select-chevron);
+		background-repeat: no-repeat;
+		background-position: right 9px center;
+		background-size: 14px;
+		cursor: pointer;
+	}
+
+	input:is([type=checkbox], [type=radio]) {
+		accent-color: var(--joplin-color4);
+	}
+
+	// Tag pills under the note
+	.tag-list button {
+		padding: 2px 9px !important;
+		border: 1px solid var(--wb-border-color) !important;
+		background-color: transparent !important;
+		color: var(--joplin-color-faded) !important;
+		font-size: var(--wb-font-size-sm) !important;
+		cursor: pointer;
+
+		&:hover {
+			border-color: var(--wb-border-color-strong) !important;
+			color: var(--joplin-color) !important;
+		}
+	}
+}

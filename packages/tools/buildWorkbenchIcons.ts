@@ -316,12 +316,15 @@ const mobileIconsModule = (iconNodes: Record<string, IconNode>, version: string)
 	return lines.join('\n');
 };
 
+// Lucide's default stroke of 2 (on a 24 unit grid) looks heavy at desktop sizes. 1.5 gives 1px lines at 16px.
+const desktopStrokeWidth = '1.5';
+
 // A mask only needs the shape, so drop the licence comment, and the class and size of the root element.
 // The size attributes of shapes inside it, such as <rect>, are part of the drawing.
 const svgToDataUri = (svg: string) => {
 	const compact = svg
 		.replace(/<!--[\s\S]*?-->/g, '')
-		.replace(/<svg[^>]*>/, rootTag => rootTag.replace(/\s+(class|width|height)="[^"]*"/g, ''))
+		.replace(/<svg[^>]*>/, rootTag => rootTag.replace(/\s+(class|width|height)="[^"]*"/g, '').replace(/stroke-width="[^"]*"/, `stroke-width="${desktopStrokeWidth}"`))
 		.replace(/\s+/g, ' ')
 		.replace(/> </g, '><')
 		.trim();

@@ -21,7 +21,7 @@ describe('LucideIcon', () => {
 		const svgs = screen.UNSAFE_queryAllByType(Svg);
 		expect(svgs.length).toBe(expectedSvgCount);
 		if (expectedSvgCount) {
-			expect(svgs[0].props).toMatchObject({ width: 20, stroke: 'red', accessibilityLabel: 'Search' });
+			expect(svgs[0].props).toMatchObject({ width: 16, strokeWidth: 2.25, stroke: 'red', accessibilityLabel: 'Search' });
 		}
 	});
 });
