@@ -2,7 +2,7 @@
 // It takes the same text style as the glyph: fontSize sets the size and color the stroke colour.
 
 import * as React from 'react';
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import Svg, { Circle, Ellipse, Line, Path, Polygon, Polyline, Rect } from 'react-native-svg';
 import { LucideIconNode } from './lucideIcons';
 
@@ -31,8 +31,11 @@ const LucideIcon: React.FC<Props> = ({ nodes, style, accessibilityLabel }) => {
 	const size = Math.round((flatStyle.fontSize ?? 30) * sizeRatio);
 	const viewStyle = Object.fromEntries(Object.entries(flatStyle).filter(([key]) => !droppedKeys.includes(key))) as ViewStyle;
 	const hidden = accessibilityLabel === null;
+	// Glyph styles often reserve a fixed-width slot (a width wider than the glyph, with centred text), which keeps
+	// a list's labels aligned. The drawing is centred in that slot.
+	const slotWidth = typeof flatStyle.width === 'number' && flatStyle.width > size ? flatStyle.width : null;
 
-	return (
+	const svg = (
 		<Svg
 			width={size}
 			height={size}
@@ -42,7 +45,7 @@ const LucideIcon: React.FC<Props> = ({ nodes, style, accessibilityLabel }) => {
 			strokeWidth={strokePx * 24 / size}
 			strokeLinecap='round'
 			strokeLinejoin='round'
-			style={[viewStyle, { flexShrink: 0, width: size, height: size }]}
+			style={[slotWidth ? null : viewStyle, { flexShrink: 0, width: size, height: size }]}
 			accessibilityLabel={accessibilityLabel ?? undefined}
 			accessibilityRole={hidden ? undefined : 'image'}
 			importantForAccessibility={hidden ? 'no-hide-descendants' : 'yes'}
@@ -55,6 +58,9 @@ const LucideIcon: React.FC<Props> = ({ nodes, style, accessibilityLabel }) => {
 			})}
 		</Svg>
 	);
+
+	if (!slotWidth) return svg;
+	return <View style={[viewStyle, { width: slotWidth, alignItems: 'center', justifyContent: 'center' }]}>{svg}</View>;
 };
 
 export default LucideIcon;

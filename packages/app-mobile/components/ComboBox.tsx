@@ -13,6 +13,7 @@ import AsyncActionQueue from '@joplin/lib/AsyncActionQueue';
 import NestableFlatList, { NestableFlatListControl } from './NestableFlatList';
 import useKeyboardState from '../utils/hooks/useKeyboardState';
 import { getCollator, getCollatorLocale } from '@joplin/lib/models/utils/getCollator';
+import useIsWorkbenchTheme from './LucideIcon/useIsWorkbenchTheme';
 
 
 export interface Option {
@@ -164,8 +165,10 @@ const useStyles = (themeId: number, showSearchResults: boolean) => {
 	const menuItemHeight = 40 * fontScale;
 	const theme = themeStyle(themeId);
 
+	// Fork: Workbench themes round the field like the other text fields (TextInput.tsx).
+	const workbench = useIsWorkbenchTheme();
 	const styles = useMemo(() => {
-		const borderRadius = 4;
+		const borderRadius = workbench ? 10 : 4;
 		const itemMarginVertical = 8;
 		return StyleSheet.create({
 			root: {
@@ -193,7 +196,7 @@ const useStyles = (themeId: number, showSearchResults: boolean) => {
 				marginTop: 6,
 			},
 			searchInput: {
-				minHeight: 32,
+				minHeight: workbench ? 40 : 32,
 			},
 			searchResults: {
 				height: searchResultsHeight,
@@ -229,7 +232,7 @@ const useStyles = (themeId: number, showSearchResults: boolean) => {
 				backgroundColor: theme.selectedColor,
 			},
 		});
-	}, [theme, menuItemHeight, searchResultsHeight, showSearchResults]);
+	}, [theme, menuItemHeight, searchResultsHeight, showSearchResults, workbench]);
 
 	return { menuItemHeight, styles };
 };

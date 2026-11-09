@@ -6,6 +6,7 @@ import { useId, useMemo, useState } from 'react';
 import PromptButton from './PromptButton';
 import { _ } from '@joplin/lib/locale';
 import TextInput from '../TextInput';
+import useIsWorkbenchTheme from '../LucideIcon/useIsWorkbenchTheme';
 import { themeStyle } from '../global-style';
 
 interface Props {
@@ -34,12 +35,18 @@ const useStyles = (themeId: number) => {
 				paddingLeft: 6,
 				paddingBottom: 8,
 			},
+			// Fork: Workbench text fields are outlined (TextInput.tsx), so keep their padding.
+			textInputWorkbench: {
+				paddingLeft: 14,
+				paddingBottom: 11,
+			},
 		});
 	}, [themeId]);
 };
 
 const TextInputDialog: React.FC<Props> = ({ dialog, containerStyle, themeId }) => {
 	const styles = useStyles(themeId);
+	const workbench = useIsWorkbenchTheme();
 	const [text, setText] = useState(dialog.initialValue ?? '');
 	const labelId = useId();
 
@@ -58,7 +65,7 @@ const TextInputDialog: React.FC<Props> = ({ dialog, containerStyle, themeId }) =
 				<TextInput
 					aria-labelledby={labelId}
 					themeId={themeId}
-					style={styles.textInput}
+					style={[styles.textInput, workbench && styles.textInputWorkbench]}
 					value={text}
 					onChangeText={setText}
 					secureTextEntry={dialog.secureTextEntry}

@@ -14,6 +14,7 @@ import { FolderEntity } from '@joplin/lib/services/database/types';
 import { AppState } from '../../utils/types';
 import { Dispatch } from 'redux';
 import FolderColorPicker from '../FolderColorPicker';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 import { folderColor, setFolderColor } from '@joplin/lib/models/utils/folderColor';
 
 interface Props {
@@ -124,6 +125,8 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 				<ScreenHeader title={_('Edit notebook')} showSaveButton={true} saveButtonDisabled={saveButtonDisabled} onSaveButtonPress={() => this.saveFolderButton_press()} showSideMenuButton={false} showSearchButton={false} />
 				<TextInput
 					themeId={this.props.themeId}
+					// Fork: Workbench text fields are outlined, so they need room around them.
+					style={isWorkbenchTheme(this.props.themeId) ? { margin: 12, marginBottom: 4 } : undefined}
 					placeholder={_('Enter notebook title')}
 					autoFocus={true}
 					value={this.state.folder.title}

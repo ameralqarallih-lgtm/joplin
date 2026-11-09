@@ -19,6 +19,8 @@ import { PromptButtonSpec } from '../DialogManager/types';
 import MultiTouchableOpacity from '../buttons/MultiTouchableOpacity';
 import SearchBar from './SearchScreen/SearchBar';
 import Logger from '@joplin/utils/Logger';
+import TagChips from './TagChips';
+import useIsWorkbenchTheme from '../LucideIcon/useIsWorkbenchTheme';
 
 const logger = Logger.create('tags');
 
@@ -103,6 +105,7 @@ const TagsScreenComponent: React.FC<Props> = props => {
 	const [showSearch, setShowSearch] = useState(false);
 	const styles = useStyles(props.themeId);
 	const dialogs = useContext(DialogContext);
+	const workbench = useIsWorkbenchTheme();
 	const collatorLocale = getCollatorLocale();
 	const collator = useMemo(() => {
 		return getCollator(collatorLocale);
@@ -255,7 +258,9 @@ const TagsScreenComponent: React.FC<Props> = props => {
 					onClearButtonPress={clearButton_press}
 				/>
 			)}
-			<FlatList style={{ flex: 1 }} data={showSearch && !searchQuery.trim() ? [] : tags} renderItem={onRenderItem} keyExtractor={tag => tag.id} />
+			{workbench
+				? <TagChips tags={showSearch && !searchQuery.trim() ? [] : tags} themeId={props.themeId} onPress={id => onTagItemPress({ id })} onLongPress={onTagItemLongPress}/>
+				: <FlatList style={{ flex: 1 }} data={showSearch && !searchQuery.trim() ? [] : tags} renderItem={onRenderItem} keyExtractor={tag => tag.id} />}
 		</View>
 	);
 };

@@ -11,6 +11,7 @@ import { Divider } from 'react-native-paper';
 import focusView from '../utils/focusView';
 import { msleep } from '@joplin/utils/time';
 import { getCollator, getCollatorLocale } from '@joplin/lib/models/utils/getCollator';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 export enum TagEditorMode {
 	Large,
@@ -59,7 +60,8 @@ const useStyles = (themeId: number, headerStyle: TextStyle|undefined) => {
 			tagBoxScrollView: {
 				borderColor: theme.dividerColor,
 				borderWidth: 1,
-				borderRadius: 4,
+				// Fork: rounded like the Workbench text fields (TextInput.tsx)
+				borderRadius: isWorkbenchTheme(themeId) ? 10 : 4,
 				height: 80,
 				flexShrink: 1,
 			},

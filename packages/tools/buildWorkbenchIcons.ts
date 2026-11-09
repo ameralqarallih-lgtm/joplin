@@ -214,6 +214,27 @@ const iconMap: Record<string, string> = {
 
 // The icon names that the mobile app passes to its Icon component.
 const mobileIconMap: Record<string, string> = {
+	// The settings sections (Setting.sectionNameToIcon)
+	'fa fa-cloud': 'cloud',
+	'fa fa-cog': 'settings',
+	'fa fa-file-export': 'file-output',
+	'fa fa-info-circle': 'info',
+	'fa fa-key': 'key-round',
+	'fa fa-keyboard': 'keyboard',
+	'fa fa-lock': 'lock',
+	'fa fa-plug': 'plug',
+	'fa fa-puzzle-piece': 'puzzle',
+	'fa fa-robot': 'bot',
+	'fa fa-ruler': 'palette',
+	'fa fa-sliders-h': 'sliders-horizontal',
+	'fa fa-sticky-note': 'sticky-note',
+	'fa fa-sync': 'refresh-cw',
+	'fa fa-toolbox': 'toolbox',
+	'fab fa-markdown': 'file-code',
+	'far fa-hand-scissors': 'scissors',
+	'far fa-history': 'history',
+	'fas fa-pen': 'square-pen',
+
 	'fas fa-check': 'check',
 	'fas fa-circle': 'circle',
 	'fas fa-crown': 'crown',
