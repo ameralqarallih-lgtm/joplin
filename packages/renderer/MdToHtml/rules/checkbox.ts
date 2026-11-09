@@ -54,6 +54,15 @@ function pluginAssets(theme: RendererTheme) {
 
 				.joplin-checklist li:not(.checked)::before {
 					content:"\\f0c8";
+				}
+
+				/* Fork: items without a checkbox in a list that has some */
+				ul.joplin-checklist li.joplin-checklist-bullet {
+					list-style-type: disc;
+				}
+
+				ul.joplin-checklist li.joplin-checklist-bullet::before {
+					content: none;
 				}`,
 		},
 	];
@@ -130,8 +139,24 @@ function checkboxPlugin(markdownIt: MarkdownIt, options: RuleOptions) {
 		let currentListItem = null;
 		let processedFirstInline = false;
 		const lists = [];
+		// Fork: the items of each open list, and which of them have a checkbox, so that items without one stay
+		// bullets in the Rich Text editor.
+		const listItems: { items: Token[]; checkboxItems: Set<Token> }[] = [];
 		for (let i = 0; i < tokens.length; i++) {
 			const token = tokens[i];
+
+			if (token.type === 'bullet_list_open' || token.type === 'ordered_list_open') {
+				listItems.push({ items: [], checkboxItems: new Set() });
+			}
+
+			if (token.type === 'bullet_list_close' || token.type === 'ordered_list_close') {
+				const { items, checkboxItems } = listItems.pop();
+				if (renderingType === 2 && checkboxItems.size) {
+					for (const item of items) {
+						if (!checkboxItems.has(item)) item.attrSet('class', (`${item.attrGet('class') || ''} joplin-checklist-bullet`).trim());
+					}
+				}
+			}
 
 			if (token.type === 'bullet_list_open') {
 				lists.push(token);
@@ -146,6 +171,7 @@ function checkboxPlugin(markdownIt: MarkdownIt, options: RuleOptions) {
 			if (token.type === 'list_item_open') {
 				currentListItem = token;
 				processedFirstInline = false;
+				listItems[listItems.length - 1]?.items.push(token);
 				continue;
 			}
 
@@ -201,6 +227,7 @@ function checkboxPlugin(markdownIt: MarkdownIt, options: RuleOptions) {
 					if (checked) {
 						currentListItem.attrSet('class', (`${currentListItem.attrGet('class') || ''} checked`).trim());
 					}
+					listItems[listItems.length - 1]?.checkboxItems.add(currentListItem);
 				}
 
 				currentList.attrSet('data-is-checklist', '1');

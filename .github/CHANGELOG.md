@@ -4,6 +4,16 @@ Inkbench versions and what changed in each. Every entry links to its issue, whic
 
 Inkbench 0.1.0 to 0.4.0 are based on Joplin 3.7.22 (desktop) and 3.7.11 (Android).
 
+## Unreleased
+
+### New and improved
+
+- Tighter paragraph spacing, so notes written in the Rich Text editor no longer have large gaps between lines ([#68](https://github.com/ameralqarallih-lgtm/joplin/issues/68))
+
+### Fixed
+
+- Desktop: the Rich Text editor rewrites or drops footnotes, `[toc]`, comments, mixed checklists, reference links, definition lists and abbreviations ([#67](https://github.com/ameralqarallih-lgtm/joplin/issues/67))
+
 ## Inkbench 0.4.0 (2026-11-10)
 
 Polish, drag and drop, notebook colours and order, wide layouts, installers and moving from Joplin.

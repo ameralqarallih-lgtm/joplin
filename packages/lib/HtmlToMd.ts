@@ -1,6 +1,7 @@
 const TurndownService = require('@joplin/turndown');
 const turndownPluginGfm = require('@joplin/turndown-plugin-gfm').gfm;
 import markdownUtils from './markdownUtils';
+import { addRichTextRules, RichTextMarkdownPlugins } from './utils/richTextTurndownRules';
 
 const pdfUrlRegex = /[\s\S]*?\.pdf$/i;
 
@@ -15,6 +16,8 @@ export interface ParseOptions {
 	convertEmbeddedPdfsToLinks?: boolean;
 	tightLists?: boolean;
 	collapseMultipleBlankLines?: boolean;
+	// Fork: set when converting from the Rich Text editor, to keep the Markdown of these plugins.
+	richTextMarkdownPlugins?: RichTextMarkdownPlugins;
 }
 
 export default class HtmlToMd {
@@ -80,6 +83,7 @@ export default class HtmlToMd {
 		if (options.convertEmbeddedPdfsToLinks) {
 			turndown.addRule('pdf', pdfRule);
 		}
+		if (options.richTextMarkdownPlugins) addRichTextRules(turndown, options.richTextMarkdownPlugins);
 		let md = turndown.turndown(html);
 		if (options.baseUrl) md = markdownUtils.prependBaseUrl(md, options.baseUrl);
 		return md;

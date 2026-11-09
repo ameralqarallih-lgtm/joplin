@@ -7,6 +7,7 @@ import enableTextAreaTab, { TextAreaTabHandler } from './enableTextAreaTab';
 import { MarkupToHtml } from '@joplin/renderer';
 import { getGlobalSettings } from '@joplin/renderer/types';
 import Setting from '@joplin/lib/models/Setting';
+import { markdownSourceLanguage } from '@joplin/renderer/MdToHtml/rules/richTextSource';
 
 interface Props {
 	editor: Editor;
@@ -51,6 +52,15 @@ function newBlockSource(language = '', content = '', previousSource: SourceInfo 
 		} else {
 			fence = '$$';
 		}
+	} else if (language === markdownSourceLanguage) {
+		// Fork: Markdown kept as it was written (see renderer/MdToHtml/rules/richTextSource.ts)
+		return {
+			openCharacters: '',
+			closeCharacters: '',
+			content: content,
+			node: null,
+			language: language,
+		};
 	} else if (language === 'frontmatter') {
 		// Frontmatter uses --- delimiters instead of code fences
 		return {
@@ -101,7 +111,7 @@ function openEditDialog(
 		onSubmit: async (dialogApi: any) => {
 			const newSource = newBlockSource(dialogApi.getData().languageInput, dialogApi.getData().codeTextArea, source);
 			const md = `${newSource.openCharacters}${newSource.content}${newSource.closeCharacters}`;
-			const result = await markupToHtml.current(MarkupToHtml.MARKUP_LANGUAGE_MARKDOWN, md, { bodyOnly: true, globalSettings: getGlobalSettings(Setting) });
+			const result = await markupToHtml.current(MarkupToHtml.MARKUP_LANGUAGE_MARKDOWN, md, { bodyOnly: true, globalSettings: getGlobalSettings(Setting), plugins: { richTextSource: { richTextEditor: true } } });
 
 			// markupToHtml will return the complete editable HTML, but we only
 			// want to update the inner HTML, so as not to break additional props that
@@ -129,7 +139,7 @@ function openEditDialog(
 					label: 'Language',
 					// Katex is a special case with special opening/closing tags
 					// and we don't currently handle switching the language in this case.
-					enabled: source.language !== 'katex',
+					enabled: source.language !== 'katex' && source.language !== markdownSourceLanguage,
 				},
 				{
 					type: 'textarea',

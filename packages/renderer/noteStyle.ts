@@ -83,8 +83,9 @@ export default function(theme: RendererTheme, options: Options = null) {
 
 	theme = theme ? theme : {};
 
-	// Fork: Workbench themes set their own default note font (lib/themes/utils/workbenchStyle.ts).
+	// Fork: Workbench themes set their own default note font and paragraph spacing (lib/themes/utils/workbenchStyle.ts).
 	const fontFamily = options.baseFontFamily || (theme as { noteFontFamily?: string }).noteFontFamily || '\'Avenir Next\', \'Avenir\', \'Arial\', sans-serif';
+	const paragraphSpacing = (theme as { noteParagraphSpacing?: string }).noteParagraphSpacing || '1.35em';
 
 	const contentWrapperTarget = options.contentWrapperSelector ?? '#rendered-md';
 	const maxWidthTarget = options.contentMaxWidthTarget ? options.contentMaxWidthTarget : contentWrapperTarget;
@@ -169,7 +170,7 @@ export default function(theme: RendererTheme, options: Options = null) {
 		
 		p, h1, h2, h3, h4, h5, h6, ul, table {
 			margin-top: .6em;
-			margin-bottom: 1.35em;
+			margin-bottom: ${paragraphSpacing};
 
 			/*
 				Adds support for RTL text in the note body. It automatically detects the direction using the content.

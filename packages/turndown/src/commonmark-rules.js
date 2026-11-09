@@ -946,6 +946,9 @@ function joplinCheckboxInfo(liNode) {
   // Should handle both <ul class='joplin-checklist'><li>...</li></ul>
   // and <ul><li class='joplin-checklist-item'>...</li></ul>. The second is present
   // in certain types of imported notes.
+  // Fork: an item without a checkbox in a list that has some.
+  if (liNode.classList.contains('joplin-checklist-bullet')) return null;
+
   const parentChecklist = findParent(liNode, 'class', 'joplin-checklist');
   const currentChecklist = liNode.classList.contains('joplin-checklist-item');
   if (parentChecklist || currentChecklist) {

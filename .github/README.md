@@ -46,6 +46,8 @@ Versioned releases, with what changed in each, are on the [Releases page](https:
 **Fixes for notes that didn't show as written**
 
 - Tables, numbered lists, maths, diagrams, front matter and checklists now render and convert as written. Two of these bugs are also [reported to Joplin](https://github.com/ameralqarallih-lgtm/joplin/issues?q=label%3Aupstream).
+- On desktop, the Rich Text editor keeps footnotes, `[toc]`, comments, reference links, definition lists and lists that mix checkboxes and bullets exactly as written, so it no longer needs a warning.
+- Notes written in the Rich Text editor, which have a paragraph per line, no longer show large gaps between lines.
 
 <table>
 	<tr>

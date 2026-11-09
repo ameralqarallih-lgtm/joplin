@@ -12,10 +12,14 @@ export type WorkbenchTheme = Theme & {
 	fontFamily: string;
 	// Default font of the note viewer and editor, when the user hasn't chosen one.
 	noteFontFamily: string;
+	// Space after a paragraph in the note viewer and Rich Text editor. Notes written in the Rich Text editor have a
+	// paragraph per line, which Joplin's 1.35em spreads out.
+	noteParagraphSpacing: string;
 };
 
 export const workbenchStyle = {
 	uiStyle: 'workbench',
 	fontFamily: uiFontFamily,
 	noteFontFamily: uiFontFamily,
+	noteParagraphSpacing: '0.75em',
 };

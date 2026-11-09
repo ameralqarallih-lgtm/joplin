@@ -7,9 +7,12 @@ interface OptionOverride {
 	bodyOnly: boolean;
 	resourceInfos?: ResourceInfos;
 	allowedFilePrefixes?: string[];
+	// Fork: rendering for the Rich Text editor (renderer/MdToHtml/rules/richTextSource.ts)
+	richTextEditor?: boolean;
 }
 
 export default (override: OptionOverride = null): MarkupToHtmlOptions => {
+	const { richTextEditor = false, ...otherOverrides } = override ?? ({} as OptionOverride);
 	return {
 		plugins: {
 			checkbox: {
@@ -18,9 +21,12 @@ export default (override: OptionOverride = null): MarkupToHtmlOptions => {
 			link_open: {
 				linkRenderingType: LinkRenderingType.HrefHandler,
 			},
+			richTextSource: {
+				richTextEditor,
+			},
 		},
 		replaceResourceInternalToExternalLinks: true,
 		globalSettings: getGlobalSettings(Setting),
-		...override,
+		...otherOverrides,
 	};
 };

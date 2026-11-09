@@ -2,6 +2,7 @@ import { FormNote } from './types';
 
 import HtmlToMd, { ParseOptions } from '@joplin/lib/HtmlToMd';
 import Note from '@joplin/lib/models/Note';
+import Setting from '@joplin/lib/models/Setting';
 import { MarkupToHtml } from '@joplin/renderer';
 
 export async function htmlToMarkdown(markupLanguage: number, html: string, originalCss: string, parseOptions: ParseOptions = null): Promise<string> {
@@ -14,6 +15,13 @@ export async function htmlToMarkdown(markupLanguage: number, html: string, origi
 			preserveNestedTables: true,
 			preserveTableStyles: true,
 			preserveColorStyles: true,
+			richTextMarkdownPlugins: {
+				footnote: Setting.value('markdown.plugin.footnote'),
+				deflist: Setting.value('markdown.plugin.deflist'),
+				sub: Setting.value('markdown.plugin.sub'),
+				sup: Setting.value('markdown.plugin.sup'),
+				insert: Setting.value('markdown.plugin.insert'),
+			},
 			...parseOptions,
 		});
 		newBody = await Note.replaceResourceExternalToInternalLinks(newBody, { useAbsolutePaths: true });

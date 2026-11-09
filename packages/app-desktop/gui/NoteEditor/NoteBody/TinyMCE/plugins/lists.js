@@ -1529,6 +1529,9 @@
     function isJoplinChecklistItem(element) {
       if (element.nodeName !== 'LI')
         return false;
+      // Fork: an item without a checkbox in a list that has some.
+      if (element.classList && element.classList.contains('joplin-checklist-bullet'))
+        return false;
       var listType = findContainerListTypeFromElement(element);
       return listType === 'joplinChecklist';
     }

@@ -4,8 +4,6 @@ import { AppState } from '../../../app.reducer';
 import Setting from '@joplin/lib/models/Setting';
 import BannerContent from './BannerContent';
 import { _ } from '@joplin/lib/locale';
-import onRichTextReadMoreLinkClick from '@joplin/lib/components/shared/NoteEditor/WarningBanner/onRichTextReadMoreLinkClick';
-import onRichTextDismissLinkClick from '@joplin/lib/components/shared/NoteEditor/WarningBanner/onRichTextDismissLinkClick';
 import useEditorTypeMigrationBanner from '@joplin/lib/components/shared/NoteEditor/WarningBanner/useEditorTypeMigrationBanner';
 import { useMemo } from 'react';
 import { PluginStates } from '@joplin/lib/services/plugins/reducer';
@@ -16,7 +14,6 @@ interface Props {
 	bodyEditor: NoteBodyEditorType;
 	lockedInShare: boolean;
 	editorMigrationVersion: number;
-	richTextBannerDismissed: boolean;
 	inEditorRenderingEnabled: boolean;
 	pluginCompatibilityBannerDismissedFor: string[];
 	plugins: PluginStates;
@@ -62,16 +59,8 @@ const WarningBanner: React.FC<Props> = props => {
 		</BannerContent>
 	);
 
-	const wysiwygBanner = (
-		<BannerContent
-			acceptMessage={_('Read more about it')}
-			onAccept={onRichTextReadMoreLinkClick}
-			onDismiss={onRichTextDismissLinkClick}
-			visible={props.bodyEditor === 'TinyMCE' && !props.richTextBannerDismissed}
-		>
-			{_('This Rich Text editor has a number of limitations and it is recommended to be aware of them before using it.')}
-		</BannerContent>
-	);
+	// Fork: no warning about the Rich Text editor's limitations, because the desktop editor now keeps the Markdown it
+	// used to lose (renderer/MdToHtml/rules/richTextSource.ts).
 
 	const incompatiblePluginNames = useMemo(() => {
 		if (props.bodyEditor !== 'CodeMirror6') {
@@ -109,7 +98,6 @@ const WarningBanner: React.FC<Props> = props => {
 
 	return <>
 		{lockedInShareBanner}
-		{wysiwygBanner}
 		{markdownPluginBanner}
 		{editorMigrationBanner}
 	</>;
@@ -117,7 +105,6 @@ const WarningBanner: React.FC<Props> = props => {
 
 export default connect((state: AppState) => {
 	return {
-		richTextBannerDismissed: state.settings.richTextBannerDismissed,
 		pluginCompatibilityBannerDismissedFor: state.settings['editor.pluginCompatibilityBannerDismissedFor'],
 		plugins: state.pluginService.plugins,
 		editorMigrationVersion: state.settings['editor.migration'],

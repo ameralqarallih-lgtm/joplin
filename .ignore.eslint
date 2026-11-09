@@ -2207,6 +2207,8 @@ packages/lib/utils/replaceUnsupportedCharacters.test.js
 packages/lib/utils/replaceUnsupportedCharacters.js
 packages/lib/utils/resolvePathWithinDir.test.js
 packages/lib/utils/resolvePathWithinDir.js
+packages/lib/utils/richTextTurndownRules.test.js
+packages/lib/utils/richTextTurndownRules.js
 packages/lib/utils/tls/setExtraRootCertificates.test.js
 packages/lib/utils/tls/setExtraRootCertificates.js
 packages/lib/utils/types/pdfJs.js
@@ -2281,6 +2283,7 @@ packages/renderer/MdToHtml/rules/katex.js
 packages/renderer/MdToHtml/rules/link_close.js
 packages/renderer/MdToHtml/rules/link_open.js
 packages/renderer/MdToHtml/rules/mermaid.js
+packages/renderer/MdToHtml/rules/richTextSource.js
 packages/renderer/MdToHtml/rules/sanitize_html.js
 packages/renderer/MdToHtml/rules/source_map.js
 packages/renderer/MdToHtml/rules/tableHorizontallyScrollable.js

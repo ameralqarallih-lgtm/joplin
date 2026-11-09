@@ -56,6 +56,8 @@ const rules: RendererRules = {
 	externalEmbed: require('./MdToHtml/rules/externalEmbed').default,
 	source_map: require('./MdToHtml/rules/source_map').default,
 	tableHorizontallyScrollable: require('./MdToHtml/rules/tableHorizontallyScrollable').default,
+	// Fork: keeps Markdown through the Rich Text editor.
+	richTextSource: require('./MdToHtml/rules/richTextSource').default,
 };
 
 const uslug = require('@joplin/fork-uslug');

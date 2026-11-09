@@ -1111,6 +1111,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: Ref<NoteBodyEditorRef>) => {
 						// TinyMCE to crash in some cases.
 						// See https://github.com/tinymce/tinymce/issues/10276
 						bodyOnly: true,
+						richTextEditor: true,
 					}),
 				);
 				if (cancelled) return;
