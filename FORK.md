@@ -9,8 +9,9 @@ This is a fork of [laurent22/joplin](https://github.com/laurent22/joplin). We ad
 | Branch | Purpose | Rules |
 | --- | --- | --- |
 | `dev` | Exact mirror of `upstream/dev`, updated automatically. | Never commit to it. Never resolve conflicts on it. |
-| `main` | Integration branch: upstream plus our changes. Default branch. | Changes arrive only through PRs. |
-| `feat/*`, `fix/*` | Our work. | Branch from `main`, open the PR against `main`. |
+| `next` | Working branch: upstream plus our changes. | Commit and push directly. CI and the Android build run on every push. |
+| `main` | Stable branch. Default branch. | Takes `next` through a single reviewed PR once `next` is ready. |
+| `feat/*`, `fix/*` | Optional, for large or risky changes. | Branch from `next` and merge back into it. |
 
 Keep our changes small and self-contained, so upstream merges stay easy. Put new code in new files where possible, rather than spreading edits through upstream files. If a change would be useful to everyone, consider sending it upstream too: every change upstream accepts is one less thing to maintain here.
 
@@ -23,7 +24,7 @@ git config core.longpaths true
 git remote add upstream https://github.com/laurent22/joplin.git
 git remote set-url --push upstream DISABLED
 git fetch upstream --tags
-git switch main
+git switch next
 ```
 
 For building and running the apps, see [readme/dev/BUILD.md](readme/dev/BUILD.md) and [readme/dev/index.md](readme/dev/index.md).
@@ -35,6 +36,8 @@ For building and running the apps, see [readme/dev/BUILD.md](readme/dev/BUILD.md
 1. **Mirrors `dev`.** It fast-forwards `dev` to `upstream/dev`. If someone has committed to `dev`, it stops with an error instead of merging or overwriting.
 2. **Opens a sync PR.** When `main` is behind `dev`, it opens a `dev → main` PR labelled `upstream-sync`. The PR updates itself as `dev` advances.
 3. **Tracks releases.** It opens an issue labelled `upstream-release` for each new upstream GitHub release (desktop, `v*`) and for the newest `android-v*` and `server-v*` tags. Each issue links the release notes or changelog, says how many of the release's commits are missing from `main`, and has a review checklist.
+
+The sync PR targets `main`. While our work lives on `next`, bring upstream into `next` as well (see [Bringing upstream into next](#bringing-upstream-into-next)).
 
 The script can also run locally: `DRY_RUN=1 bash .github/fork/upstream-sync.sh`. It needs `gh` to be signed in.
 
@@ -51,17 +54,17 @@ Without the secret, the workflow falls back to `GITHUB_TOKEN`. Syncing then fail
 
 ## Continuous integration
 
-Upstream's CI only runs in `laurent22/joplin`, so the fork has its own, in [.github/workflows/fork-ci.yml](.github/workflows/fork-ci.yml). It runs on every PR into `main` and on every push to `main`:
+Upstream's CI only runs in `laurent22/joplin`, so the fork has its own, in [.github/workflows/fork-ci.yml](.github/workflows/fork-ci.yml). It runs on every push to `next` or `main`, and on every PR into `main`:
 
 1. `yarn install`. This builds every package and runs `yarn tsc`, so it also type-checks the code.
-2. ESLint on the files the PR changes.
+2. ESLint. For a PR, on the files it changes. For a push, on every file the fork changes relative to upstream `dev`.
 3. Tests for `utils`, `renderer`, `editor`, `lib`, `app-desktop`, `app-mobile` and `app-cli`. The `app-cli` tests include the HTML-to-Markdown fixtures in `packages/app-cli/tests/html_to_md`, which cover the rich-text editor's conversion.
 
-Merge a PR only when this check passes.
+Fix a failing run on `next` before adding more work on top. Merge a PR only when this check passes.
 
 ## Android builds
 
-[.github/workflows/fork-android.yml](.github/workflows/fork-android.yml) builds a signed APK whenever a push to `main` changes the mobile app or a package it uses. It can also be started by hand from the Actions tab. The APK is attached to the workflow run, and published on the `android-latest` pre-release on the repository's Releases page, which you can open from your phone to install or update.
+[.github/workflows/fork-android.yml](.github/workflows/fork-android.yml) builds a signed APK whenever a push to `next` or `main` changes the mobile app or a package it uses. It can also be started by hand from the Actions tab. The APK is attached to the workflow run, and published on the `android-latest` pre-release on the repository's Releases page, which you can open from your phone to install or update.
 
 The build uses our own app ID and name, so it installs alongside the official Joplin app instead of replacing it. [.github/fork/android-branding.sh](.github/fork/android-branding.sh) applies them during the build only; the committed Android files stay identical to upstream's. Version numbers follow upstream's, with the build number added (for example `3.7.11-fork.12`).
 
@@ -77,6 +80,17 @@ Configuration (Settings → Secrets and variables → Actions):
 | Secret | `FORK_ANDROID_KEY_PASSWORD` | Key password |
 
 Keep a backup of the keystore and its password outside GitHub. Android only installs an update that is signed with the same key. Changing the key means uninstalling the app first, which deletes its local data.
+
+## Bringing upstream into next
+
+```bash
+git fetch origin
+git switch next
+git merge origin/dev           # fix conflicts, then: git add ... && git commit
+git push
+```
+
+Conflicts in the generated block at the end of `.gitignore` or `.ignore.eslint` don't need resolving by hand: take either side, run `yarn updateIgnored`, and add the result.
 
 ## Merging a sync PR
 

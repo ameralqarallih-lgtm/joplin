@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches: [main, next]
   workflow_dispatch:
 
 permissions:
@@ -37,10 +37,12 @@ jobs:
           source .github/scripts/retry.sh
           retry yarn install
 
+      # A PR lints what it changes. A push lints everything the fork changes relative to upstream.
       - name: Lint changed files
-        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.base_ref || 'dev' }}
         run: |
-          git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' > changed.txt
+          git diff --name-only --diff-filter=ACMR "origin/$BASE...HEAD" -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' > changed.txt
           cat changed.txt
           if [ -s changed.txt ]; then
             xargs -a changed.txt yarn linter-ci --no-warn-ignored
