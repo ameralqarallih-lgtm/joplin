@@ -1,6 +1,9 @@
 // Fork: the Workbench design layer. Its rules apply only while a Workbench theme is active: those themes set
 // --joplin-ui-style: workbench (see packages/lib/themes/workbenchLight.ts), which the style query below matches.
 
+// The fork's own components, styled for every theme.
+@use '../NoteEditor/NoteTitle/note-breadcrumb.scss';
+
 :root {
 	--wb-radius-sm: 3px;
 	--wb-radius: 4px;

@@ -1,0 +1,38 @@
+// Fork: styles for NoteBreadcrumb.tsx, in every theme.
+
+.note-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px;
+	padding: 6px 8px 0 var(--joplin-editor-padding-left);
+	font-family: var(--joplin-font-family);
+	font-size: calc(var(--joplin-font-size) * 0.95);
+	color: var(--joplin-color-faded);
+
+	> .crumb {
+		padding: 1px 4px;
+		border: none;
+		border-radius: 4px;
+		background: none;
+		color: inherit;
+		font: inherit;
+		// Line up the text, not the hover background, with the title below.
+		margin-left: -4px;
+		margin-right: -4px;
+	}
+
+	> button.crumb {
+		cursor: pointer;
+
+		&:hover {
+			color: var(--joplin-color);
+			background-color: var(--joplin-background-color-hover3);
+		}
+	}
+
+	> .separator {
+		padding: 0 6px;
+		opacity: 0.7;
+	}
+}

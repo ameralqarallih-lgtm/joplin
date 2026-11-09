@@ -23,6 +23,7 @@ import { AppState } from '../../app.reducer';
 import ToolbarButtonUtils, { ToolbarButtonInfo } from '@joplin/lib/services/commands/ToolbarButtonUtils';
 import { _, _n } from '@joplin/lib/locale';
 import NoteTitleBar from './NoteTitle/NoteTitleBar';
+import NoteBreadcrumb from './NoteTitle/NoteBreadcrumb';
 import markupLanguageUtils from '@joplin/lib/utils/markupLanguageUtils';
 import Setting from '@joplin/lib/models/Setting';
 import stateToWhenClauseContext from '../../services/commands/stateToWhenClauseContext';
@@ -830,6 +831,7 @@ function NoteEditorContent(props: NoteEditorProps) {
 				{renderConvertHtmlToMarkdown()}
 				{renderResourceWatchingNotification()}
 				{renderResourceInSearchResultsNotification()}
+				<NoteBreadcrumb noteId={formNote.id} folderId={formNote.parent_id} />
 				<NoteTitleBar
 					titleInputRef={titleInputRef}
 					themeId={props.themeId}
