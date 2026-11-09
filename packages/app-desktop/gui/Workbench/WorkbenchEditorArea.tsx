@@ -8,6 +8,7 @@ import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 import { AppState } from '../../app.reducer';
 import NoteTabs from './NoteTabs/NoteTabs';
 import HomeView from './HomeView/HomeView';
+import NoteOutline from './NoteOutline/NoteOutline';
 
 interface Props {
 	windowId: string;
@@ -22,7 +23,10 @@ const WorkbenchEditorArea: React.FC<Props> = props => {
 	return <div className='workbench-editor'>
 		<NoteTabs/>
 		<HomeView visible={props.homeTabActive}/>
-		<div className={`editor ${props.homeTabActive ? '-hidden' : ''}`}>{props.children}</div>
+		<div className={`editor ${props.homeTabActive ? '-hidden' : ''}`}>
+			{props.children}
+			<NoteOutline/>
+		</div>
 	</div>;
 };
 

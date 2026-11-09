@@ -1,6 +1,7 @@
 // Fork: the editor pane with the tab bar and the Home page, see WorkbenchEditorArea.tsx.
 
 .workbench-editor {
+	container: workbench-editor / inline-size;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -14,6 +15,10 @@
 
 		&.-hidden {
 			display: none;
+		}
+
+		> .note-editor-wrapper {
+			min-width: 0;
 		}
 	}
 }
