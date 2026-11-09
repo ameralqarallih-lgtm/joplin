@@ -1978,6 +1978,8 @@ packages/lib/services/sortOrder/PerFolderSortOrderService.test.js
 packages/lib/services/sortOrder/PerFolderSortOrderService.js
 packages/lib/services/sortOrder/notesSortOrderUtils.test.js
 packages/lib/services/sortOrder/notesSortOrderUtils.js
+packages/lib/services/sortOrder/saveDisplayedOrderAsCustomOrder.test.js
+packages/lib/services/sortOrder/saveDisplayedOrderAsCustomOrder.js
 packages/lib/services/spellChecker/SpellCheckerService.js
 packages/lib/services/spellChecker/SpellCheckerServiceDriverBase.js
 packages/lib/services/style/cssToTheme.test.js

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useCallback, DragEventHandler, MutableRefObject, useState, useEffect } from 'react';
 import Note from '@joplin/lib/models/Note';
 import canManuallySortNotes from './canManuallySortNotes';
+import Setting from '@joplin/lib/models/Setting';
+import saveDisplayedOrderAsCustomOrder from '@joplin/lib/services/sortOrder/saveDisplayedOrderAsCustomOrder';
 import { Size } from '@joplin/utils/types';
 import { ItemFlow } from '@joplin/lib/services/plugins/api/noteListType';
 
@@ -90,12 +92,21 @@ const useDragAndDrop = (
 		if (!dt.types.includes('text/x-jop-note-ids')) return;
 
 		// TODO: check that parent type is folder
-		if (!canManuallySortNotes(notesParentType, noteSortOrder, selectedFolderInTrash)) return;
+		let switchedToCustomOrder = false;
+		if (!canManuallySortNotes(notesParentType, noteSortOrder, selectedFolderInTrash)) {
+			// Fork: if the user has just switched to custom order, still make the move they dropped.
+			if (noteSortOrder === 'order' || Setting.value('notes.sortOrder.field') !== 'order') return;
+			switchedToCustomOrder = true;
+		}
 
 		setDragOverTargetNoteIndex(null);
 
 		const targetNoteIndex = dragTargetNoteIndex(event);
 		const noteIds: string[] = JSON.parse(dt.getData('text/x-jop-note-ids'));
+
+		if (switchedToCustomOrder) {
+			await saveDisplayedOrderAsCustomOrder(selectedFolderId, { field: noteSortOrder, reverse: Setting.value('notes.sortOrder.reverse'), uncompletedTodosOnTop, showCompletedTodos });
+		}
 
 		await Note.insertNotesAt(selectedFolderId, noteIds, targetNoteIndex, uncompletedTodosOnTop, showCompletedTodos);
 	}, [notesParentType, dragTargetNoteIndex, noteSortOrder, selectedFolderId, uncompletedTodosOnTop, showCompletedTodos, selectedFolderInTrash]);
