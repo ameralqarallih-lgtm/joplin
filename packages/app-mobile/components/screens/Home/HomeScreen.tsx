@@ -27,6 +27,7 @@ import { DialogContext } from '../../DialogManager';
 import setTodoCompleted from './setTodoCompleted';
 import withAlpha from './withAlpha';
 import { folderColor } from '@joplin/lib/models/utils/folderColor';
+import Setting from '@joplin/lib/models/Setting';
 import { dockedMenuWidth, isDockedMenuLayout } from '../../../utils/workbenchLayout';
 
 interface Props {
@@ -35,6 +36,7 @@ interface Props {
 	pinnedNotes: NoteEntity[];
 	includeCompletedTodos: boolean;
 	syncTargetSet: boolean;
+	migrationHintDismissed: boolean;
 	syncStarted: boolean;
 	syncPending: boolean;
 	syncReport: ProgressReport;
@@ -101,6 +103,14 @@ const useStyles = (theme: Theme) => {
 				recentTitle: { fontSize: 15, fontWeight: '600', color: theme.color },
 				recentExcerpt: { fontSize: 13, lineHeight: 19, color: theme.color3 },
 				panel: { ...card, marginHorizontal: 16, overflow: 'hidden' },
+				hint: { ...card, marginHorizontal: 16, padding: 16, gap: 8, borderColor: withAlpha(theme.color4, 0.35), backgroundColor: withAlpha(theme.color4, 0.06) },
+				hintTitle: { fontSize: 15, fontWeight: '600', color: theme.color },
+				hintText: { fontSize: 14, lineHeight: 20, color: theme.colorFaded },
+				hintActions: { flexDirection: 'row', gap: 8, marginTop: 4 },
+				hintPrimary: { height: 40, paddingHorizontal: 16, borderRadius: 20, justifyContent: 'center', backgroundColor: theme.color4 },
+				hintPrimaryText: { fontSize: 14, fontWeight: '600', color: theme.backgroundColor },
+				hintSecondary: { height: 40, paddingHorizontal: 16, borderRadius: 20, justifyContent: 'center' },
+				hintSecondaryText: { fontSize: 14, fontWeight: '500', color: theme.color4 },
 				row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 14 },
 				rowDivider: { borderTopWidth: 1, borderTopColor: ring },
 				rowTitle: { flex: 1, fontSize: 15, color: theme.color },
@@ -162,6 +172,23 @@ const SyncChip: React.FC<Props & { styles: Styles; theme: Theme }> = props => {
 		<Icon name={syncIcons[status.icon]} accessibilityLabel={null} style={{ fontSize: 15, color }}/>
 		<Text style={[props.styles.syncText, { color }]}>{status.label}</Text>
 	</Pressable>;
+};
+
+// Fork: Android keeps each app's data to itself, so notes come over from Joplin through its sync server: signing in
+// to the same server brings them here.
+const MigrationHint: React.FC<{ styles: Styles; theme: Theme; dispatch: Dispatch }> = ({ styles, dispatch }) => {
+	return <View style={styles.hint}>
+		<Text style={styles.hintTitle} accessibilityRole='header'>{_('Moving from Joplin?')}</Text>
+		<Text style={styles.hintText}>{_('Sign in to the sync server that Joplin uses, such as Joplin Server or Dropbox, and your notes will appear here. Joplin keeps its own copy.')}</Text>
+		<View style={styles.hintActions}>
+			<Pressable accessibilityRole='button' style={styles.hintPrimary} onPress={() => dispatch({ type: 'NAV_GO', routeName: 'Config', sectionName: 'sync' })}>
+				<Text style={styles.hintPrimaryText}>{_('Set up sync')}</Text>
+			</Pressable>
+			<Pressable accessibilityRole='button' style={styles.hintSecondary} onPress={() => Setting.setValue('ui.joplinMigrationHintDismissed', true)}>
+				<Text style={styles.hintSecondaryText}>{_('Not now')}</Text>
+			</Pressable>
+		</View>
+	</View>;
 };
 
 const TodoRows: React.FC<{ todos: NoteEntity[]; styles: Styles; dispatch: Dispatch }> = ({ todos, styles, dispatch }) => {
@@ -266,6 +293,7 @@ const HomeScreen: React.FC<Props> = props => {
 					<Text style={styles.searchText}>{_('Search notes')}</Text>
 				</Pressable>
 			</View>
+			{!props.syncTargetSet && !props.migrationHintDismissed ? <MigrationHint styles={styles} theme={theme} dispatch={props.dispatch}/> : null}
 			{data ? <>
 				{recentCards.length ? <View style={styles.section}>
 					<Text style={styles.sectionTitle} accessibilityRole='header'>{_('Continue')}</Text>
@@ -307,6 +335,7 @@ export default connect((state: AppState) => ({
 	pinnedNotes: state.pinnedNotes,
 	includeCompletedTodos: state.settings.showCompletedTodos,
 	syncTargetSet: !!state.settings['sync.target'],
+	migrationHintDismissed: state.settings['ui.joplinMigrationHintDismissed'],
 	syncStarted: state.syncStarted,
 	syncPending: state.syncPending,
 	syncReport: state.syncReport,

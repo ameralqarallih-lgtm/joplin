@@ -18,6 +18,7 @@ import { _, setLocale } from '@joplin/lib/locale';
 import SpellCheckerService from '@joplin/lib/services/spellChecker/SpellCheckerService';
 import SpellCheckerServiceDriverNative from './services/spellChecker/SpellCheckerServiceDriverNative';
 import bridge from './services/bridge';
+import offerJoplinMigration from './services/forkMigration/offerJoplinMigration';
 import menuCommandNames from './gui/menuCommandNames';
 import ResourceService from '@joplin/lib/services/ResourceService';
 import ExternalEditWatcher from '@joplin/lib/services/ExternalEditWatcher';
@@ -829,6 +830,8 @@ class Application extends BaseApplication {
 		// insert an extra argument so that they can be processed in a consistent way everywhere.
 		if (!bridge().electronIsDev()) argv.splice(1, 0, '.');
 
+		// Fork: a renamed build (Inkbench) offers to copy an installed Joplin's notes on its first start.
+		await offerJoplinMigration(argv);
 
 		argv = await super.start(argv, startOptions);
 

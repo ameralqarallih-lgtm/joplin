@@ -85,6 +85,8 @@ Keep a backup of the keystore and its password outside GitHub. Android only inst
 
 [.github/fork/desktop-branding.js](.github/fork/desktop-branding.js) applies the name during the build only. The app gets its own Windows app ID, install folder, keychain entries and profile folder (`~/.config/inkbench-desktop` for Inkbench), so it installs beside Joplin without touching its notes. It doesn't offer Joplin's releases as updates. The installer isn't signed, so Windows SmartScreen warns about it until you choose "Run anyway".
 
+On its first start, the installed app offers to copy an installed Joplin's profile (notes, notebooks, attachments and settings) into its own, as a new device for the sync server; Joplin's profile stays as it was ([migrateFromJoplin.ts](packages/app-desktop/services/forkMigration/migrateFromJoplin.ts)). The sync password stays in Joplin's keychain, so it's entered once more. Android keeps each app's data private, so the mobile Home screen instead suggests signing in to the sync server that Joplin uses, until sync is set up or the hint is dismissed.
+
 ## Workbench design
 
 The fork's look is called Workbench: cool grey surfaces, a cobalt accent, compact rows and 4px corners.

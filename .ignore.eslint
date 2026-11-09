@@ -733,6 +733,9 @@ packages/app-desktop/services/autoUpdater/AutoUpdaterService.js
 packages/app-desktop/services/bridge.js
 packages/app-desktop/services/commands/stateToWhenClauseContext.js
 packages/app-desktop/services/commands/types.js
+packages/app-desktop/services/forkMigration/migrateFromJoplin.test.js
+packages/app-desktop/services/forkMigration/migrateFromJoplin.js
+packages/app-desktop/services/forkMigration/offerJoplinMigration.js
 packages/app-desktop/services/plugins/BackOffHandler.js
 packages/app-desktop/services/plugins/PlatformImplementation.js
 packages/app-desktop/services/plugins/PluginRunner.js

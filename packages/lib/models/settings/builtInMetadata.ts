@@ -1790,6 +1790,14 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			appTypes: [AppType.Desktop],
 		},
 
+		// Fork: hides the "Moving from Joplin?" card on the mobile Home screen.
+		'ui.joplinMigrationHintDismissed': {
+			value: false,
+			type: SettingItemType.Bool,
+			public: false,
+			appTypes: [AppType.Mobile],
+		},
+
 		'ui.lastSelectedPluginPanel': {
 			value: '',
 			type: SettingItemType.String,
