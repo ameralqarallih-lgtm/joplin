@@ -123,11 +123,14 @@ jobs:
           APK_PATH: ${{ steps.apk.outputs.path }}
           VERSION_NAME: ${{ steps.brand.outputs.version_name }}
         run: |
+          bash .github/fork/build-changes.sh android-latest > changes.md
           gh release delete android-latest --cleanup-tag --yes 2>/dev/null || true
           cat > notes.md <<EOF
           Latest ${FORK_APP_NAME} Android build from \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA::9}. Version ${VERSION_NAME}.
 
           Download the APK below on your phone and open it to install or update. Android may ask you to allow installs from your browser.
+
           EOF
+          cat changes.md >> notes.md
           gh release create android-latest "$APK_PATH" --target "$GITHUB_SHA" --prerelease \
             --title "${FORK_APP_NAME} for Android (latest)" --notes-file notes.md

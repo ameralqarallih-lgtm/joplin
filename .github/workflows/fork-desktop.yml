@@ -97,11 +97,14 @@ jobs:
           INSTALLER_PATH: ${{ steps.installer.outputs.path }}
           VERSION_NAME: ${{ steps.brand.outputs.version_name }}
         run: |
+          bash .github/fork/build-changes.sh desktop-latest > changes.md
           gh release delete desktop-latest --cleanup-tag --yes 2>/dev/null || true
           cat > notes.md <<EOF
           Latest ${FORK_APP_NAME} for Windows from \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA::9}. Version ${VERSION_NAME}.
 
           Download the installer below and run it. It installs ${FORK_APP_NAME} beside Joplin, with its own notes and settings, so it doesn't change an installed Joplin. The installer isn't signed, so Windows may warn about it: choose "More info", then "Run anyway".
+
           EOF
+          cat changes.md >> notes.md
           gh release create desktop-latest "$INSTALLER_PATH" --target "$GITHUB_SHA" --prerelease \
             --title "${FORK_APP_NAME} for Windows (latest)" --notes-file notes.md
