@@ -12,6 +12,7 @@ import Folder from '@joplin/lib/models/Folder';
 
 import { _ } from '@joplin/lib/locale';
 import NoteItem from './NoteItem';
+import { reg } from '@joplin/lib/registry';
 import { themeStyle } from './global-style';
 
 interface NoteListProps {
@@ -22,7 +23,13 @@ interface NoteListProps {
 	folders: FolderEntity[];
 	noteSelectionEnabled?: boolean;
 	selectedFolderId: string|null;
+	syncStarted?: boolean;
+	syncTarget?: number;
 }
+
+const onPullToRefresh = () => {
+	void reg.scheduleSync(0);
+};
 
 class NoteListComponent extends Component<NoteListProps> {
 	private rootRef_: FlatList;
@@ -92,6 +99,9 @@ class NoteListComponent extends Component<NoteListProps> {
 				data={this.props.items}
 				renderItem={({ item, index }) => <NoteItem note={item} index={index} />}
 				keyExtractor={item => item.id}
+				// Fork: pull down to synchronise, when synchronisation is set up.
+				refreshing={!!this.props.syncStarted}
+				onRefresh={this.props.syncTarget ? onPullToRefresh : undefined}
 			/>;
 		} else {
 			if (!Folder.atLeastOneRealFolderExists(this.props.folders)) {
@@ -120,6 +130,8 @@ const NoteList = connect((state: AppState) => {
 		themeId: state.settings.theme,
 		noteSelectionEnabled: state.noteSelectionEnabled,
 		selectedFolderId: state.selectedFolderId,
+		syncStarted: state.syncStarted,
+		syncTarget: state.settings['sync.target'],
 	};
 })(NoteListComponent);
 

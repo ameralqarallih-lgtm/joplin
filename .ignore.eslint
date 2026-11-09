@@ -850,6 +850,7 @@ packages/app-mobile/components/NoteEditor/hooks/useEditorCommandHandler.js
 packages/app-mobile/components/NoteEditor/testing/createTestEditorProps.js
 packages/app-mobile/components/NoteEditor/types.js
 packages/app-mobile/components/NoteItem.js
+packages/app-mobile/components/NoteList.test.js
 packages/app-mobile/components/NoteList.js
 packages/app-mobile/components/ProfileSwitcher/ProfileEditor.js
 packages/app-mobile/components/ProfileSwitcher/ProfileSwitcher.js
