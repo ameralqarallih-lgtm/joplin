@@ -13,6 +13,8 @@ import TextInput from '../TextInput';
 import { FolderEntity } from '@joplin/lib/services/database/types';
 import { AppState } from '../../utils/types';
 import { Dispatch } from 'redux';
+import FolderColorPicker from '../FolderColorPicker';
+import { folderColor, setFolderColor } from '@joplin/lib/models/utils/folderColor';
 
 interface Props {
 	folderId: string;
@@ -25,6 +27,9 @@ interface Props {
 interface State {
 	folder: FolderEntity;
 	lastSavedFolder: FolderEntity|null;
+	// Fork: the notebook colour, saved in its user data apart from the other fields.
+	color: string;
+	lastSavedColor: string;
 }
 
 class FolderScreenComponent extends BaseScreenComponent<Props, State> {
@@ -34,6 +39,8 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 		this.state = {
 			folder: Folder.new(),
 			lastSavedFolder: null,
+			color: '',
+			lastSavedColor: '',
 		};
 	}
 
@@ -50,6 +57,8 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 				this.setState({
 					folder: folder,
 					lastSavedFolder: { ...folder },
+					color: folderColor(folder),
+					lastSavedColor: folderColor(folder),
 				});
 			});
 		}
@@ -57,6 +66,7 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 
 	private isModified() {
 		if (!this.state.folder || !this.state.lastSavedFolder) return false;
+		if (this.state.color !== this.state.lastSavedColor) return true;
 		const diff = BaseModel.diffObjects(this.state.folder, this.state.lastSavedFolder);
 		delete diff.type_;
 		return !!Object.getOwnPropertyNames(diff).length;
@@ -87,15 +97,17 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 		try {
 			if (folder.id && !(await Folder.canNestUnder(folder.id, folder.parent_id))) throw new Error(_('Cannot move notebook to this location'));
 			folder = await Folder.save(folder, { userSideValidation: true });
+			if (this.state.color !== this.state.lastSavedColor) await setFolderColor(folder.id, this.state.color);
 		} catch (error) {
 			void shim.showErrorDialog(_('The notebook could not be saved: %s', error.message));
 			return;
 		}
 
-		this.setState({
+		this.setState(prevState => ({
 			lastSavedFolder: { ...folder },
 			folder: folder,
-		});
+			lastSavedColor: prevState.color,
+		}));
 
 		this.props.dispatch({
 			type: 'NAV_GO',
@@ -128,6 +140,7 @@ class FolderScreenComponent extends BaseScreenComponent<Props, State> {
 						mustSelect
 					/>
 				</View>
+				<FolderColorPicker themeId={this.props.themeId} value={this.state.color} onChange={color => this.setState({ color })}/>
 				<View style={{ flex: 1 }} />
 			</View>
 		);

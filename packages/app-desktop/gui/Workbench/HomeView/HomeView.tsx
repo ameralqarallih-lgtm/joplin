@@ -17,6 +17,7 @@ import formatTodoDue from '@joplin/lib/services/home/formatTodoDue';
 import { ALL_NOTES_FILTER_ID } from '@joplin/lib/reserved-ids';
 import { FolderEntity, NoteEntity } from '@joplin/lib/services/database/types';
 import FolderIconBox from '../../FolderIconBox';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 import { AppState } from '../../../app.reducer';
 import setTodoCompleted from './setTodoCompleted';
 
@@ -141,7 +142,9 @@ const PinnedPanel: React.FC<{ pinnedNotes: NoteEntity[]; folders: FolderEntity[]
 const FolderSection: React.FC<{ data: HomeData; dispatch: Dispatch }> = ({ data, dispatch }) => {
 	const tiles = data.folders.map(({ folder, noteCount }) => {
 		const icon = Folder.unserializeIcon(folder.icon);
-		return <button key={folder.id} type='button' className='folder-tile' onClick={() => dispatch({ type: 'FOLDER_SELECT', id: folder.id })}>
+		const color = folderColor(folder);
+		const style = color ? { '--tile-accent': color } as React.CSSProperties : undefined;
+		return <button key={folder.id} type='button' className='folder-tile' style={style} onClick={() => dispatch({ type: 'FOLDER_SELECT', id: folder.id })}>
 			<span className='icon'>{icon ? <FolderIconBox folderIcon={icon}/> : <i className='icon-notebooks' aria-hidden={true}></i>}</span>
 			<span className='text'>
 				<span className='name'>{folder.title}</span>

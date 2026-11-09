@@ -15,6 +15,8 @@ import bridge from '../../services/bridge';
 import shim from '@joplin/lib/shim';
 import FolderIconBox from '../FolderIconBox';
 import { focus } from '@joplin/lib/utils/focusHandler';
+import ColorPicker from '../Workbench/ColorPicker/ColorPicker';
+import { folderColor, setFolderColor } from '@joplin/lib/models/utils/folderColor';
 
 interface Props {
 	themeId: number;
@@ -26,6 +28,9 @@ interface Props {
 export default function(props: Props) {
 	const [folderTitle, setFolderTitle] = useState('');
 	const [folderIcon, setFolderIcon] = useState<FolderIcon>();
+	// Fork: the notebook colour, and the colour it had when the dialog opened.
+	const [color, setColor] = useState('');
+	const [initialColor, setInitialColor] = useState('');
 	const titleInputRef = useRef(null);
 
 	const isNew = !props.folderId;
@@ -37,6 +42,8 @@ export default function(props: Props) {
 		if (event.cancelled) return;
 		setFolderTitle(folder.title);
 		setFolderIcon(Folder.unserializeIcon(folder.icon));
+		setColor(folderColor(folder));
+		setInitialColor(folderColor(folder));
 	}, [props.folderId, isNew]);
 
 	const onClose = useCallback(() => {
@@ -74,6 +81,7 @@ export default function(props: Props) {
 
 			try {
 				const savedFolder = await Folder.save(folder, { userSideValidation: true });
+				if (color !== initialColor) await setFolderColor(savedFolder.id, color);
 				onClose();
 
 				props.dispatch({
@@ -87,7 +95,7 @@ export default function(props: Props) {
 			return;
 		}
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [onClose, folderTitle, folderIcon, props.folderId, props.parentId]);
+	}, [onClose, folderTitle, folderIcon, color, initialColor, props.folderId, props.parentId]);
 
 	const onFolderTitleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
 		setFolderTitle(event.target.value);
@@ -152,6 +160,11 @@ export default function(props: Props) {
 							<Button ml={1} title={_('Select file...')} onClick={onBrowseClick}/>
 							{ folderIcon && <Button ml={1} title={_('Clear')} onClick={onClearClick}/> }
 						</div>
+					</div>
+
+					<div className="form-input-group">
+						<label>{_('Colour')}</label>
+						<ColorPicker value={color} onChange={setColor}/>
 					</div>
 				</div>
 			</div>

@@ -26,6 +26,7 @@ import NewNoteButton from '../Notes/NewNoteButton';
 import { DialogContext } from '../../DialogManager';
 import setTodoCompleted from './setTodoCompleted';
 import withAlpha from './withAlpha';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 
 interface Props {
 	themeId: number;
@@ -75,9 +76,9 @@ const useStyles = (theme: Theme) => {
 			borderColor: ring,
 			backgroundColor: theme.backgroundColor,
 		};
-		const accents = [theme.color4, theme.colorCorrect, theme.colorWarn];
 		return {
-			accents,
+			// Notebooks without a colour of their own.
+			defaultAccent: theme.color4,
 			...StyleSheet.create({
 				root: { flex: 1, backgroundColor: theme.appearance === ThemeAppearance.Light ? theme.oddBackgroundColor : theme.backgroundColor2 },
 				content: { gap: 20, paddingTop: 18, paddingBottom: 96 },
@@ -225,8 +226,8 @@ const HomeScreen: React.FC<Props> = props => {
 		</Pressable>
 	));
 
-	const folderTiles = data?.folders.map(({ folder, noteCount }, index) => {
-		const accent = styles.accents[index % styles.accents.length];
+	const folderTiles = data?.folders.map(({ folder, noteCount }) => {
+		const accent = folderColor(folder) || styles.defaultAccent;
 		return <Pressable
 			key={folder.id}
 			accessibilityRole='button'

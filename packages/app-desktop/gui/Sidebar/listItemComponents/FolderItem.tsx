@@ -48,6 +48,9 @@ interface FolderItemProps {
 	shareId: string;
 	isPublished: boolean;
 	selectionState: ItemSelectionState;
+	// Fork: the notebook's colour, and whether any notebook has one (so that titles stay aligned).
+	folderColor: string;
+	showFolderColor: boolean;
 
 	index: number;
 	itemCount: number;
@@ -111,6 +114,7 @@ function FolderItem(props: FolderItemProps) {
 					});
 				}}
 			>
+				{props.showFolderColor ? <span className={`folder-color-dot ${props.folderColor ? '' : '-empty'}`} style={{ '--folder-color': props.folderColor } as React.CSSProperties}/> : null}
 				{doRenderFolderIcon()}<StyledSpanFix className="title">{folderTitle}</StyledSpanFix>
 				{publishedIcon}{shareIcon} <NoteCount count={noteCount}/>
 			</StyledListItemAnchor>

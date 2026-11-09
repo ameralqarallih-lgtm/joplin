@@ -106,6 +106,17 @@ With a Workbench theme, both apps also get the Studio Home layout. Upstream's th
   - `HomeView/` is the Home page, `NoteOutline/` the headings and backlinks beside the editor, and `SidebarPinned/` the pinned notes at the top of the sidebar.
 - **Mobile.** The app starts on [HomeScreen.tsx](packages/app-mobile/components/screens/Home/HomeScreen.tsx), with a bottom bar ([WorkbenchTabBar.tsx](packages/app-mobile/components/screens/Home/WorkbenchTabBar.tsx)) on Home, the note list and Tags. The note list gets All / To-dos / Pinned filters ([NoteListFilterBar.tsx](packages/app-mobile/components/screens/Notes/NoteListFilterBar.tsx)), and the note menu has Pin / Unpin.
 
+### Notebook colours
+
+A notebook's colour lives in its user data under `org.inkbench` ([folderColor.ts](packages/lib/models/utils/folderColor.ts), which also lists the presets), so it syncs and upstream clients ignore it. It shows in every theme:
+
+- **Desktop.** The Edit notebook dialog has the presets and a custom picker ([ColorPicker.tsx](packages/app-desktop/gui/Workbench/ColorPicker/ColorPicker.tsx)). The notebook context menu has a Colour submenu ([folderColorMenu.ts](packages/app-desktop/gui/Workbench/folderColorMenu.ts)). The sidebar, the note list title and the Home tiles show the colour.
+- **Mobile.** The notebook screen has the presets ([FolderColorPicker.tsx](packages/app-mobile/components/FolderColorPicker.tsx)), and keeps a custom colour chosen on desktop. The drawer and the Home tiles show the colour.
+
+### Drag and drop (desktop)
+
+With a Workbench theme, dragging notes or notebooks shows a tilted card under the pointer that names what is dragged and where a drop would land, and outlines the target ([DragGhost.tsx](packages/app-desktop/gui/Workbench/DragDrop/DragGhost.tsx)). The sidebar and the note list report the drag and the target through [dragFeedback.ts](packages/app-desktop/gui/Workbench/DragDrop/dragFeedback.ts). In every theme, the sidebar refuses impossible drops, such as a notebook into one of its own sub-notebooks ([dropTargets.ts](packages/app-desktop/gui/Workbench/DragDrop/dropTargets.ts)), opens a collapsed notebook when the pointer rests on it, and accepts drops on tags and on the "Notebooks" header, which upstream handled but never accepted.
+
 ## Spelling
 
 The pre-commit hook spellchecks new and changed files. Add the fork's unknown words to [packages/tools/cspell/dictionary-fork.txt](packages/tools/cspell/dictionary-fork.txt), not to upstream's `dictionary*.txt` files, which upstream appends to.

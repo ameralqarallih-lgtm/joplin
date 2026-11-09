@@ -19,6 +19,11 @@
 		color: var(--joplin-color);
 	}
 
+	> .folder-color-dot {
+		align-self: center;
+		margin-right: calc(-1 * var(--wb-space-1));
+	}
+
 	> .count {
 		flex: 0 0 auto;
 		font-size: var(--wb-font-size-sm);

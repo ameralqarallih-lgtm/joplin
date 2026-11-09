@@ -1,0 +1,170 @@
+// Fork: the drag preview card and the drop target outline (DragGhost.tsx).
+
+@keyframes wb-drag-lift {
+	from {
+		transform: rotate(0deg) scale(0.92);
+		opacity: 0;
+	}
+}
+
+@keyframes wb-drop-land {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--joplin-color4) 45%, transparent);
+	}
+
+	100% {
+		box-shadow: 0 0 0 10px transparent;
+	}
+}
+
+.drag-ghost {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10001;
+	pointer-events: none;
+	visibility: hidden;
+	will-change: transform;
+
+	&.-positioned {
+		visibility: visible;
+	}
+
+	> .card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		max-width: 260px;
+		padding: 7px 11px;
+		border: 1px solid var(--wb-border-color);
+		border-radius: var(--wb-radius-lg);
+		background-color: var(--joplin-background-color);
+		box-shadow: 0 2px 4px var(--joplin-shadow-color), 0 12px 28px var(--joplin-shadow-color);
+		font-size: var(--wb-font-size);
+		color: var(--joplin-color);
+		transform: rotate(-3deg);
+		transform-origin: 20% 50%;
+		animation: wb-drag-lift 180ms cubic-bezier(0.2, 0.9, 0.3, 1.25);
+		transition: transform 180ms cubic-bezier(0.2, 0.9, 0.3, 1.25), border-color 120ms, opacity 160ms;
+
+		// More than one item: cards fanned out behind the top one.
+		&.-stack::before, &.-stack::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			border: 1px solid var(--wb-border-color);
+			border-radius: inherit;
+			background-color: var(--joplin-background-color);
+		}
+
+		&.-stack::before {
+			transform: rotate(4deg) translate(3px, 2px);
+		}
+
+		&.-stack::after {
+			transform: rotate(8deg) translate(6px, 4px);
+			opacity: 0.6;
+		}
+	}
+
+	.item, .target {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		min-width: 0;
+	}
+
+	.item > .title {
+		overflow: hidden;
+		font-weight: 500;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.icon {
+		flex-shrink: 0;
+		font-size: var(--wb-icon-sm);
+		color: var(--wb-icon-color);
+	}
+
+	.target {
+		font-size: var(--wb-font-size-sm);
+		color: var(--joplin-color4);
+
+		> .icon {
+			color: inherit;
+		}
+	}
+
+	// Over a target, the card straightens a little, as if about to be put down.
+	&.-over-target > .card {
+		transform: rotate(-1deg) scale(0.98);
+		border-color: color-mix(in srgb, var(--joplin-color4) 55%, transparent);
+	}
+
+	&.-blocked > .card {
+		transform: rotate(-3deg);
+
+		.target {
+			color: var(--joplin-color-error, #d64545);
+		}
+	}
+
+	&.-dropped {
+		transition: transform 240ms cubic-bezier(0.3, 0.7, 0.2, 1);
+
+		> .card {
+			transform: rotate(0deg) scale(0.5);
+			opacity: 0;
+			transition: transform 240ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 240ms ease-in;
+		}
+	}
+
+	&.-cancelled > .card {
+		transform: rotate(0deg) scale(0.9);
+		opacity: 0;
+		transition: transform 150ms ease-in, opacity 150ms ease-in;
+	}
+}
+
+// A note title's tooltip, shown on hover just before the drag, would otherwise stay on screen.
+body:has(.drag-ghost) .note-title-tooltip {
+	display: none;
+}
+
+.drop-highlight {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	box-sizing: border-box;
+	border: 1.5px solid var(--joplin-color4);
+	border-radius: var(--wb-radius);
+	background-color: color-mix(in srgb, var(--joplin-color4) 12%, transparent);
+	pointer-events: none;
+	// Slides from one target to the next.
+	transition: transform 140ms cubic-bezier(0.2, 0.8, 0.2, 1), width 140ms, height 140ms;
+
+	&.-blocked {
+		border-style: dashed;
+		border-color: color-mix(in srgb, var(--joplin-color) 30%, transparent);
+		background-color: transparent;
+	}
+
+	&.-landed {
+		animation: wb-drop-land 300ms ease-out;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.drag-ghost > .card, .drag-ghost.-over-target > .card, .drag-ghost.-blocked > .card {
+		transform: none;
+		animation: none;
+	}
+
+	.drop-highlight {
+		transition: none;
+	}
+}

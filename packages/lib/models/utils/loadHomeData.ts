@@ -72,7 +72,7 @@ const loadTodos = async (count: number, now: number) => {
 
 const loadFolders = async (includeCompletedTodos: boolean) => {
 	const folders = (await Folder.all({
-		fields: ['id', 'title', 'parent_id', 'icon', 'deleted_time', 'encryption_applied'],
+		fields: ['id', 'title', 'parent_id', 'icon', 'deleted_time', 'encryption_applied', 'user_data'],
 		order: [{ by: 'title', dir: 'ASC' }],
 	})).filter(folder => !folder.deleted_time);
 	await Folder.addNoteCounts(folders, includeCompletedTodos);

@@ -15,6 +15,7 @@ interface Props {
 	tag: TagsWithNoteCountEntity;
 	label: string;
 	onTagDrop: React.DragEventHandler<HTMLElement>;
+	onTagDragOver: React.DragEventHandler<HTMLElement>;
 	onContextMenu: React.MouseEventHandler<HTMLElement>;
 	onClick: (event: ItemClickEvent)=> void;
 
@@ -43,6 +44,7 @@ const TagItem = (props: Props) => {
 			className={`list-item-container ${selectionState.selected ? 'selected' : ''}`}
 			highlightOnHover={true}
 			onDrop={props.onTagDrop}
+			onDragOver={props.onTagDragOver}
 			onContextMenu={props.onContextMenu}
 			data-id={tag.id}
 			data-tag-id={tag.id}

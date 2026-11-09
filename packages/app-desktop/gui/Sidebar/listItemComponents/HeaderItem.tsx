@@ -17,6 +17,7 @@ interface Props {
 	item: HeaderListItem;
 	selectionState: ItemSelectionState;
 	onDrop: React.DragEventHandler|null;
+	onDragOver: React.DragEventHandler|null;
 	index: number;
 	itemCount: number;
 }
@@ -57,6 +58,7 @@ const HeaderItem: React.FC<Props> = props => {
 			className='sidebar-header-container'
 			{...item.extraProps}
 			onDrop={props.onDrop}
+			onDragOver={props.onDragOver}
 		>
 			<StyledHeader
 				onClick={onClick}

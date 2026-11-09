@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FolderEntity, FolderIcon, FolderIconType } from '@joplin/lib/services/database/types';
 import { themeStyle } from '../global-style';
 import Folder from '@joplin/lib/models/Folder';
@@ -9,6 +9,7 @@ import { _ } from '@joplin/lib/locale';
 import useOnLongPressProps from '../../utils/hooks/useOnLongPressProps';
 import SideMenuItem, { ToggleState } from './SideMenuItem';
 import SidebarIcon from './SidebarIcon';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 
 type FolderEventHandler = (folder: FolderEntity)=> void;
 interface FolderItemProps {
@@ -19,6 +20,8 @@ interface FolderItemProps {
 	selected: boolean;
 	depth: number;
 	alwaysShowFolderIcons: boolean;
+	// Fork: if any notebook has a colour, every notebook keeps room for its colour dot, so that titles stay aligned.
+	showFolderColor: boolean;
 
 	onPress: FolderEventHandler;
 	onTogglePress: FolderEventHandler;
@@ -47,6 +50,14 @@ const FolderItem: React.FC<FolderItemProps> = props => {
 
 			icon: {
 				color: theme.color,
+			},
+			colorDot: {
+				width: 8,
+				height: 8,
+				borderRadius: 4,
+			},
+			colorDotBeforeIcon: {
+				marginRight: theme.marginSmall,
 			},
 		});
 	}, [props.themeId]);
@@ -106,12 +117,14 @@ const FolderItem: React.FC<FolderItemProps> = props => {
 		toggleState = collapsed ? ToggleState.Collapsed : ToggleState.Expanded;
 	}
 
+	const icon = folderIcon && <SidebarIcon icon={folderIcon} style={textStyle} />;
+	const color = folderColor(props.folder);
+	const colorDot = props.showFolderColor ? <View style={[styles.colorDot, icon && styles.colorDotBeforeIcon, { backgroundColor: color || 'transparent' }]}/> : null;
+
 	const currentProp = { 'aria-current': props.selected };
 	return (
 		<SideMenuItem
-			icon={
-				folderIcon && <SidebarIcon icon={folderIcon} style={textStyle} />
-			}
+			icon={colorDot || icon ? <>{colorDot}{icon}</> : null}
 			text={folderTitle}
 			textStyle={textStyle}
 			selected={props.selected}

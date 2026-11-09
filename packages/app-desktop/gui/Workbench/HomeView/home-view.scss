@@ -278,14 +278,6 @@
 	padding: 14px;
 	transition: box-shadow var(--wb-duration);
 
-	&:nth-child(3n + 2) {
-		--tile-accent: var(--joplin-color-correct);
-	}
-
-	&:nth-child(3n + 3) {
-		--tile-accent: var(--joplin-color-warn);
-	}
-
 	&:hover {
 		box-shadow: 0 0 0 1px color-mix(in srgb, var(--tile-accent) 50%, transparent);
 	}

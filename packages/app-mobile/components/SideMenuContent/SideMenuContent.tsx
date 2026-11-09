@@ -28,6 +28,7 @@ import { ALL_NOTES_FILTER_ID } from '@joplin/lib/reserved-ids';
 import SidebarIcon from './SidebarIcon';
 import SideMenuItem, { ToggleState } from './SideMenuItem';
 import BottomPanelActions from './BottomPanelActions';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 
 interface Props {
 	syncStarted: boolean;
@@ -94,6 +95,9 @@ const useStyles = (themeId: number) => {
 const SideMenuContentComponent = (props: Props) => {
 	const alwaysShowFolderIcons = useMemo(() => {
 		return Folder.shouldShowFolderIcons(props.folders);
+	}, [props.folders]);
+	const showFolderColors = useMemo(() => {
+		return props.folders.some(folder => !!folderColor(folder));
 	}, [props.folders]);
 	const styles_ = useStyles(props.themeId);
 
@@ -310,6 +314,7 @@ const SideMenuContentComponent = (props: Props) => {
 			selected={selected}
 			folder={folder}
 			alwaysShowFolderIcons={alwaysShowFolderIcons}
+			showFolderColor={showFolderColors}
 			onPress={folder_press}
 			onLongPress={folder_longPress}
 			onTogglePress={folder_togglePress}

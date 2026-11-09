@@ -8,15 +8,18 @@ import { stateUtils } from '@joplin/lib/reducer';
 import { getTrashFolderId } from '@joplin/lib/services/trash';
 import Folder from '@joplin/lib/models/Folder';
 import { TagEntity } from '@joplin/lib/services/database/types';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 import { AppState } from '../../../app.reducer';
 
 interface Props {
 	title: string;
 	noteCount: number;
+	color: string;
 }
 
 const NoteListTitle: React.FC<Props> = props => {
 	return <div className='note-list-title'>
+		{props.color ? <span className='folder-color-dot' style={{ '--folder-color': props.color } as React.CSSProperties}/> : null}
 		<span className='name' title={props.title}>{props.title}</span>
 		<span className='count'>{_n('%d note', '%d notes', props.noteCount, props.noteCount)}</span>
 	</div>;
@@ -44,7 +47,14 @@ const listTitle = (state: AppState, windowId: string) => {
 	return _('All notes');
 };
 
+const listColor = (state: AppState, windowId: string) => {
+	const windowState = stateUtils.windowStateById(state, windowId);
+	if (windowState.notesParentType !== 'Folder') return '';
+	return folderColor(state.folders.find(folder => folder.id === windowState.selectedFolderId));
+};
+
 export default connect((state: AppState, ownProps: OwnProps) => ({
 	title: listTitle(state, ownProps.windowId),
 	noteCount: stateUtils.windowStateById(state, ownProps.windowId).notes.length,
+	color: listColor(state, ownProps.windowId),
 }))(NoteListTitle);

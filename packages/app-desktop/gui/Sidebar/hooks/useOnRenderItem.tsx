@@ -32,6 +32,10 @@ import { focus } from '@joplin/lib/utils/focusHandler';
 import shim from '@joplin/lib/shim';
 import useOnItemClick from './useOnItemClick';
 import { ShareType, StateShare } from '@joplin/lib/services/share/reducer';
+import { DragKind, draggedIds, setDropTarget, startDrag } from '../../Workbench/DragDrop/dragFeedback';
+import { notebooksDropOutcome, notesDropOutcome } from '../../Workbench/DragDrop/dropTargets';
+import folderColorMenuItem from '../../Workbench/folderColorMenu';
+import { folderColor } from '@joplin/lib/models/utils/folderColor';
 
 const Menu = bridge().Menu;
 const MenuItem: typeof MenuItemType = bridge().MenuItem;
@@ -128,6 +132,16 @@ const useOnRenderItem = (props: Props) => {
 	selectedIndexesRef.current = props.selectedIndexes;
 	const itemsRef = useRef(props.listItems);
 	itemsRef.current = props.listItems;
+
+	// Fork: without this, tags never accepted the drop above.
+	const onTagDragOver_: DragEventHandler<HTMLElement> = useCallback(event => {
+		if (!event.dataTransfer.types.includes('text/x-jop-note-ids')) return;
+		event.preventDefault();
+		const tagId = event.currentTarget.getAttribute('data-tag-id');
+		const tagItem = itemsRef.current.find(item => item.kind === ListItemType.Tag && item.tag.id === tagId);
+		const title = tagItem?.kind === ListItemType.Tag ? tagItem.tag.title : '';
+		setDropTarget({ label: _('Add the tag %s', title), allowed: true }, event.currentTarget);
+	}, []);
 	const getSelectedIds = useCallback(() => {
 		return selectedIndexesRef.current.map(index => {
 			const item = itemsRef.current[index];
@@ -228,6 +242,10 @@ const useOnRenderItem = (props: Props) => {
 					// menu item applies to folders. For now, use a custom condition:
 					enabled: !whenClause.foldersIncludeReadOnly,
 				}));
+
+				// Fork: notebook colours
+				const folders: FolderEntity[] = itemIds.map(id => BaseModel.byId(foldersRef.current, id)).filter(folder => !!folder);
+				menu.append(new MenuItem({ ...folderColorMenuItem(folders), enabled: !whenClause.foldersIncludeReadOnly }));
 			}
 
 			if (isDecryptedFolder && itemIds.length === 1) {
@@ -337,12 +355,32 @@ const useOnRenderItem = (props: Props) => {
 		event.dataTransfer.setDragImage(new Image(), 1, 1);
 		event.dataTransfer.clearData();
 		event.dataTransfer.setData('text/x-jop-folder-ids', JSON.stringify(itemIds));
+		startDrag({ kind: DragKind.Folders, ids: itemIds });
 	}, [getSelectedIds]);
 
+	// Fork: the notebook being hovered during a drag, to open it when the pointer rests on it.
+	const dragHoverRef = useRef({ folderId: '', since: 0 });
+
+	// Fork: refuses drops that can't happen, such as a notebook into itself, and tells the drag preview where a drop
+	// would go.
 	const onFolderDragOver_: ItemDragListener = useCallback(event => {
-		if (event.dataTransfer.types.indexOf('text/x-jop-note-ids') >= 0) event.preventDefault();
-		if (event.dataTransfer.types.indexOf('text/x-jop-folder-ids') >= 0) event.preventDefault();
-	}, []);
+		const folderId = event.currentTarget.getAttribute('data-folder-id') ?? '';
+		const types = event.dataTransfer.types;
+		let outcome = null;
+		if (types.includes('text/x-jop-note-ids')) outcome = notesDropOutcome(folderId, foldersRef.current);
+		if (types.includes('text/x-jop-folder-ids')) outcome = notebooksDropOutcome(draggedIds(DragKind.Folders), folderId, foldersRef.current);
+		if (!outcome) return;
+		if (outcome.allowed) event.preventDefault();
+		setDropTarget(outcome, event.currentTarget);
+
+		const hover = dragHoverRef.current;
+		if (hover.folderId !== folderId) {
+			dragHoverRef.current = { folderId, since: Date.now() };
+		} else if (folderId && event.currentTarget.getAttribute('aria-expanded') === 'false' && Date.now() - hover.since > 700) {
+			hover.since = Infinity;
+			props.dispatch({ type: 'FOLDER_SET_COLLAPSED', id: folderId, collapsed: false });
+		}
+	}, [props.dispatch]);
 
 	const onFolderDrop_: ItemDragListener = useCallback(async event => {
 		const folderId = event.currentTarget.getAttribute('data-folder-id');
@@ -386,6 +424,10 @@ const useOnRenderItem = (props: Props) => {
 	const showFolderIcons = useMemo(() => {
 		return Folder.shouldShowFolderIcons(props.folders);
 	}, [props.folders]);
+	// Fork: likewise, if one notebook has a colour, every notebook keeps room for its colour dot.
+	const showFolderColors = useMemo(() => {
+		return props.folders.some(folder => !!folderColor(folder));
+	}, [props.folders]);
 	const publishedFolderIds = useMemo(() => {
 		const output = new Set(props.shares.filter(share => share.type === ShareType.PublishedFolder).map(share => share.folder_id));
 		for (const folder of props.folders) {
@@ -427,6 +469,7 @@ const useOnRenderItem = (props: Props) => {
 				selectionState={selectionState}
 				onClick={onItemClick}
 				onTagDrop={onTagDrop_}
+				onTagDragOver={onTagDragOver_}
 				onContextMenu={onItemContextMenu}
 				label={item.label}
 				tag={tag}
@@ -471,6 +514,8 @@ const useOnRenderItem = (props: Props) => {
 				isPublished={publishedFolderIds.has(folder.id)}
 				parentId={folder.parent_id}
 				showFolderIcon={showFolderIcons}
+				folderColor={folderColor(folder)}
+				showFolderColor={showFolderColors}
 				index={index}
 				itemCount={itemCount}
 			/>;
@@ -481,6 +526,7 @@ const useOnRenderItem = (props: Props) => {
 				item={item}
 				selectionState={selectionState}
 				onDrop={item.supportsFolderDrop ? onFolderDrop_ : null}
+				onDragOver={item.supportsFolderDrop ? onFolderDragOver_ : null}
 				index={index}
 				itemCount={itemCount}
 			/>;
@@ -520,10 +566,12 @@ const useOnRenderItem = (props: Props) => {
 		onFolderToggleClick_,
 		onItemContextMenu,
 		onTagDrop_,
+		onTagDragOver_,
 		props.collapsedFolderIds,
 		props.folders,
 		publishedFolderIds,
 		showFolderIcons,
+		showFolderColors,
 		props.selectedIndex,
 		props.selectedIndexes,
 		props.containerRef,

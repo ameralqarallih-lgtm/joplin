@@ -6,6 +6,8 @@ import Setting from '@joplin/lib/models/Setting';
 import saveDisplayedOrderAsCustomOrder from '@joplin/lib/services/sortOrder/saveDisplayedOrderAsCustomOrder';
 import { Size } from '@joplin/utils/types';
 import { ItemFlow } from '@joplin/lib/services/plugins/api/noteListType';
+import { _ } from '@joplin/lib/locale';
+import { DragKind, setDropTarget, startDrag } from '../../Workbench/DragDrop/dragFeedback';
 
 const useDragAndDrop = (
 	parentFolderIsReadOnly: boolean,
@@ -28,12 +30,20 @@ const useDragAndDrop = (
 		setDragOverTargetNoteIndex(null);
 	}, []);
 
+	// Fork: hides the insertion line once the pointer leaves the list, so that it doesn't suggest the notes would
+	// land there.
+	const onGlobalDragOver = useCallback((event: DragEvent) => {
+		if (!listRef.current?.contains(event.target as Node)) setDragOverTargetNoteIndex(null);
+	}, [listRef]);
+
 	useEffect(() => {
 		document.addEventListener('dragend', onGlobalDrop);
+		document.addEventListener('dragover', onGlobalDragOver);
 		return () => {
 			document.removeEventListener('dragend', onGlobalDrop);
+			document.removeEventListener('dragover', onGlobalDragOver);
 		};
-	}, [onGlobalDrop]);
+	}, [onGlobalDrop, onGlobalDragOver]);
 
 	const onDragStart: DragEventHandler = useCallback(event => {
 		if (parentFolderIsReadOnly) return false;
@@ -56,6 +66,7 @@ const useDragAndDrop = (
 		event.dataTransfer.setDragImage(new Image(), 1, 1);
 		event.dataTransfer.clearData();
 		event.dataTransfer.setData('text/x-jop-note-ids', JSON.stringify(noteIds));
+		startDrag({ kind: DragKind.Notes, ids: noteIds });
 		return true;
 	}, [parentFolderIsReadOnly, selectedNoteIds]);
 
@@ -81,11 +92,13 @@ const useDragAndDrop = (
 
 		if (dt.types.indexOf('text/x-jop-note-ids') >= 0) {
 			event.preventDefault();
+			// Fork: for the drag preview. Dropping into a list that isn't in custom order offers to switch to it.
+			setDropTarget({ label: noteSortOrder === 'order' ? _('Move here') : _('Move here (switches to custom order)'), allowed: true });
 			const newIndex = dragTargetNoteIndex(event);
 			if (dragOverTargetNoteIndex === newIndex) return;
 			setDragOverTargetNoteIndex(newIndex);
 		}
-	}, [notesParentType, dragTargetNoteIndex, dragOverTargetNoteIndex, selectedFolderInTrash]);
+	}, [notesParentType, dragTargetNoteIndex, dragOverTargetNoteIndex, selectedFolderInTrash, noteSortOrder]);
 
 	const onDrop: DragEventHandler = useCallback(async (event) => {
 		const dt = event.dataTransfer;
