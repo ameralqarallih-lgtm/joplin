@@ -1,4 +1,4 @@
-// Fork: the Workbench status bar: where the open note is, the editor in use and the note's word count.
+// Fork: the Workbench status bar: where the open note is, sync activity, the editor in use and the note's word count.
 
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -8,9 +8,10 @@ import Folder from '@joplin/lib/models/Folder';
 import { FolderEntity, NoteEntity } from '@joplin/lib/services/database/types';
 import { AppState } from '../../../app.reducer';
 import useSavedNoteBody from '../utils/useSavedNoteBody';
+import syncActivity, { SyncActivityState } from './syncActivity';
 const Countable = require('@joplin/lib/countable/Countable');
 
-interface Props {
+interface Props extends SyncActivityState {
 	homeTabActive: boolean;
 	note: NoteEntity|null;
 	folders: FolderEntity[];
@@ -30,10 +31,15 @@ const StatusBar: React.FC<Props> = props => {
 	const wordCount = useMemo(() => countWords(body), [body]);
 
 	const location = noteId ? Folder.folderPathString(props.folders, props.note.parent_id) : _('Home');
+	const activity = syncActivity(props);
 
 	return <footer className='workbench-status-bar'>
 		<span className='location'>{location}</span>
 		<span className='spacer'></span>
+		{activity ? <span className='item sync-activity' title={activity.details.join('\n')} role='status'>
+			<i className='icon fas fa-sync-alt' aria-hidden={true}></i>
+			{activity.text}
+		</span> : null}
 		{noteId ? <span className='item'>{props.editorCodeView ? _('Markdown') : _('Rich Text')}</span> : null}
 		{noteId && wordCount !== null ? <span className='item'>{_n('%d word', '%d words', wordCount, wordCount)}</span> : null}
 	</footer>;
@@ -46,5 +52,9 @@ export default connect((state: AppState) => {
 		note: noteId ? state.notes.find(note => note.id === noteId) ?? null : null,
 		folders: state.folders,
 		editorCodeView: state.editorCodeView,
+		syncStarted: state.syncStarted,
+		syncReport: state.syncReport,
+		decryptionWorker: state.decryptionWorker,
+		resourceFetcher: state.resourceFetcher,
 	};
 })(StatusBar);

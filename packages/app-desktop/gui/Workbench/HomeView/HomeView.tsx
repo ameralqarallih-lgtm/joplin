@@ -15,7 +15,7 @@ import Folder from '@joplin/lib/models/Folder';
 import formatListDate from '@joplin/lib/services/noteList/formatListDate';
 import formatTodoDue from '@joplin/lib/services/home/formatTodoDue';
 import { ALL_NOTES_FILTER_ID } from '@joplin/lib/reserved-ids';
-import { FolderEntity, NoteEntity } from '@joplin/lib/services/database/types';
+import { FolderEntity, NoteEntity, TagEntity } from '@joplin/lib/services/database/types';
 import FolderIconBox from '../../FolderIconBox';
 import { folderColor } from '@joplin/lib/models/utils/folderColor';
 import { AppState } from '../../../app.reducer';
@@ -25,6 +25,7 @@ interface Props {
 	visible: boolean;
 	folders: FolderEntity[];
 	pinnedNotes: NoteEntity[];
+	tags: TagWithCount[];
 	includeCompletedTodos: boolean;
 	dispatch: Dispatch;
 }
@@ -167,6 +168,26 @@ const FolderSection: React.FC<{ data: HomeData; dispatch: Dispatch }> = ({ data,
 	</section>;
 };
 
+type TagWithCount = TagEntity & { note_count?: number };
+
+// The tags as chips, each opening the notes with that tag.
+const TagSection: React.FC<{ tags: TagWithCount[]; dispatch: Dispatch }> = ({ tags, dispatch }) => {
+	if (!tags.length) return null;
+
+	const sorted = tags.slice().sort((a, b) => (a.title ?? '').localeCompare(b.title ?? '', undefined, { sensitivity: 'base' }));
+	const chips = sorted.map(tag => <button key={tag.id} type='button' className='tag-chip' onClick={() => dispatch({ type: 'TAG_SELECT', id: tag.id })}>
+		<span className='name'>{`#${tag.title}`}</span>
+		{tag.note_count ? <span className='count'>{tag.note_count}</span> : null}
+	</button>);
+
+	return <section className='home-section' aria-labelledby='home-tags'>
+		<div className='header'>
+			<h2 className='title' id='home-tags'>{_('Tags')}</h2>
+		</div>
+		<div className='tag-chips'>{chips}</div>
+	</section>;
+};
+
 const HomeView: React.FC<Props> = props => {
 	const data = useHomeData(props.visible, props.includeCompletedTodos);
 	if (!props.visible) return null;
@@ -186,6 +207,7 @@ const HomeView: React.FC<Props> = props => {
 					<PinnedPanel pinnedNotes={props.pinnedNotes} folders={props.folders}/>
 				</div>
 				<FolderSection data={data} dispatch={props.dispatch}/>
+				<TagSection tags={props.tags} dispatch={props.dispatch}/>
 			</> : null}
 		</div>
 	</div>;
@@ -194,5 +216,6 @@ const HomeView: React.FC<Props> = props => {
 export default connect((state: AppState) => ({
 	folders: state.folders,
 	pinnedNotes: state.pinnedNotes,
+	tags: state.tags as TagWithCount[],
 	includeCompletedTodos: state.settings.showCompletedTodos,
 }))(HomeView);

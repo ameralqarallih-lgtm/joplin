@@ -321,3 +321,34 @@
 		color: var(--joplin-color3);
 	}
 }
+
+.tag-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wb-space-3);
+}
+
+.tag-chip {
+	@extend %home-plain-button;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wb-space-3);
+	height: 30px;
+	padding: 0 12px;
+	border: 1px solid var(--wb-border-color);
+	border-radius: 15px;
+	background-color: var(--wb-surface-raised);
+	font-size: var(--wb-font-size);
+	transition: border-color var(--wb-duration), color var(--wb-duration);
+
+	&:hover {
+		border-color: color-mix(in srgb, var(--joplin-color4) 50%, transparent);
+		color: var(--joplin-color4);
+	}
+
+	> .count {
+		font-size: var(--wb-font-size-xs);
+		font-variant-numeric: tabular-nums;
+		color: var(--joplin-color-faded);
+	}
+}

@@ -645,6 +645,8 @@ packages/app-desktop/gui/Workbench/Shell/StatusBar.js
 packages/app-desktop/gui/Workbench/Shell/TopBar.js
 packages/app-desktop/gui/Workbench/Shell/WorkbenchShell.js
 packages/app-desktop/gui/Workbench/Shell/shellSize.js
+packages/app-desktop/gui/Workbench/Shell/syncActivity.test.js
+packages/app-desktop/gui/Workbench/Shell/syncActivity.js
 packages/app-desktop/gui/Workbench/SidebarHome/SidebarHome.js
 packages/app-desktop/gui/Workbench/SidebarPinned/SidebarPinned.js
 packages/app-desktop/gui/Workbench/WorkbenchEditorArea.js

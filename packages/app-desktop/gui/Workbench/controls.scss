@@ -221,6 +221,39 @@ $text-fields: 'input:is([type=text], [type=search], [type=password], [type=numbe
 		accent-color: var(--joplin-color4);
 	}
 
+	// Tables on app screens, such as the keyboard shortcuts and the note attachments. Notes render in their own
+	// frame, and the Markdown editor's tables are left alone.
+	table:not(.cm-editor *) {
+		border-collapse: separate;
+		border-spacing: 0;
+		overflow: hidden;
+		border: 1px solid var(--wb-border-color-soft);
+		border-radius: var(--wb-radius-lg);
+
+		th, td {
+			padding: 7px 12px;
+			border: none;
+			border-bottom: 1px solid var(--wb-border-color-soft);
+		}
+
+		th {
+			background-color: var(--wb-surface-sunken);
+			font-size: var(--wb-font-size-xs) !important;
+			font-weight: 600;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			color: var(--joplin-color-faded) !important;
+		}
+
+		tbody tr:last-child td {
+			border-bottom: none;
+		}
+
+		tbody tr:hover td {
+			background-color: var(--wb-hover-bg);
+		}
+	}
+
 	// Tag pills under the note
 	.tag-list button {
 		padding: 2px 9px !important;

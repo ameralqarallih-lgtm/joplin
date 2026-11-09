@@ -231,4 +231,29 @@
 	> .item {
 		flex: 0 0 auto;
 	}
+
+	> .sync-activity {
+		display: flex;
+		align-items: center;
+		gap: var(--wb-space-2);
+		color: var(--joplin-color4);
+		cursor: default;
+
+		> .icon {
+			font-size: var(--wb-icon-sm);
+			animation: wb-spin 1.2s linear infinite;
+		}
+	}
+}
+
+@keyframes wb-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.workbench-status-bar > .sync-activity > .icon {
+		animation: none;
+	}
 }
