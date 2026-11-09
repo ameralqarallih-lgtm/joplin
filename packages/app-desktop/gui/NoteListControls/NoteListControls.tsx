@@ -16,9 +16,11 @@ import { Breakpoints } from '../NoteList/utils/types';
 import { stateUtils } from '@joplin/lib/reducer';
 import { WindowIdContext } from '../NewWindowOrIFrame';
 import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
+import NoteListTitle from '../Workbench/NoteListTitle/NoteListTitle';
 
 interface Props {
 	showNewNoteButtons: boolean;
+	workbench: boolean;
 	sortOrderButtonsVisible: boolean;
 	sortOrderField: string;
 	sortOrderReverse: boolean;
@@ -248,7 +250,7 @@ function NoteListControls(props: Props) {
 	const windowId = useContext(WindowIdContext);
 	return (
 		<StyledRoot ref={noteControlsRef} padding={props.padding} buttonVerticalGap={props.buttonVerticalGap}>
-			{renderNewNoteButtons()}
+			{props.workbench ? <NoteListTitle windowId={windowId}/> : renderNewNoteButtons()}
 			<BottomRow ref={searchAndSortRef} className="search-and-sort">
 				<SearchBar inputRef={searchBarRef} windowId={windowId}/>
 				{showsSortOrderButtons() &&
@@ -289,6 +291,7 @@ const mapStateToProps = (state: AppState, ownProps: ConnectProps) => {
 	return {
 		// Fork: Workbench themes have the New note buttons in the top bar
 		showNewNoteButtons: hasFolderForNewNotes && !isWorkbenchTheme(state.settings.theme),
+		workbench: isWorkbenchTheme(state.settings.theme),
 		newNoteButtonEnabled: CommandService.instance().isEnabled('newNote', whenClauseContext),
 		newTodoButtonEnabled: CommandService.instance().isEnabled('newTodo', whenClauseContext),
 		sortOrderButtonsVisible: state.settings['notes.sortOrder.buttonsVisible'],

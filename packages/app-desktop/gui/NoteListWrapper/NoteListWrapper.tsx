@@ -57,7 +57,7 @@ const getTextWidth = (newNoteButtonElement: Element, text: string): number => {
 
 // Even though these calculations mostly concern the NoteListControls component, we do them here
 // because we need to know the height of that control to calculate the note list height.
-const useNoteListControlsBreakpoints = (width: number, newNoteButtonElement: Element, selectedFolderId: string, newNoteButtonsHidden: boolean) => {
+const useNoteListControlsBreakpoints = (width: number, newNoteButtonElement: Element, selectedFolderId: string, workbench: boolean) => {
 	const [dynamicBreakpoints, setDynamicBreakpoints] = useState<Breakpoints>({ Sm: BaseBreakpoint.Sm, Md: BaseBreakpoint.Md, Lg: BaseBreakpoint.Lg, Xl: BaseBreakpoint.Xl });
 	const previousWidth = usePrevious(width);
 	const widthHasChanged = width !== previousWidth;
@@ -87,8 +87,8 @@ const useNoteListControlsBreakpoints = (width: number, newNoteButtonElement: Ele
 		return index === -1 ? dynamicBreakpoints.Xl : Object.values(dynamicBreakpoints)[index];
 	}, [width, dynamicBreakpoints]);
 
-	// Fork: without the New note buttons (Workbench themes), the search field and sort buttons fit on one line
-	const lineCount = breakpoint !== dynamicBreakpoints.Xl && !newNoteButtonsHidden ? 2 : 1;
+	// Fork: Workbench themes always show the list's title on the first line, and the search field below it
+	const lineCount = breakpoint !== dynamicBreakpoints.Xl || workbench ? 2 : 1;
 
 	return { breakpoint, dynamicBreakpoints, lineCount };
 };

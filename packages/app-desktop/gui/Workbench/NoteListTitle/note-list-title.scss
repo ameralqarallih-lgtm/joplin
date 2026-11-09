@@ -1,0 +1,27 @@
+// Fork: the title above the Workbench note list, see NoteListTitle.tsx. As tall as a small button, which
+// NoteListWrapper assumes when it sizes the list.
+
+.note-list-title {
+	display: flex;
+	align-items: baseline;
+	gap: var(--wb-space-3);
+	height: 26px;
+	min-width: 0;
+	padding: 0 2px;
+
+	> .name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: var(--wb-font-size-lg);
+		font-weight: 600;
+		line-height: 26px;
+		color: var(--joplin-color);
+	}
+
+	> .count {
+		flex: 0 0 auto;
+		font-size: var(--wb-font-size-sm);
+		color: var(--joplin-color-faded);
+	}
+}
