@@ -92,6 +92,18 @@ The fork's look is called Workbench: cool grey surfaces, a cobalt accent, compac
 
 Restyle components in the layer rather than editing upstream's files. That keeps upstream merges clean.
 
+### Layout ("Studio Home")
+
+With a Workbench theme, both apps also get the Studio Home layout. Upstream's themes keep upstream's layout.
+
+- **Pinned notes.** A pin lives in the note's user data under `org.inkbench` ([pinnedNotes.ts](packages/lib/models/utils/pinnedNotes.ts)), so it syncs and upstream clients ignore it. `state.pinnedNotes` reloads only when a pin may have changed ([handlePinnedNotesAction.ts](packages/lib/services/pinnedNotes/handlePinnedNotesAction.ts)). The `togglePinNote` command pins and unpins.
+- **Home.** [loadHomeData.ts](packages/lib/models/utils/loadHomeData.ts) loads the recent notes, open to-dos (plus those ticked in the last day), pinned notes and top-level notebooks for both apps.
+- **Desktop.** Everything is under [gui/Workbench](packages/app-desktop/gui/Workbench):
+  - `Shell/` holds the top bar (search opens Goto Anything, sync status, New to-do, New note), the icon rail and the status bar. `MainScreen` takes their room off the layout's size ([shellSize.ts](packages/app-desktop/gui/Workbench/Shell/shellSize.ts)).
+  - `NoteTabs/` puts a Home tab and the open notes above the editor. A note opened from the list goes into a preview tab (italic) until it is edited or its tab is double-clicked ([noteTabsReducer.ts](packages/app-desktop/gui/Workbench/NoteTabs/noteTabsReducer.ts)). The app starts on Home. A plain `NOTE_SELECT` doesn't leave Home, because the app selects notes by itself when a notebook opens; the note list dispatches `WORKBENCH_HOME_HIDE` when the user opens a note.
+  - `HomeView/` is the Home page, `NoteOutline/` the headings and backlinks beside the editor, and `SidebarPinned/` the pinned notes at the top of the sidebar.
+- **Mobile.** The app starts on [HomeScreen.tsx](packages/app-mobile/components/screens/Home/HomeScreen.tsx), with a bottom bar ([WorkbenchTabBar.tsx](packages/app-mobile/components/screens/Home/WorkbenchTabBar.tsx)) on Home, the note list and Tags. The note list gets All / To-dos / Pinned filters ([NoteListFilterBar.tsx](packages/app-mobile/components/screens/Notes/NoteListFilterBar.tsx)), and the note menu has Pin / Unpin.
+
 ## Spelling
 
 The pre-commit hook spellchecks new and changed files. Add the fork's unknown words to [packages/tools/cspell/dictionary-fork.txt](packages/tools/cspell/dictionary-fork.txt), not to upstream's `dictionary*.txt` files, which upstream appends to.
