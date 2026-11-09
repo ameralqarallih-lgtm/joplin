@@ -1,0 +1,29 @@
+// Fork: styles for SidebarFilter.tsx, in every theme. Colours derive from the sidebar text colour,
+// so they work on both dark and light sidebars.
+
+.sidebar-filter {
+	flex: 0 0 auto;
+	padding: 10px 12px 4px;
+
+	> input {
+		box-sizing: border-box;
+		width: 100%;
+		height: 26px;
+		padding: 0 8px;
+		border: 1px solid color-mix(in srgb, var(--joplin-color2) 22%, transparent);
+		border-radius: 4px;
+		background-color: color-mix(in srgb, var(--joplin-color2) 6%, transparent);
+		color: var(--joplin-color2);
+		font-family: var(--joplin-font-family);
+		font-size: var(--joplin-font-size);
+
+		&::placeholder {
+			color: var(--joplin-color-faded2);
+		}
+
+		&:focus {
+			outline: 1px solid var(--joplin-focus-outline-color);
+			border-color: transparent;
+		}
+	}
+}

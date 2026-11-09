@@ -3,6 +3,7 @@
 
 // The fork's own components, styled for every theme.
 @use '../NoteEditor/NoteTitle/note-breadcrumb.scss';
+@use '../Sidebar/sidebar-filter.scss';
 
 :root {
 	--wb-radius-sm: 3px;

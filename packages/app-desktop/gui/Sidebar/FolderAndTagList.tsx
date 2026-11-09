@@ -37,6 +37,8 @@ interface Props {
 	collapsedFolderIds: string[];
 	folderHeaderIsExpanded: boolean;
 	tagHeaderIsExpanded: boolean;
+	// Fork: text from the sidebar filter box (SidebarFilter.tsx).
+	filter?: string;
 }
 
 

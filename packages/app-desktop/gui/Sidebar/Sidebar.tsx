@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import { themeStyle } from '@joplin/lib/theme';
 import { Dispatch } from 'redux';
 import FolderAndTagList from './FolderAndTagList';
+import SidebarFilter from './SidebarFilter';
+import { useState } from 'react';
 
 
 interface Props {
@@ -29,6 +31,8 @@ const syncCompletedWithoutError = (syncReport: ProgressReport) => {
 };
 
 const SidebarComponent = (props: Props) => {
+	const [filter, setFilter] = useState('');
+
 	const renderSynchronizeButton = (type: string) => {
 		const label = type === 'sync' ? _('Synchronise') : _('Cancel');
 		const nothingToSync = type === 'sync' && !props.syncPending && syncCompletedWithoutError(props.syncReport);
@@ -99,7 +103,8 @@ const SidebarComponent = (props: Props) => {
 
 	return (
 		<StyledRoot className='sidebar _scrollbar2' role='navigation' aria-label={_('Sidebar')}>
-			<div style={{ flex: 1 }}><FolderAndTagList/></div>
+			<SidebarFilter value={filter} onChange={setFilter}/>
+			<div style={{ flex: 1 }}><FolderAndTagList filter={filter}/></div>
 			<div style={{ flex: 0, padding: theme.mainPadding }}>
 				{syncReportToggle}
 				{syncReportComp}
