@@ -79,6 +79,12 @@ Configuration (Settings → Secrets and variables → Actions):
 
 Keep a backup of the keystore and its password outside GitHub. Android only installs an update that is signed with the same key. Changing the key means uninstalling the app first, which deletes its local data.
 
+## Desktop builds
+
+[.github/workflows/fork-desktop.yml](.github/workflows/fork-desktop.yml) builds a 64-bit Windows installer in the same way, on pushes that change the desktop app or a package it uses, and publishes it on the `desktop-latest` pre-release. It uses the same `FORK_APP_ID` and `FORK_APP_NAME` variables and needs no secrets.
+
+[.github/fork/desktop-branding.js](.github/fork/desktop-branding.js) applies the name during the build only. The app gets its own Windows app ID, install folder, keychain entries and profile folder (`~/.config/inkbench-desktop` for Inkbench), so it installs beside Joplin without touching its notes. It doesn't offer Joplin's releases as updates. The installer isn't signed, so Windows SmartScreen warns about it until you choose "Run anyway".
+
 ## Workbench design
 
 The fork's look is called Workbench: cool grey surfaces, a cobalt accent, compact rows and 4px corners.

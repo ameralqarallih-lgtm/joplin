@@ -1,0 +1,107 @@
+# Fork-only: builds a Windows installer under the fork's own name, app ID and profile folder, so that it installs beside Joplin, and publishes it as the "desktop-latest" pre-release. See FORK.md.
+name: Fork - Desktop build
+
+on:
+  push:
+    branches: [main, next]
+    paths:
+      - 'packages/app-desktop/**'
+      - 'packages/lib/**'
+      - 'packages/renderer/**'
+      - 'packages/editor/**'
+      - 'packages/utils/**'
+      - 'yarn.lock'
+      - '.github/fork/desktop-branding.js'
+      - '.github/workflows/fork-desktop.yml'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish the installer to the desktop-latest pre-release'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fork-desktop
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository != 'laurent22/joplin'
+    runs-on: windows-latest
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+    env:
+      FORK_APP_ID: ${{ vars.FORK_APP_ID }}
+      FORK_APP_NAME: ${{ vars.FORK_APP_NAME }}
+      FORK_BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - name: Check configuration
+        run: |
+          missing=0
+          [ -n "$FORK_APP_ID" ] || { echo "::error::Set the FORK_APP_ID repository variable (see FORK.md)"; missing=1; }
+          [ -n "$FORK_APP_NAME" ] || { echo "::error::Set the FORK_APP_NAME repository variable (see FORK.md)"; missing=1; }
+          exit $missing
+
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - uses: ./.github/workflows/shared/install-yarn
+
+      - name: Install
+        env:
+          SKIP_ONENOTE_CONVERTER_BUILD: 1
+        run: |
+          source .github/scripts/retry.sh
+          retry yarn install
+
+      - name: Apply fork branding
+        id: brand
+        run: node .github/fork/desktop-branding.js
+
+      # The branding edits TypeScript files that "yarn install" has already compiled.
+      - name: Build the installer
+        run: |
+          (cd packages/lib && yarn tsc)
+          cd packages/app-desktop
+          yarn tsc
+          yarn gulp before-dist
+          yarn electronRebuild
+          npx electron-builder --win nsis --x64 --publish never
+
+      - name: Find the installer
+        id: installer
+        run: |
+          path="$(ls packages/app-desktop/dist/*.exe | head -1)"
+          test -f "$path" || { echo "::error::No installer in packages/app-desktop/dist"; exit 1; }
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$path")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.installer.outputs.name }}
+          path: ${{ steps.installer.outputs.path }}
+          retention-days: 30
+
+      - name: Publish desktop-latest pre-release
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INSTALLER_PATH: ${{ steps.installer.outputs.path }}
+          VERSION_NAME: ${{ steps.brand.outputs.version_name }}
+        run: |
+          gh release delete desktop-latest --cleanup-tag --yes 2>/dev/null || true
+          cat > notes.md <<EOF
+          Latest ${FORK_APP_NAME} for Windows from \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA::9}. Version ${VERSION_NAME}.
+
+          Download the installer below and run it. It installs ${FORK_APP_NAME} beside Joplin, with its own notes and settings, so it doesn't change an installed Joplin. The installer isn't signed, so Windows may warn about it: choose "More info", then "Run anyway".
+          EOF
+          gh release create desktop-latest "$INSTALLER_PATH" --target "$GITHUB_SHA" --prerelease \
+            --title "${FORK_APP_NAME} for Windows (latest)" --notes-file notes.md
