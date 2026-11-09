@@ -58,6 +58,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import SideMenu, { SideMenuPosition } from './components/SideMenu';
 import SideMenuContent from './components/SideMenuContent/SideMenuContent';
 import SideMenuContentNote, { SideMenuContentOptions } from './components/SideMenuContentNote';
+import { dockedMenuWidth, isDockedMenuLayout } from './utils/workbenchLayout';
 import { reg } from '@joplin/lib/registry';
 import { defaultState } from '@joplin/lib/reducer';
 import ResourceFetcher from '@joplin/lib/services/ResourceFetcher';
@@ -320,6 +321,8 @@ interface AppComponentProps {
 
 interface AppComponentState {
 	sideMenuWidth: number;
+	// Fork: for the docked side menu of wide windows (utils/workbenchLayout.ts)
+	windowWidth: number;
 	sensorInfo: SensorInfo;
 	sideMenuContentOpacity: Animated.Value;
 }
@@ -350,6 +353,7 @@ class AppComponent extends React.Component<AppComponentProps, AppComponentState>
 		this.state = {
 			sideMenuContentOpacity: new Animated.Value(0),
 			sideMenuWidth: this.getSideMenuWidth(),
+			windowWidth: Dimensions.get('window').width,
 			sensorInfo: null,
 		};
 
@@ -704,7 +708,7 @@ class AppComponent extends React.Component<AppComponentProps, AppComponentState>
 	}
 
 	private async handleScreenWidthChange_() {
-		this.setState({ sideMenuWidth: this.getSideMenuWidth() });
+		this.setState({ sideMenuWidth: this.getSideMenuWidth(), windowWidth: Dimensions.get('window').width });
 	}
 
 	public UNSAFE_componentWillReceiveProps(newProps: AppComponentProps) {
@@ -772,6 +776,14 @@ class AppComponent extends React.Component<AppComponentProps, AppComponentState>
 			sideMenuContent = <SideMenuContent/>;
 		}
 
+		// Fork: in wide windows, the notebooks menu stays open on the left instead of sliding in. The note screen
+		// keeps its sliding menu, on the right.
+		const dockedMenu = isDockedMenuLayout(this.props.themeId, this.state.windowWidth);
+		if (dockedMenu && this.props.routeName !== 'Note') {
+			sideMenuContent = null;
+			disableSideMenuGestures = true;
+		}
+
 		const appNavInit = {
 			Notes: { screen: NotesScreen },
 			Home: { screen: HomeScreen },
@@ -808,26 +820,33 @@ class AppComponent extends React.Component<AppComponentProps, AppComponentState>
 		logger.info('root.biometrics: shouldShowMainContent', shouldShowMainContent);
 		logger.info('root.biometrics: this.state.sensorInfo', this.state.sensorInfo);
 
+		const sideMenu = (
+			<SideMenu
+				menu={sideMenuContent}
+				toleranceX={4}
+				minHorizontalSwipe={10}
+				openMenuOffset={this.state.sideMenuWidth}
+				menuPosition={menuPosition}
+				onChange={this.sideMenu_change}
+				isOpen={this.props.showSideMenu && !!sideMenuContent}
+				disableGestures={disableSideMenuGestures}
+				disableOpenGesture={disableSideMenuOpenGesture}
+			>
+				<View style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
+					{ shouldShowMainContent && <AppNav screens={appNavInit} dispatch={this.props.dispatch} /> }
+				</View>
+				<SyncWizard/>
+			</SideMenu>
+		);
+
 		const mainContent = (
 			<View style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
 				<View style={{ flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}>
 					<SafeAreaView style={{ flex: 1 }} titleBarUnderlayColor={theme.backgroundColor}>
-						<SideMenu
-							menu={sideMenuContent}
-							toleranceX={4}
-							minHorizontalSwipe={10}
-							openMenuOffset={this.state.sideMenuWidth}
-							menuPosition={menuPosition}
-							onChange={this.sideMenu_change}
-							isOpen={this.props.showSideMenu}
-							disableGestures={disableSideMenuGestures}
-							disableOpenGesture={disableSideMenuOpenGesture}
-						>
-							<View style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
-								{ shouldShowMainContent && <AppNav screens={appNavInit} dispatch={this.props.dispatch} /> }
-							</View>
-							<SyncWizard/>
-						</SideMenu>
+						<View style={{ flex: 1, flexDirection: 'row' }}>
+							{dockedMenu ? <View style={{ width: dockedMenuWidth, borderRightWidth: 1, borderRightColor: theme.dividerColor }}><SideMenuContent/></View> : null}
+							<View style={{ flex: 1 }}>{sideMenu}</View>
+						</View>
 					</SafeAreaView>
 					<DropdownAlertWrapper alert={(func) => { this.dropdownAlert_ = func; }} />
 				</View>

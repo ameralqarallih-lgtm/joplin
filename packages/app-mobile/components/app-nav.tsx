@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import NotesScreen from './screens/Notes/Notes';
 import SearchScreen from './screens/SearchScreen';
-import { Platform, View, StyleSheet } from 'react-native';
+import { Platform, View, StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { AppState, Route } from '../utils/types';
 import { themeStyle } from './global-style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,9 @@ import { useMemo } from 'react';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
 import WorkbenchTabBar, { tabBarRoutes } from './screens/Home/WorkbenchTabBar';
 import useIsWorkbenchTheme from './LucideIcon/useIsWorkbenchTheme';
+import { isTwoPaneLayout, listPaneWidth } from '../utils/workbenchLayout';
+import { _ } from '@joplin/lib/locale';
+import Icon from './Icon';
 
 interface Props {
 	route: Route;
@@ -28,6 +31,14 @@ const useStyles = (theme: Theme) => {
 	return useMemo(() => {
 		return StyleSheet.create({
 			keyboardAvoidingView: { flex: 1, backgroundColor: theme.backgroundColor },
+			// Fork: the two-pane layout of wide windows (utils/workbenchLayout.ts)
+			panes: { flex: 1, flexDirection: 'row' },
+			listPane: { width: listPaneWidth, borderRightWidth: 1, borderRightColor: theme.dividerColor },
+			mainPane: { flex: 1 },
+			hidden: { display: 'none' },
+			emptyPane: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+			emptyIcon: { fontSize: 44, color: theme.colorFaded },
+			emptyText: { fontSize: 15, color: theme.colorFaded, textAlign: 'center' },
 		});
 	}, [theme]);
 };
@@ -37,6 +48,7 @@ const AppNavComponent: React.FC<Props> = (props) => {
 	const keyboardState = useKeyboardState();
 	const safeAreaPadding = useSafeAreaInsets();
 	const isWorkbenchTheme = useIsWorkbenchTheme();
+	const windowWidth = useWindowDimensions().width;
 
 	if (!props.route) throw new Error('Route must not be null');
 
@@ -71,6 +83,32 @@ const AppNavComponent: React.FC<Props> = (props) => {
 		(Platform.OS === 'android' && Platform.Version < 35)
 		|| Platform.OS === 'ios';
 	const autocompletionBarPadding = keyboardState.keyboardVisible && keyboardAvoidingViewEnabled ? safeAreaPadding.top : 0;
+
+	// Fork: in wide windows, the note list stays beside the open note. The panes are kept while the window is wide,
+	// so that the list isn't reloaded when a note opens.
+	if (isTwoPaneLayout(props.themeId, windowWidth)) {
+		const listRoute = route.routeName === 'Notes' || route.routeName === 'Note';
+		const showTabBar = (tabBarRoutes.includes(route.routeName) || route.routeName === 'Note') && !keyboardState.keyboardVisible;
+		return (
+			<KeyboardAvoidingView style={styles.keyboardAvoidingView} enabled={keyboardAvoidingViewEnabled}>
+				<View style={styles.panes}>
+					<View style={[styles.listPane, !listRoute && styles.hidden]}>
+						<NotesScreen visible={listRoute} />
+					</View>
+					<View style={styles.mainPane}>
+						{searchScreenLoaded && <SearchScreen visible={searchScreenVisible} />}
+						{route.routeName === 'Notes' ? <View style={styles.emptyPane}>
+							<Icon name='ionicon document-outline' accessibilityLabel={null} style={styles.emptyIcon}/>
+							<Text style={styles.emptyText}>{_('Select a note to open it here.')}</Text>
+						</View> : null}
+						{Screen && <Screen navigation={{ state: route }} themeId={props.themeId} dispatch={props.dispatch} />}
+					</View>
+				</View>
+				<View style={{ height: autocompletionBarPadding }} />
+				{showTabBar ? <WorkbenchTabBar/> : null}
+			</KeyboardAvoidingView>
+		);
+	}
 
 	return (
 		<KeyboardAvoidingView

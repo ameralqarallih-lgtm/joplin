@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { PureComponent, ReactElement } from 'react';
 import { connect } from 'react-redux';
-import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, TextStyle, ImageStyle, Dimensions } from 'react-native';
+import { isDockedMenuLayout } from '../../utils/workbenchLayout';
 import BackButtonService from '../../services/BackButtonService';
 import NavService from '@joplin/lib/services/NavService';
 import { _, _n } from '@joplin/lib/locale';
@@ -648,7 +649,9 @@ class ScreenHeaderComponent extends PureComponent<ScreenHeaderProps, ScreenHeade
 			}
 		};
 
-		const showSideMenuButton = !!this.props.showSideMenuButton && !this.props.noteSelectionEnabled;
+		// Fork: wide windows keep the side menu open (root.tsx), so there's nothing to open.
+		const sideMenuDocked = isDockedMenuLayout(this.props.themeId, Dimensions.get('window').width);
+		const showSideMenuButton = !!this.props.showSideMenuButton && !this.props.noteSelectionEnabled && !sideMenuDocked;
 		const showSelectAllButton = this.props.noteSelectionEnabled;
 		const showSearchButton = !!this.props.showSearchButton && !this.props.noteSelectionEnabled;
 		const showContextMenuButton = this.props.showContextMenuButton !== false;

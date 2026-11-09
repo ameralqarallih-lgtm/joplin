@@ -106,6 +106,7 @@ With a Workbench theme, both apps also get the Studio Home layout. Upstream's th
   - `HomeView/` is the Home page (with the tags as chips at the end), `NoteOutline/` the headings and backlinks beside the editor, and `SidebarPinned/` the pinned notes at the top of the sidebar.
   - The status bar shows sync activity, attachments being fetched and items being decrypted, which upstream shows below the sidebar; hovering it shows the full sync report ([syncActivity.ts](packages/app-desktop/gui/Workbench/Shell/syncActivity.ts)).
 - **Mobile.** The app starts on [HomeScreen.tsx](packages/app-mobile/components/screens/Home/HomeScreen.tsx), with a bottom bar ([WorkbenchTabBar.tsx](packages/app-mobile/components/screens/Home/WorkbenchTabBar.tsx)) on Home, the note list and Tags. The note list gets All / To-dos / Pinned filters ([NoteListFilterBar.tsx](packages/app-mobile/components/screens/Notes/NoteListFilterBar.tsx)), and the note menu has Pin / Unpin.
+  In wide windows ([workbenchLayout.ts](packages/app-mobile/utils/workbenchLayout.ts)), the note list and the open note are side by side from 760 wide, and the notebooks menu stays open on the left from 1100 wide.
   With a Workbench theme, text fields are outlined with rounded corners ([TextInput.tsx](packages/app-mobile/components/TextInput.tsx)), the Tags screen shows chips with note counts ([TagChips.tsx](packages/app-mobile/components/screens/TagChips.tsx)), and the settings sections use Lucide icons.
 
 ### Notebook colours

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { _, _n, currentLocale } from '@joplin/lib/locale';
@@ -27,6 +27,7 @@ import { DialogContext } from '../../DialogManager';
 import setTodoCompleted from './setTodoCompleted';
 import withAlpha from './withAlpha';
 import { folderColor } from '@joplin/lib/models/utils/folderColor';
+import { dockedMenuWidth, isDockedMenuLayout } from '../../../utils/workbenchLayout';
 
 interface Props {
 	themeId: number;
@@ -212,6 +213,7 @@ const PinnedRows: React.FC<{ notes: NoteEntity[]; folders: FolderEntity[]; style
 
 const HomeScreen: React.FC<Props> = props => {
 	const theme = themeStyle(props.themeId);
+	const windowWidth = useWindowDimensions().width;
 	const styles = useStyles(theme);
 	const data = useHomeData(props.includeCompletedTodos);
 	const today = new Date().toLocaleDateString(currentLocale().replace('_', '-'), { weekday: 'long', day: 'numeric', month: 'long' });
@@ -226,12 +228,17 @@ const HomeScreen: React.FC<Props> = props => {
 		</Pressable>
 	));
 
+	// Two notebook tiles per row on phones, more in wide windows (where the docked side menu takes some room).
+	const contentWidth = windowWidth - (isDockedMenuLayout(props.themeId, windowWidth) ? dockedMenuWidth : 0);
+	const tileColumns = contentWidth >= 900 ? 4 : contentWidth >= 600 ? 3 : 2;
+	const tileWidth = { flexBasis: `${Math.floor(100 / tileColumns) - 3}%` as const };
+
 	const folderTiles = data?.folders.map(({ folder, noteCount }) => {
 		const accent = folderColor(folder) || styles.defaultAccent;
 		return <Pressable
 			key={folder.id}
 			accessibilityRole='button'
-			style={styles.tile}
+			style={[styles.tile, tileWidth]}
 			onPress={() => props.dispatch({ type: 'NAV_GO', routeName: 'Notes', folderId: folder.id })}
 		>
 			<View style={[styles.tileIcon, { backgroundColor: withAlpha(accent, 0.13) }]}>
@@ -278,7 +285,7 @@ const HomeScreen: React.FC<Props> = props => {
 						{folderTiles}
 						<Pressable
 							accessibilityRole='button'
-							style={[styles.tile, styles.tileNew]}
+							style={[styles.tile, tileWidth, styles.tileNew]}
 							onPress={() => props.dispatch({ type: 'NAV_GO', routeName: 'Folder', folderId: null })}
 						>
 							<View style={[styles.tileIcon, { backgroundColor: withAlpha(theme.color, 0.06) }]}>
