@@ -405,6 +405,8 @@ packages/app-desktop/gui/NoteList/utils/useVisibleRange.js
 packages/app-desktop/gui/NoteListControls/NoteListControls.js
 packages/app-desktop/gui/NoteListControls/commands/focusSearch.js
 packages/app-desktop/gui/NoteListControls/commands/index.js
+packages/app-desktop/gui/NoteListControls/showSortOrderMenu.test.js
+packages/app-desktop/gui/NoteListControls/showSortOrderMenu.js
 packages/app-desktop/gui/NoteListHeader/NoteListHeader.js
 packages/app-desktop/gui/NoteListHeader/NoteListHeaderItem.js
 packages/app-desktop/gui/NoteListHeader/types.js

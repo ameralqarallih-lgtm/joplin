@@ -6,7 +6,7 @@ import Button, { ButtonLevel, ButtonSize, buttonSizePx } from '../Button/Button'
 import CommandService from '@joplin/lib/services/CommandService';
 import { runtime as focusSearchRuntime } from './commands/focusSearch';
 import Note from '@joplin/lib/models/Note';
-import { notesSortOrderNextField } from '@joplin/lib/services/sortOrder/notesSortOrderUtils';
+import showSortOrderMenu from './showSortOrderMenu';
 import { _ } from '@joplin/lib/locale';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
@@ -176,7 +176,7 @@ function NoteListControls(props: Props) {
 	}
 
 	function onSortOrderFieldButtonClick() {
-		void CommandService.instance().execute('toggleNotesSortOrderField');
+		showSortOrderMenu(props.sortOrderField, props.sortOrderReverse, searchAndSortRef.current?.querySelector('.sort-order-field-button'));
 	}
 
 	function onSortOrderReverseButtonClick() {
@@ -184,11 +184,7 @@ function NoteListControls(props: Props) {
 	}
 
 	function sortOrderFieldTooltip() {
-		const term1 = CommandService.instance().label('toggleNotesSortOrderField');
-		const field = props.sortOrderField;
-		const term2 = Note.fieldToLabel(field);
-		const term3 = Note.fieldToLabel(notesSortOrderNextField(field));
-		return `${term1}:\n ${term2} -> ${term3}`;
+		return `${_('Sort notes by')}: ${Note.fieldToLabel(props.sortOrderField)}`;
 	}
 
 	function sortOrderFieldIcon() {
