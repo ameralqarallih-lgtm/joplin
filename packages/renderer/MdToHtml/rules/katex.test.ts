@@ -45,4 +45,15 @@ describe('katex', () => {
 		const warned = warnSpy.mock.calls.some(args => String(args[0]).includes('LaTeX-incompatible'));
 		expect(warned).toBe(false);
 	});
+
+	test.each([
+		['Restaurants\n$$ means mid-range\n\n## Lunch', false],
+		['$$100 is the price\n\n## Lunch', false],
+		['$$\nx^2\n$$\n\n## Lunch', true],
+		['$$x^2$$\n\n## Lunch', true],
+	])('renders a $$ block only when it is closed: %j', (markdown, isMath) => {
+		const output = createMarkdownIt().render(markdown);
+		expect(output.includes('class="katex')).toBe(isMath);
+		expect(output).toContain('<h2>Lunch</h2>');
+	});
 });
