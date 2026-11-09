@@ -20,6 +20,8 @@ import { DialogContext } from './DialogManager';
 import Icon from './Icon';
 import isSyncDisabledConflict from '@joplin/lib/services/noteList/isSyncDisabledConflict';
 import { noteIsLockedInShare } from '@joplin/lib/models/utils/readOnly';
+import useNoteExcerpt from '../utils/hooks/useNoteExcerpt';
+import formatListDate from '@joplin/lib/services/noteList/formatListDate';
 
 interface Props {
 	dispatch: Dispatch;
@@ -66,6 +68,7 @@ const useStyles = (themeId: number, showTopBorder: boolean) => {
 
 		const listItemText: TextStyle = {
 			flexShrink: 1,
+			flexGrow: 1,
 			color: theme.color,
 			fontSize: theme.fontSize,
 		};
@@ -85,6 +88,18 @@ const useStyles = (themeId: number, showTopBorder: boolean) => {
 			titleRow: {
 				flexDirection: 'row',
 				alignItems: 'center',
+			},
+			// Fork: the date and excerpt of two-line rows.
+			date: {
+				flexShrink: 0,
+				marginLeft: 8,
+				color: theme.colorFaded,
+				fontSize: theme.fontSize * 0.85,
+			},
+			excerpt: {
+				marginTop: 2,
+				color: theme.colorFaded,
+				fontSize: theme.fontSize * 0.9,
 			},
 			lockIcon: {
 				color: theme.color,
@@ -207,6 +222,7 @@ const NoteItemComponent: React.FC<Props> = memo(props => {
 	const showLockIcon = isNoteLockEnabled() && !!note.is_locked;
 
 	const selectionWrapperStyle = isSelected ? styles.selectionWrapperSelected : styles.selectionWrapper;
+	const excerpt = useNoteExcerpt(note.id, note.updated_time);
 
 	const noteTitle = Note.displayTitle(note);
 	const highlightedWord = props.highlightedWord;
@@ -224,7 +240,7 @@ const NoteItemComponent: React.FC<Props> = memo(props => {
 		accessibilityLabel={_('to-do: %s', noteTitle)}
 	/> : null;
 
-	const titleElement = <Text style={listItemTextStyle}>{displayedNoteTitle}</Text>;
+	const titleElement = <Text style={listItemTextStyle} numberOfLines={1}>{displayedNoteTitle}</Text>;
 
 	const pressableProps = {
 		style: isTodo ? styles.listItemPressableWithCheckbox : styles.listItemPressableWithoutCheckbox,
@@ -244,13 +260,13 @@ const NoteItemComponent: React.FC<Props> = memo(props => {
 				onPress={onPress}
 				beforePressable={todoCheckbox}
 			>
-				{showSyncDisabledIcon || showLockIcon ? (
-					<View style={styles.titleRow}>
-						{showSyncDisabledIcon && <Icon name='ionicon cloud-offline-outline' style={styles.syncDisabledIcon} accessibilityLabel={_('Local only')} />}
-						{showLockIcon && <Icon name='fas fa-lock' style={styles.lockIcon} accessibilityLabel={_('Locked')} />}
-						{titleElement}
-					</View>
-				) : titleElement}
+				<View style={styles.titleRow}>
+					{showSyncDisabledIcon && <Icon name='ionicon cloud-offline-outline' style={styles.syncDisabledIcon} accessibilityLabel={_('Local only')} />}
+					{showLockIcon && <Icon name='fas fa-lock' style={styles.lockIcon} accessibilityLabel={_('Locked')} />}
+					{titleElement}
+					{note.user_updated_time ? <Text style={styles.date}>{formatListDate(note.user_updated_time)}</Text> : null}
+				</View>
+				{excerpt ? <Text style={styles.excerpt} numberOfLines={1}>{excerpt}</Text> : null}
 			</MultiTouchableOpacity>
 		</View>
 	);

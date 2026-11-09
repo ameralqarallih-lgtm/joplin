@@ -1115,6 +1115,8 @@ packages/app-mobile/utils/hooks/useBackHandler.js
 packages/app-mobile/utils/hooks/useDebounced.js
 packages/app-mobile/utils/hooks/useIsScreenReaderEnabled.js
 packages/app-mobile/utils/hooks/useKeyboardState.js
+packages/app-mobile/utils/hooks/useNoteExcerpt.test.js
+packages/app-mobile/utils/hooks/useNoteExcerpt.js
 packages/app-mobile/utils/hooks/useOnLongPressProps.js
 packages/app-mobile/utils/hooks/useReduceMotionEnabled.js
 packages/app-mobile/utils/hooks/useSafeAreaPadding.js
@@ -1607,6 +1609,8 @@ packages/lib/models/utils/getConflictFolderId.js
 packages/lib/models/utils/isItemId.js
 packages/lib/models/utils/isJoplinServerVariant.js
 packages/lib/models/utils/itemCanBeEncrypted.js
+packages/lib/models/utils/loadNoteExcerpts.test.js
+packages/lib/models/utils/loadNoteExcerpts.js
 packages/lib/models/utils/onFolderDrop.test.js
 packages/lib/models/utils/onFolderDrop.js
 packages/lib/models/utils/paginatedFeed.js
@@ -1847,6 +1851,7 @@ packages/lib/services/noteList/defaultMultiColumnsRenderer.js
 packages/lib/services/noteList/depNameToNoteProp.js
 packages/lib/services/noteList/detailedListRenderer.test.js
 packages/lib/services/noteList/detailedListRenderer.js
+packages/lib/services/noteList/formatListDate.js
 packages/lib/services/noteList/isSyncDisabledConflict.test.js
 packages/lib/services/noteList/isSyncDisabledConflict.js
 packages/lib/services/noteList/noteExcerpt.test.js

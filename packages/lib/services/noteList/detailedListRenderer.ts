@@ -9,6 +9,7 @@ import noteExcerpt from './noteExcerpt';
 import isNoteLockEnabled from '../noteLock/isNoteLockEnabled';
 import { TagEntity } from '../database/types';
 import time from '../../time';
+import formatListDate from './formatListDate';
 
 interface Props {
 	note: {
@@ -20,12 +21,6 @@ interface Props {
 		user_updated_time: number;
 	};
 }
-
-// The time for notes changed today, otherwise the date: short enough to fit a narrow list.
-const shortDate = (ms: number) => {
-	const isToday = new Date(ms).toDateString() === new Date().toDateString();
-	return time.formatMsToLocal(ms, isToday ? time.timeFormat() : time.dateFormat());
-};
 
 const renderer: ListRenderer = {
 	id: 'detailed',
@@ -222,7 +217,7 @@ const renderer: ListRenderer = {
 				body: '',
 			},
 			excerpt: hideContent ? '' : noteExcerpt(note.body, note.title),
-			shortDate: shortDate(note.user_updated_time),
+			shortDate: formatListDate(note.user_updated_time),
 			fullDate: time.formatMsToLocal(note.user_updated_time),
 			tagTitles: (note.tags ?? []).map(tag => tag.title),
 		};
