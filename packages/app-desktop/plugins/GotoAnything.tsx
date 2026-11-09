@@ -25,6 +25,7 @@ import { FolderEntity, NoteEntity, ResourceEntity, TagEntity } from '@joplin/lib
 import Dialog from '@joplin/lib/components/Dialog';
 import AsyncActionQueue from '@joplin/lib/AsyncActionQueue';
 import { PluginManifest } from '@joplin/lib/services/PluginManager';
+import gotoAnythingRecentNotes from './gotoAnythingRecentNotes';
 
 const logger = Logger.create('GotoAnything');
 
@@ -81,6 +82,8 @@ interface Props {
 	folders: FolderEntity[];
 	showCompletedTodos: boolean;
 	userData: GotoAnythingUserData;
+	visitedNotes: NoteEntity[];
+	selectedNoteIds: string[];
 }
 
 interface State {
@@ -196,7 +199,8 @@ class DialogComponent extends React.PureComponent<Props, State> {
 		this.listItem_onMouseMove = this.listItem_onMouseMove.bind(this);
 		this.helpButton_onClick = this.helpButton_onClick.bind(this);
 
-		if (startString) this.scheduleListUpdate();
+		// Fork: always update, so that an empty query lists recent notes.
+		this.scheduleListUpdate();
 	}
 
 	public style() {
@@ -321,7 +325,15 @@ class DialogComponent extends React.PureComponent<Props, State> {
 		let resultsInBody = false;
 
 		if (!this.state.query) {
-			this.setState({ results: [], keywords: [] });
+			// Fork: list recent notes until something is typed.
+			const results = await gotoAnythingRecentNotes(this.props.visitedNotes, this.props.selectedNoteIds, this.props.folders);
+			this.setState({
+				listType: BaseModel.TYPE_NOTE,
+				results,
+				keywords: [],
+				selectedItemId: results.length ? getResultId(results[0]) : null,
+				resultsInBody: false,
+			});
 		} else {
 			let results: GotoAnythingSearchResult[] = [];
 			let listType = null;
@@ -774,6 +786,8 @@ const mapStateToProps = (state: AppState) => {
 		themeId: state.settings.theme,
 		showCompletedTodos: state.settings.showCompletedTodos,
 		highlightedWords: state.highlightedWords,
+		visitedNotes: state.backwardHistoryNotes,
+		selectedNoteIds: state.selectedNoteIds,
 	};
 };
 

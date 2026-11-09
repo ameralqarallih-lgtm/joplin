@@ -689,6 +689,8 @@ packages/app-desktop/main-html.js
 packages/app-desktop/main.js
 packages/app-desktop/playwright.config.js
 packages/app-desktop/plugins/GotoAnything.js
+packages/app-desktop/plugins/gotoAnythingRecentNotes.test.js
+packages/app-desktop/plugins/gotoAnythingRecentNotes.js
 packages/app-desktop/services/aiStatusBridge.test.js
 packages/app-desktop/services/aiStatusBridge.js
 packages/app-desktop/services/autoUpdater/AutoUpdaterService.test.js
