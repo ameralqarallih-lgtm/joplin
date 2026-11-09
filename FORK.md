@@ -59,6 +59,25 @@ Upstream's CI only runs in `laurent22/joplin`, so the fork has its own, in [.git
 
 Merge a PR only when this check passes.
 
+## Android builds
+
+[.github/workflows/fork-android.yml](.github/workflows/fork-android.yml) builds a signed APK whenever a push to `main` changes the mobile app or a package it uses. It can also be started by hand from the Actions tab. The APK is attached to the workflow run, and published on the `android-latest` pre-release on the repository's Releases page, which you can open from your phone to install or update.
+
+The build uses our own app ID and name, so it installs alongside the official Joplin app instead of replacing it. [.github/fork/android-branding.sh](.github/fork/android-branding.sh) applies them during the build only; the committed Android files stay identical to upstream's. Version numbers follow upstream's, with the build number added (for example `3.7.11-fork.12`).
+
+Configuration (Settings → Secrets and variables → Actions):
+
+| Kind | Name | Value |
+| --- | --- | --- |
+| Variable | `FORK_APP_ID` | Android application ID, e.g. `io.github.example.notes` |
+| Variable | `FORK_APP_NAME` | Name under the app icon. Letters, digits, spaces, `.`, `_` and `-` only. |
+| Secret | `FORK_ANDROID_KEYSTORE_BASE64` | Base64 of the release keystore |
+| Secret | `FORK_ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| Secret | `FORK_ANDROID_KEY_ALIAS` | Key alias |
+| Secret | `FORK_ANDROID_KEY_PASSWORD` | Key password |
+
+Keep a backup of the keystore and its password outside GitHub. Android only installs an update that is signed with the same key. Changing the key means uninstalling the app first, which deletes its local data.
+
 ## Merging a sync PR
 
 - Always merge with **Create a merge commit**. Squash or rebase would rewrite upstream's history, and every later sync would conflict again.

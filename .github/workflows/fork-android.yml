@@ -1,0 +1,133 @@
+# Fork-only: builds a signed APK under the fork's own app ID and name, and publishes it as the "android-latest" pre-release. See FORK.md.
+name: Fork - Android build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/app-mobile/**'
+      - 'packages/lib/**'
+      - 'packages/renderer/**'
+      - 'packages/editor/**'
+      - 'packages/utils/**'
+      - 'packages/turndown/**'
+      - 'packages/turndown-plugin-gfm/**'
+      - 'yarn.lock'
+      - '.github/fork/android-branding.sh'
+      - '.github/workflows/fork-android.yml'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish the APK to the android-latest pre-release'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fork-android
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository != 'laurent22/joplin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      FORK_APP_ID: ${{ vars.FORK_APP_ID }}
+      FORK_APP_NAME: ${{ vars.FORK_APP_NAME }}
+      FORK_BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - name: Check configuration
+        env:
+          HAS_KEYSTORE: ${{ secrets.FORK_ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          missing=0
+          [ -n "$FORK_APP_ID" ] || { echo "::error::Set the FORK_APP_ID repository variable (see FORK.md)"; missing=1; }
+          [ -n "$FORK_APP_NAME" ] || { echo "::error::Set the FORK_APP_NAME repository variable (see FORK.md)"; missing=1; }
+          [ "$HAS_KEYSTORE" = "true" ] || { echo "::error::Add the FORK_ANDROID_KEYSTORE_BASE64 secret (see FORK.md)"; missing=1; }
+          exit $missing
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/share/swift /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/share/powershell || true
+          docker system prune -af || true
+          df -h /
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y libsecret-1-dev
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '20'
+
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - uses: ./.github/workflows/shared/install-yarn
+
+      - name: Install
+        env:
+          SKIP_ONENOTE_CONVERTER_BUILD: 1
+        run: |
+          source .github/scripts/retry.sh
+          retry yarn install
+
+      - name: Apply fork branding
+        id: brand
+        run: bash .github/fork/android-branding.sh
+
+      - name: Assemble signed release APK
+        env:
+          KEYSTORE_BASE64: ${{ secrets.FORK_ANDROID_KEYSTORE_BASE64 }}
+          # Gradle reads ORG_GRADLE_PROJECT_* variables as project properties, which upstream's build.gradle uses for release signing.
+          ORG_GRADLE_PROJECT_JOPLIN_RELEASE_STORE_PASSWORD: ${{ secrets.FORK_ANDROID_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_JOPLIN_RELEASE_KEY_ALIAS: ${{ secrets.FORK_ANDROID_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_JOPLIN_RELEASE_KEY_PASSWORD: ${{ secrets.FORK_ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export ORG_GRADLE_PROJECT_JOPLIN_RELEASE_STORE_FILE="$RUNNER_TEMP/release.jks"
+          cd packages/app-mobile/android
+          ./gradlew assembleRelease
+          rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: Name the APK
+        id: apk
+        env:
+          VERSION_NAME: ${{ steps.brand.outputs.version_name }}
+        run: |
+          src=packages/app-mobile/android/app/build/outputs/apk/release/app-release.apk
+          test -f "$src" || { echo "::error::APK not found at $src"; exit 1; }
+          name="${FORK_APP_NAME// /-}-${VERSION_NAME}.apk"
+          mkdir -p dist && cp "$src" "dist/$name"
+          echo "path=dist/$name" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.apk.outputs.name }}
+          path: ${{ steps.apk.outputs.path }}
+          retention-days: 30
+
+      - name: Publish android-latest pre-release
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APK_PATH: ${{ steps.apk.outputs.path }}
+          VERSION_NAME: ${{ steps.brand.outputs.version_name }}
+        run: |
+          gh release delete android-latest --cleanup-tag --yes 2>/dev/null || true
+          cat > notes.md <<EOF
+          Latest ${FORK_APP_NAME} Android build from \`main\` at ${GITHUB_SHA::9}. Version ${VERSION_NAME}.
+
+          Download the APK below on your phone and open it to install or update. Android may ask you to allow installs from your browser.
+          EOF
+          gh release create android-latest "$APK_PATH" --target "$GITHUB_SHA" --prerelease \
+            --title "${FORK_APP_NAME} for Android (latest)" --notes-file notes.md
