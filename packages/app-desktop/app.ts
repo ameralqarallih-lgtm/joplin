@@ -22,6 +22,7 @@ import menuCommandNames from './gui/menuCommandNames';
 import ResourceService from '@joplin/lib/services/ResourceService';
 import ExternalEditWatcher from '@joplin/lib/services/ExternalEditWatcher';
 import appReducer, { createAppDefaultState } from './app.reducer';
+import updateNoteTabs from './gui/Workbench/NoteTabs/noteTabsReducer';
 import Folder from '@joplin/lib/models/Folder';
 import Tag from '@joplin/lib/models/Tag';
 import { reg } from '@joplin/lib/registry';
@@ -103,6 +104,7 @@ class Application extends BaseApplication {
 		let newState = appReducer(state, action);
 		newState = resourceEditWatcherReducer(newState, action);
 		newState = super.reducer(newState, action) as AppState;
+		newState = updateNoteTabs(state, newState, action);
 		return newState;
 	}
 

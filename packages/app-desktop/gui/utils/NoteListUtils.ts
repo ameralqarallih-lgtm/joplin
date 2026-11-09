@@ -10,11 +10,13 @@ import bridge from '../../services/bridge';
 import BaseModel from '@joplin/lib/BaseModel';
 import Note from '@joplin/lib/models/Note';
 import Setting from '@joplin/lib/models/Setting';
-import { clipboard } from 'electron';
+import { clipboard, MenuItemConstructorOptions } from 'electron';
 import { Dispatch } from 'redux';
 import { NoteEntity } from '@joplin/lib/services/database/types';
 import { MarkupLanguage } from '@joplin/renderer';
 import hasLockedNoteWhileSessionLocked from '@joplin/lib/services/noteLock/hasLockedNoteWhileSessionLocked';
+import { store } from '@joplin/lib/reducer';
+import { allNotesPinned } from '@joplin/lib/commands/togglePinNote';
 
 const Menu = bridge().Menu;
 const MenuItem = bridge().MenuItem;
@@ -60,6 +62,12 @@ export default class NoteListUtils {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- commandToStatefulMenuItem returns lib's MenuItem shape which doesn't structurally match Electron's MenuItemConstructorOptions
 				new MenuItem(menuUtils.commandToStatefulMenuItem('setTags', noteIds) as any),
 			);
+
+			// Fork: pinned notes, see lib/models/utils/pinnedNotes.ts
+			menu.append(new MenuItem({
+				...menuUtils.commandToStatefulMenuItem('togglePinNote', noteIds),
+				label: store() && allNotesPinned(store().getState(), noteIds) ? _('Unpin') : _('Pin'),
+			} as MenuItemConstructorOptions));
 
 			menu.append(new MenuItem({ type: 'separator' }));
 

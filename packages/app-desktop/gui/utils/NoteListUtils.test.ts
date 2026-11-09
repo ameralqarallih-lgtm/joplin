@@ -93,6 +93,7 @@ describe('NoteListUtils', () => {
 			'startExternalEditing',
 			'separator',
 			'setTags',
+			'togglePinNote',
 			'separator',
 			'toggleNoteType',
 			'moveToFolder',
@@ -123,6 +124,7 @@ describe('NoteListUtils', () => {
 
 		expect(menu.items).toEqual([
 			'setTags',
+			'togglePinNote',
 			'separator',
 			'Switch to note type',
 			'Switch to to-do type',

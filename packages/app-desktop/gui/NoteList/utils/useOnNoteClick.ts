@@ -13,6 +13,9 @@ const useOnNoteClick = (dispatch: Dispatch, focusNote: FocusNote) => {
 		// should be handled by the checkbox onChange handler.
 		if (['INPUT'].includes(targetTagName)) return;
 
+		// Fork: opening a note from the list leaves the Workbench Home tab
+		dispatch({ type: 'WORKBENCH_HOME_HIDE' });
+
 		focusNote(noteId);
 
 		if (event.ctrlKey || event.metaKey) {

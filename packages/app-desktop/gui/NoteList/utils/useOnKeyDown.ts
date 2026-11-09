@@ -97,6 +97,9 @@ const useOnKeyDown = (
 
 			const newSelectedNote = notes[noteIndex];
 
+			// Fork: moving through the list leaves the Workbench Home tab
+			dispatch({ type: 'WORKBENCH_HOME_HIDE' });
+
 			if (event.shiftKey) {
 				if (selectedNoteIds.includes(newSelectedNote.id)) {
 					dispatch({

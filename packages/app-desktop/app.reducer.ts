@@ -6,6 +6,7 @@ import { LayoutItem } from './gui/ResizableLayout/utils/types';
 import validateLayout from './gui/ResizableLayout/utils/validateLayout';
 import Logger from '@joplin/utils/Logger';
 import { ChatMessage, ChatRole } from '@joplin/lib/services/ai/types';
+import { NoteTab } from './gui/Workbench/NoteTabs/noteTabsReducer';
 
 const logger = Logger.create('app.reducer');
 
@@ -84,6 +85,9 @@ export interface AppWindowState extends WindowState {
 	aiChatConversationId: string|null;
 	// Layout for secondary windows
 	secondaryWindowLayout: LayoutItem|null;
+	// Fork: the Workbench note tabs, see gui/Workbench/NoteTabs/noteTabsReducer.ts
+	noteTabs: NoteTab[];
+	homeTabActive: boolean;
 }
 
 interface BackgroundWindowStates {
@@ -122,6 +126,8 @@ export const createAppDefaultWindowState = (): AppWindowState => {
 		aiChatMessages: [],
 		aiChatConversationId: null,
 		secondaryWindowLayout: null,
+		noteTabs: [],
+		homeTabActive: false,
 	};
 };
 
@@ -129,6 +135,7 @@ export function createAppDefaultState(resourceEditWatcherDefaultState: Partial<A
 	return {
 		...defaultState,
 		...createAppDefaultWindowState(),
+		homeTabActive: true,
 		backgroundWindows: {},
 		route: {
 			type: 'NAV_GO',

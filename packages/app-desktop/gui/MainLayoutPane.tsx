@@ -16,6 +16,7 @@ import { AppState } from '../app.reducer';
 import { connect } from 'react-redux';
 import { stateUtils } from '@joplin/lib/reducer';
 import validateColumns from './NoteListHeader/utils/validateColumns';
+import WorkbenchEditorArea from './Workbench/WorkbenchEditorArea';
 
 interface Props {
 	themeId: number;
@@ -76,13 +77,15 @@ const MainLayoutPane: React.FC<Props> = (props) => {
 		},
 
 		editor: () => {
-			return <div className='note-editor-wrapper' role='main' aria-label={_('Note')}>
-				<NoteEditor
-					windowId={windowId}
-					onTitleChange={props.onNoteTitleChange}
-					startupPluginsLoaded={props.startupPluginsLoaded}
-				/>
-			</div>;
+			return <WorkbenchEditorArea windowId={windowId}>
+				<div className='note-editor-wrapper' role='main' aria-label={_('Note')}>
+					<NoteEditor
+						windowId={windowId}
+						onTitleChange={props.onNoteTitleChange}
+						startupPluginsLoaded={props.startupPluginsLoaded}
+					/>
+				</div>
+			</WorkbenchEditorArea>;
 		},
 
 		chatPanel: () => {
