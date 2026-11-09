@@ -38,21 +38,27 @@ ensure_labels() {
 sync_mirror() {
 	echo "== Syncing $FORK_REPO:$SYNC_BRANCH from $UPSTREAM_REPO:$SYNC_BRANCH"
 
+	# Plain git rather than GitHub's fork APIs (merge-upstream, cross-fork compare), which stop working once the
+	# repository leaves the fork network, for example to become private.
+	local dir="$tmp/mirror" token
+	token="${GH_TOKEN:-$(gh auth token)}"
+	git clone --quiet --single-branch --branch "$SYNC_BRANCH" --no-tags "https://x-access-token:${token}@github.com/${FORK_REPO}.git" "$dir" || return 1
+	git -C "$dir" fetch --quiet --no-tags "https://github.com/${UPSTREAM_REPO}.git" "$SYNC_BRANCH" || return 1
+
 	# The mirror branch must only ever contain upstream commits; refuse rather than merge or overwrite.
-	local extra
-	extra="$(gh api "repos/$UPSTREAM_REPO/compare/$SYNC_BRANCH...$FORK_OWNER:$SYNC_BRANCH" --jq .ahead_by)" || return 1
-	if [ "$extra" != "0" ]; then
-		echo "::error::$FORK_REPO:$SYNC_BRANCH has $extra commit(s) that are not upstream. Move them to a feature branch and reset $SYNC_BRANCH to upstream/$SYNC_BRANCH (see FORK.md)."
+	if ! git -C "$dir" merge-base --is-ancestor HEAD FETCH_HEAD; then
+		echo "::error::$FORK_REPO:$SYNC_BRANCH has commits that are not upstream. Move them to a feature branch and reset $SYNC_BRANCH to upstream/$SYNC_BRANCH (see FORK.md)."
 		return 1
 	fi
 
-	if [ "$DRY_RUN" = "1" ]; then
-		echo "[dry-run] would fast-forward $SYNC_BRANCH"
+	if [ "$(git -C "$dir" rev-parse HEAD)" = "$(git -C "$dir" rev-parse FETCH_HEAD)" ]; then
+		echo "$SYNC_BRANCH is up to date."
 		return 0
 	fi
 
-	if ! gh api -X POST "repos/$FORK_REPO/merge-upstream" -f branch="$SYNC_BRANCH" --jq '"merge_type=\(.merge_type) \(.message)"'; then
-		echo "::error::merge-upstream failed. If upstream changed .github/workflows, the token needs the Workflows permission: add a FORK_SYNC_TOKEN secret (see FORK.md)."
+	echo "Fast-forwarding $SYNC_BRANCH by $(git -C "$dir" rev-list --count HEAD..FETCH_HEAD) commit(s)"
+	if ! run git -C "$dir" push --quiet origin "FETCH_HEAD:refs/heads/$SYNC_BRANCH"; then
+		echo "::error::Pushing $SYNC_BRANCH failed. If upstream changed .github/workflows, the token needs the Workflows permission: add a FORK_SYNC_TOKEN secret (see FORK.md)."
 		return 1
 	fi
 }
