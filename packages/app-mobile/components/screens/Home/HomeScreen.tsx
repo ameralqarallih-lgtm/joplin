@@ -10,6 +10,7 @@ import loadHomeData, { HomeData } from '@joplin/lib/models/utils/loadHomeData';
 import useAsyncEffect from '@joplin/lib/hooks/useAsyncEffect';
 import eventManager, { EventName } from '@joplin/lib/eventManager';
 import Note from '@joplin/lib/models/Note';
+import Folder from '@joplin/lib/models/Folder';
 import formatListDate from '@joplin/lib/services/noteList/formatListDate';
 import formatTodoDue, { TodoDueTone } from '@joplin/lib/services/home/formatTodoDue';
 import formatSyncStatus, { SyncStatusIcon, SyncStatusTone } from '@joplin/lib/services/home/formatSyncStatus';
@@ -288,7 +289,7 @@ const HomeScreen: React.FC<Props> = props => {
 				</View>
 			</> : null}
 		</ScrollView>
-		<NewNoteButton/>
+		{Folder.atLeastOneRealFolderExists(props.folders) ? <NewNoteButton/> : null}
 	</View>;
 };
 
