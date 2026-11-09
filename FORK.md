@@ -81,6 +81,16 @@ Configuration (Settings → Secrets and variables → Actions):
 
 Keep a backup of the keystore and its password outside GitHub. Android only installs an update that is signed with the same key. Changing the key means uninstalling the app first, which deletes its local data.
 
+## Workbench design
+
+The fork's look is called Workbench: cool grey surfaces, a cobalt accent, compact rows and 4px corners.
+
+- **Themes.** [workbenchLight.ts](packages/lib/themes/workbenchLight.ts) and [workbenchDark.ts](packages/lib/themes/workbenchDark.ts), registered in `lib/theme.ts`, `Setting.ts` (IDs 1001 and 1002) and `builtInMetadata.ts`, where they are also the defaults. Mobile builds its Paper theme from these colours, so it picks them up too.
+- **Desktop layer.** [gui/Workbench/style.scss](packages/app-desktop/gui/Workbench/style.scss), loaded last from `style.scss`. Its rules sit inside `@container style(--joplin-ui-style: workbench)`, so they only apply while a Workbench theme is active. Upstream's themes look exactly as before.
+- **Tokens.** `--wb-*` CSS variables for spacing, corner radius, type sizes and shadows, at the top of the layer.
+
+Restyle components in the layer rather than editing upstream's files. That keeps upstream merges clean.
+
 ## Bringing upstream into next
 
 ```bash

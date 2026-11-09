@@ -6,6 +6,8 @@ import theme_solarizedDark from './themes/solarizedDark';
 import theme_nord from './themes/nord';
 import theme_aritimDark from './themes/aritimDark';
 import theme_oledDark from './themes/oledDark';
+import theme_workbenchLight from './themes/workbenchLight';
+import theme_workbenchDark from './themes/workbenchDark';
 import Setting from './models/Setting';
 import { Theme, ThemeAppearance } from './themes/type';
 
@@ -20,6 +22,8 @@ const themes: Record<number, Theme> = {
 	[Setting.THEME_NORD]: theme_nord,
 	[Setting.THEME_ARITIM_DARK]: theme_aritimDark,
 	[Setting.THEME_OLED_DARK]: theme_oledDark,
+	[Setting.THEME_WORKBENCH_LIGHT]: theme_workbenchLight,
+	[Setting.THEME_WORKBENCH_DARK]: theme_workbenchDark,
 };
 
 export function themeById(themeId: number) {

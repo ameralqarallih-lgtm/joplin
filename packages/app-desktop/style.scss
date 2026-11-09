@@ -20,6 +20,7 @@
 @use 'services/plugins/styles/index.scss' as plugins-styles;
 @use 'gui/styles/index.scss' as gui-styles;
 @use 'main.scss' as main;
+@use 'gui/Workbench/style.scss' as workbench;
 
 // These dynamic imports will be compiled to CSS imports in the output file.
 // Prefer importing new CSS files here to linking them in index.html because

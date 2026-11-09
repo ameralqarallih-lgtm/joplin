@@ -245,6 +245,9 @@ class Setting extends BaseModel {
 	public static THEME_DRACULA = 5;
 	public static THEME_NORD = 6;
 	public static THEME_ARITIM_DARK = 7;
+	// Fork themes. The IDs are high so that themes upstream adds later can't collide with them.
+	public static THEME_WORKBENCH_LIGHT = 1001;
+	public static THEME_WORKBENCH_DARK = 1002;
 
 	public static FONT_DEFAULT = 0;
 	public static FONT_MENLO = 1;

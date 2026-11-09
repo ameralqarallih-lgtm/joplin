@@ -2052,6 +2052,8 @@ packages/lib/themes/oledDark.js
 packages/lib/themes/solarizedDark.js
 packages/lib/themes/solarizedLight.js
 packages/lib/themes/type.js
+packages/lib/themes/workbenchDark.js
+packages/lib/themes/workbenchLight.js
 packages/lib/time.js
 packages/lib/timeUtils.test.js
 packages/lib/types.js

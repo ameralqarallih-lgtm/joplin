@@ -92,6 +92,8 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 
 	const themeOptions = () => {
 		const output: Record<number, string> = {};
+		output[Setting.THEME_WORKBENCH_LIGHT] = _('Workbench Light');
+		output[Setting.THEME_WORKBENCH_DARK] = _('Workbench Dark');
 		output[Setting.THEME_LIGHT] = _('Light');
 		output[Setting.THEME_DARK] = _('Dark');
 		output[Setting.THEME_DRACULA] = _('Dracula');
@@ -1036,7 +1038,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		},
 
 		theme: {
-			value: Setting.THEME_LIGHT,
+			value: Setting.THEME_WORKBENCH_LIGHT,
 			type: SettingItemType.Int,
 			public: true,
 			appTypes: [AppType.Mobile, AppType.Desktop],
@@ -1063,7 +1065,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		},
 
 		preferredLightTheme: {
-			value: Setting.THEME_LIGHT,
+			value: Setting.THEME_WORKBENCH_LIGHT,
 			type: SettingItemType.Int,
 			public: true,
 			show: (settings) => {
@@ -1079,7 +1081,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		},
 
 		preferredDarkTheme: {
-			value: Setting.THEME_DARK,
+			value: Setting.THEME_WORKBENCH_DARK,
 			type: SettingItemType.Int,
 			public: true,
 			show: (settings) => {

@@ -1,0 +1,109 @@
+// Fork: the Workbench design layer. Its rules apply only while a Workbench theme is active: those themes set
+// --joplin-ui-style: workbench (see packages/lib/themes/workbenchLight.ts), which the style query below matches.
+
+:root {
+	--wb-radius-sm: 3px;
+	--wb-radius: 4px;
+	--wb-radius-lg: 6px;
+
+	--wb-space-1: 2px;
+	--wb-space-2: 4px;
+	--wb-space-3: 8px;
+	--wb-space-4: 12px;
+	--wb-space-5: 16px;
+	--wb-space-6: 24px;
+
+	--wb-row-height: 28px;
+
+	--wb-font-size-xs: 11px;
+	--wb-font-size-sm: 12px;
+	--wb-font-size: 13px;
+	--wb-font-size-lg: 15px;
+	--wb-font-size-xl: 20px;
+	--wb-font-mono: 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+	--wb-shadow-1: 0 1px 2px var(--joplin-shadow-color);
+	--wb-shadow-2: 0 6px 24px var(--joplin-shadow-color);
+	--wb-duration: 120ms;
+}
+
+@container style(--joplin-ui-style: workbench) {
+	body {
+		--joplin-focus-outline-color: var(--joplin-color4);
+		--joplin-focus-outline-color-dimmed: color-mix(in srgb, var(--joplin-color4) 45%, transparent);
+	}
+
+	::selection {
+		background-color: color-mix(in srgb, var(--joplin-color4) 30%, transparent);
+	}
+
+	.sidebar {
+		.sidebar-header-container {
+			min-height: var(--wb-row-height);
+			margin-top: var(--wb-space-3);
+
+			i {
+				display: none;
+			}
+
+			span {
+				font-size: var(--wb-font-size-xs);
+				font-weight: 600;
+				letter-spacing: 0.06em;
+				color: var(--joplin-color-faded2);
+			}
+		}
+
+		.list-item-container {
+			min-height: var(--wb-row-height);
+			margin: 0 var(--wb-space-3);
+			border-radius: var(--wb-radius);
+			transition: background-color var(--wb-duration);
+
+			.list-item {
+				font-size: var(--wb-font-size);
+			}
+
+			&.-selected {
+				box-shadow: inset 2px 0 0 var(--joplin-color4);
+
+				.list-item {
+					color: var(--joplin-color4);
+					font-weight: 600;
+				}
+			}
+
+			// Upstream outlines the primary item of a multiple selection. The accent bar and background
+			// already mark selected items, so only show the outline for keyboard focus.
+			&.-selected-primary {
+				--outline-color: transparent;
+
+				&:focus {
+					--outline-color: var(--joplin-focus-outline-color);
+				}
+			}
+		}
+
+		.note-count-label {
+			font-size: var(--wb-font-size-xs);
+			font-variant-numeric: tabular-nums;
+			color: var(--joplin-color-faded2);
+		}
+	}
+
+	.note-list-item .content {
+		border-radius: var(--wb-radius);
+
+		.title {
+			font-size: var(--wb-font-size);
+		}
+
+		&.-selected {
+			box-shadow: inset 2px 0 0 var(--joplin-color4);
+
+			.title {
+				font-weight: 600;
+			}
+		}
+	}
+}
