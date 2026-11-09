@@ -23,6 +23,9 @@ import NewNoteButton from './NewNoteButton';
 import FolderNavigationBar from './FolderNavigationBar';
 import PerFolderSortOrderService from '@joplin/lib/services/sortOrder/PerFolderSortOrderService';
 import { ALL_NOTES_FILTER_ID } from '@joplin/lib/reserved-ids';
+import NoteListFilterBar from './NoteListFilterBar';
+import filterNoteList, { NoteListFilter } from '@joplin/lib/services/noteList/noteListFilter';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 
 interface Props {
 	dispatch: Dispatch;
@@ -44,10 +47,13 @@ interface Props {
 	selectedTagId: string;
 	selectedSmartFilterId: string;
 	notesParentType: string;
+	notes: NoteEntity[];
+	pinnedNotes: NoteEntity[];
 }
 
 interface State {
-
+	// Fork: see NoteListFilterBar.tsx
+	listFilter: NoteListFilter;
 }
 
 interface ComponentProps extends Props {
@@ -63,7 +69,12 @@ class NotesScreenComponent extends BaseScreenComponent<ComponentProps, State> {
 
 	public constructor(props: ComponentProps) {
 		super(props);
+		this.state = { listFilter: NoteListFilter.All };
 	}
+
+	private listFilter_change = (listFilter: NoteListFilter) => {
+		this.setState({ listFilter });
+	};
 
 	private onAppStateChange_ = async () => {
 		// Force an update to the notes list when app state changes
@@ -184,6 +195,10 @@ class NotesScreenComponent extends BaseScreenComponent<ComponentProps, State> {
 	}
 
 	public async componentDidUpdate(prevProps: Props) {
+		if (prevProps.selectedFolderId !== this.props.selectedFolderId || prevProps.selectedTagId !== this.props.selectedTagId || prevProps.notesParentType !== this.props.notesParentType) {
+			this.setState({ listFilter: NoteListFilter.All });
+		}
+
 		if (prevProps.notesOrder !== this.props.notesOrder || prevProps.selectedFolderId !== this.props.selectedFolderId || prevProps.selectedTagId !== this.props.selectedTagId || prevProps.selectedSmartFilterId !== this.props.selectedSmartFilterId || prevProps.notesParentType !== this.props.notesParentType || prevProps.uncompletedTodosOnTop !== this.props.uncompletedTodosOnTop || prevProps.showCompletedTodos !== this.props.showCompletedTodos) {
 			await this.refreshNotes(this.props);
 		}
@@ -325,7 +340,13 @@ class NotesScreenComponent extends BaseScreenComponent<ComponentProps, State> {
 					showSideMenuButton={true}
 				/>
 				{this.props.notesParentType === 'Folder' ? <FolderNavigationBar folderId={this.props.selectedFolderId}/> : null}
-				<NoteList />
+				{isWorkbenchTheme(this.props.themeId) ? <NoteListFilterBar
+					themeId={this.props.themeId}
+					filter={this.state.listFilter}
+					noteCount={filterNoteList(this.props.notes, this.state.listFilter, this.props.pinnedNotes).length}
+					onChange={this.listFilter_change}
+				/> : null}
+				<NoteList filter={this.state.listFilter} />
 				{actionButtonComp}
 			</AccessibleView>
 		);
@@ -348,6 +369,7 @@ const NotesScreen = connect((state: AppState) => {
 		selectedSmartFilterId: state.selectedSmartFilterId,
 		notesParentType: state.notesParentType,
 		notes: state.notes,
+		pinnedNotes: state.pinnedNotes,
 		notesSource: state.notesSource,
 		uncompletedTodosOnTop: state.settings.uncompletedTodosOnTop,
 		showCompletedTodos: state.settings.showCompletedTodos,

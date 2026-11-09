@@ -608,8 +608,6 @@ packages/app-desktop/gui/Workbench/Shell/Rail.js
 packages/app-desktop/gui/Workbench/Shell/StatusBar.js
 packages/app-desktop/gui/Workbench/Shell/TopBar.js
 packages/app-desktop/gui/Workbench/Shell/WorkbenchShell.js
-packages/app-desktop/gui/Workbench/Shell/formatSyncStatus.test.js
-packages/app-desktop/gui/Workbench/Shell/formatSyncStatus.js
 packages/app-desktop/gui/Workbench/Shell/shellSize.js
 packages/app-desktop/gui/Workbench/SidebarPinned/SidebarPinned.js
 packages/app-desktop/gui/Workbench/WorkbenchEditorArea.js
@@ -971,6 +969,10 @@ packages/app-mobile/components/screens/ConfigScreen/plugins/utils/useUpdateState
 packages/app-mobile/components/screens/ConfigScreen/types.js
 packages/app-mobile/components/screens/DocumentScanner/DocumentScanner.js
 packages/app-mobile/components/screens/DocumentScanner/NotePreview.js
+packages/app-mobile/components/screens/Home/HomeScreen.js
+packages/app-mobile/components/screens/Home/WorkbenchTabBar.js
+packages/app-mobile/components/screens/Home/setTodoCompleted.js
+packages/app-mobile/components/screens/Home/withAlpha.js
 packages/app-mobile/components/screens/JoplinCloudLoginScreen.js
 packages/app-mobile/components/screens/LogScreen.js
 packages/app-mobile/components/screens/Note/Note.test.js
@@ -992,6 +994,7 @@ packages/app-mobile/components/screens/Notes/FolderNavigationBar.test.js
 packages/app-mobile/components/screens/Notes/FolderNavigationBar.js
 packages/app-mobile/components/screens/Notes/NewNoteButton.test.js
 packages/app-mobile/components/screens/Notes/NewNoteButton.js
+packages/app-mobile/components/screens/Notes/NoteListFilterBar.js
 packages/app-mobile/components/screens/Notes/Notes.js
 packages/app-mobile/components/screens/Notes/TextWrapCalculator.js
 packages/app-mobile/components/screens/ResourceScreen.js
@@ -1801,6 +1804,8 @@ packages/lib/services/e2ee/ppk/webCrypto/buildRsaCryptoProvider.js
 packages/lib/services/e2ee/types.js
 packages/lib/services/e2ee/utils.test.js
 packages/lib/services/e2ee/utils.js
+packages/lib/services/home/formatSyncStatus.test.js
+packages/lib/services/home/formatSyncStatus.js
 packages/lib/services/home/formatTodoDue.test.js
 packages/lib/services/home/formatTodoDue.js
 packages/lib/services/interop/InteropService.noteLock.test.js
@@ -1862,6 +1867,8 @@ packages/lib/services/noteList/isSyncDisabledConflict.test.js
 packages/lib/services/noteList/isSyncDisabledConflict.js
 packages/lib/services/noteList/noteExcerpt.test.js
 packages/lib/services/noteList/noteExcerpt.js
+packages/lib/services/noteList/noteListFilter.test.js
+packages/lib/services/noteList/noteListFilter.js
 packages/lib/services/noteList/renderTemplate.test.js
 packages/lib/services/noteList/renderTemplate.js
 packages/lib/services/noteList/renderViewProps.test.js

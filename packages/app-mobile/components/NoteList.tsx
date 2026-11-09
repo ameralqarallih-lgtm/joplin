@@ -14,9 +14,16 @@ import { _ } from '@joplin/lib/locale';
 import NoteItem from './NoteItem';
 import { reg } from '@joplin/lib/registry';
 import { themeStyle } from './global-style';
+import filterNoteList, { NoteListFilter } from '@joplin/lib/services/noteList/noteListFilter';
 
-interface NoteListProps {
+interface OwnProps {
+	// Fork: see screens/Notes/NoteListFilterBar.tsx
+	filter?: NoteListFilter;
+}
+
+interface NoteListProps extends OwnProps {
 	themeId: number;
+	unfilteredCount: number;
 	dispatch: Dispatch;
 	notesSource: string;
 	items: NoteEntity[];
@@ -113,8 +120,9 @@ class NoteListComponent extends Component<NoteListProps> {
 					</View>
 				);
 			} else {
+				const filteredOut = this.props.filter && this.props.filter !== NoteListFilter.All && this.props.unfilteredCount > 0;
 				return <Text style={this.styles().noItemMessage}>
-					{getEmptyFolderMessage(this.props.folders, this.props.selectedFolderId)}
+					{filteredOut ? _('No notes match this filter.') : getEmptyFolderMessage(this.props.folders, this.props.selectedFolderId)}
 				</Text>;
 			}
 		}
@@ -122,9 +130,21 @@ class NoteListComponent extends Component<NoteListProps> {
 }
 
 
-const NoteList = connect((state: AppState) => {
+// Keeps the same array while the inputs don't change, so the list doesn't re-render on unrelated state changes.
+let lastFilterInputs: Parameters<typeof filterNoteList> = null;
+let lastFilteredNotes: NoteEntity[] = [];
+const filterNotes = (...inputs: Parameters<typeof filterNoteList>) => {
+	if (!lastFilterInputs || inputs.some((input, index) => input !== lastFilterInputs[index])) {
+		lastFilterInputs = inputs;
+		lastFilteredNotes = filterNoteList(...inputs);
+	}
+	return lastFilteredNotes;
+};
+
+const NoteList = connect((state: AppState, ownProps: OwnProps) => {
 	return {
-		items: state.notes,
+		items: ownProps.filter ? filterNotes(state.notes, ownProps.filter, state.pinnedNotes) : state.notes,
+		unfilteredCount: state.notes.length,
 		folders: state.folders,
 		notesSource: state.notesSource,
 		themeId: state.settings.theme,

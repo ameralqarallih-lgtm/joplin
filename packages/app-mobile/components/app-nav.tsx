@@ -13,6 +13,8 @@ import usePrevious from '@joplin/lib/hooks/usePrevious';
 import { Theme } from '@joplin/lib/themes/type';
 import { useMemo } from 'react';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
+import WorkbenchTabBar, { tabBarRoutes } from './screens/Home/WorkbenchTabBar';
+import useIsWorkbenchTheme from './LucideIcon/useIsWorkbenchTheme';
 
 interface Props {
 	route: Route;
@@ -34,6 +36,7 @@ const useStyles = (theme: Theme) => {
 const AppNavComponent: React.FC<Props> = (props) => {
 	const keyboardState = useKeyboardState();
 	const safeAreaPadding = useSafeAreaInsets();
+	const isWorkbenchTheme = useIsWorkbenchTheme();
 
 	if (!props.route) throw new Error('Route must not be null');
 
@@ -78,6 +81,7 @@ const AppNavComponent: React.FC<Props> = (props) => {
 			{searchScreenLoaded && <SearchScreen visible={searchScreenVisible} />}
 			{!notesScreenVisible && !searchScreenVisible && <Screen navigation={{ state: route }} themeId={props.themeId} dispatch={props.dispatch} />}
 			<View style={{ height: autocompletionBarPadding }} />
+			{isWorkbenchTheme && tabBarRoutes.includes(route.routeName) && !keyboardState.keyboardVisible ? <WorkbenchTabBar/> : null}
 		</KeyboardAvoidingView>
 	);
 };

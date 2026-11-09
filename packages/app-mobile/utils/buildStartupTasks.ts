@@ -98,6 +98,7 @@ import VoiceTyping from '../services/voiceTyping/VoiceTyping';
 import whisper from '../services/voiceTyping/whisper';
 import PerFolderSortOrderService from '@joplin/lib/services/sortOrder/PerFolderSortOrderService';
 import getConflictFolderId from '@joplin/lib/models/utils/getConflictFolderId';
+import isWorkbenchTheme from '@joplin/lib/themes/utils/isWorkbenchTheme';
 const mobileConfig = require('@joplin/mobile-config').default;
 
 
@@ -446,6 +447,11 @@ const buildStartupTasks = (
 				folderId: folder.id,
 				clearHistory: true,
 			});
+		}
+
+		// Fork: Workbench themes start on the Home screen. The note list behind it keeps the notebook chosen above.
+		if (isWorkbenchTheme(Setting.value('theme'))) {
+			dispatch({ type: 'NAV_GO', routeName: 'Home', clearHistory: true });
 		}
 	});
 	addTask('buildStartupTasks/set up search', async () => {

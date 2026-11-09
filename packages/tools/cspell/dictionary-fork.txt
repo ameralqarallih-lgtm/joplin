@@ -6,5 +6,6 @@ lucide
 Neue
 nums
 oneline
+pricetags
 Segoe
 thumbtack

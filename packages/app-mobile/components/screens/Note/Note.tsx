@@ -136,6 +136,8 @@ interface Props extends BaseProps {
 	canPublish: boolean;
 	noteVisiblePanes: string[];
 	noteLockSessionUnlocked: boolean;
+	// Fork: see lib/models/utils/pinnedNotes.ts
+	notePinned: boolean;
 	noteLockMigrationRunning: boolean;
 }
 
@@ -1464,7 +1466,7 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 
 		const pluginCommands = pluginUtils.commandNamesFromViews(this.props.plugins, 'noteToolbar');
 
-		const cacheKey = md5([isTodo, isSaved, pluginCommands.join(','), readOnly, this.state.mode, isCodeView, note.is_locked, this.props.noteLockSessionUnlocked, !!this.state.noteLockKey, this.state.noteLockUndecryptable, this.props.noteLockMigrationRunning].join('_'));
+		const cacheKey = md5([isTodo, isSaved, pluginCommands.join(','), readOnly, this.state.mode, isCodeView, note.is_locked, this.props.noteLockSessionUnlocked, !!this.state.noteLockKey, this.state.noteLockUndecryptable, this.props.noteLockMigrationRunning, this.props.notePinned].join('_'));
 		if (!this.menuOptionsCache_) this.menuOptionsCache_ = {};
 
 		if (this.menuOptionsCache_[cacheKey]) return this.menuOptionsCache_[cacheKey];
@@ -1566,6 +1568,17 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 			},
 			disabled: readOnly,
 		});
+
+		if (isSaved && !isDeleted) {
+			output.push({
+				title: this.props.notePinned ? _('Unpin') : _('Pin'),
+				icon: 'ionicon pin-outline',
+				onPress: () => {
+					void CommandService.instance().execute('togglePinNote', [note.id]);
+				},
+				disabled: readOnly,
+			});
+		}
 
 		if (isSaved && !isDeleted) {
 			output.push({
@@ -2245,6 +2258,7 @@ const NoteScreen = connect((state: AppState) => {
 		canPublish: whenClause.joplinServerConnected && !whenClause.inTrash,
 		noteLockSessionUnlocked: state.noteLockSessionUnlocked,
 		noteLockMigrationRunning: !!state.noteLockMigrationStatus?.running,
+		notePinned: !!state.selectedNoteIds.length && !!state.pinnedNotes.find(note => note.id === state.selectedNoteIds[0]),
 	};
 })(NoteScreenWrapper);
 

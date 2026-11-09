@@ -11,7 +11,7 @@ import Synchronizer, { ProgressReport } from '@joplin/lib/Synchronizer';
 import shim from '@joplin/lib/shim';
 import { AppState } from '../../../app.reducer';
 import Button, { ButtonLevel } from '../../Button/Button';
-import formatSyncStatus from './formatSyncStatus';
+import formatSyncStatus, { SyncStatusIcon } from '@joplin/lib/services/home/formatSyncStatus';
 
 interface Props {
 	syncTargetSet: boolean;
@@ -19,6 +19,13 @@ interface Props {
 	syncPending: boolean;
 	syncReport: ProgressReport;
 }
+
+const syncIcons: Record<SyncStatusIcon, string> = {
+	[SyncStatusIcon.Off]: 'wb-icon-sync-off',
+	[SyncStatusIcon.Sync]: 'icon-sync',
+	[SyncStatusIcon.Synced]: 'wb-icon-synced',
+	[SyncStatusIcon.Error]: 'fas fa-exclamation-triangle',
+};
 
 const formatAccelerator = (accelerator: string) => {
 	if (!accelerator) return '';
@@ -49,7 +56,7 @@ const SyncChip: React.FC<Props> = props => {
 	};
 
 	return <button type='button' className={`sync-chip -${status.tone}`} title={details || status.label} onClick={onClick}>
-		<i className={`icon ${status.icon}`} aria-hidden={true}></i>
+		<i className={`icon ${syncIcons[status.icon]}`} aria-hidden={true}></i>
 		<span className='label' aria-live='polite'>{status.label}</span>
 	</button>;
 };

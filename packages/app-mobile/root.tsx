@@ -43,6 +43,7 @@ import reduxSharedMiddleware from '@joplin/lib/components/shared/reduxSharedMidd
 const { AppNav } = require('./components/app-nav.js');
 import Folder from '@joplin/lib/models/Folder';
 import NotesScreen from './components/screens/Notes/Notes';
+import HomeScreen from './components/screens/Home/HomeScreen';
 import TagsScreen from './components/screens/tags';
 import ConfigScreen from './components/screens/ConfigScreen/ConfigScreen';
 import FolderScreen from './components/screens/folder';
@@ -773,6 +774,7 @@ class AppComponent extends React.Component<AppComponentProps, AppComponentState>
 
 		const appNavInit = {
 			Notes: { screen: NotesScreen },
+			Home: { screen: HomeScreen },
 			Note: { screen: NoteScreen },
 			Tags: { screen: TagsScreen },
 			Folder: { screen: FolderScreen },
