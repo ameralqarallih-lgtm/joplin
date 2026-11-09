@@ -87,4 +87,14 @@ describe('frontmatter', () => {
 		// The data-joplin-source-close should have newline + closing delimiter + newline
 		expect(output).toContain('data-joplin-source-close="&#10;---&#10;"');
 	});
+
+	test.each([
+		['---\nIntro\n\n---\nMore', false],
+		['---\n\ntitle: Test\n---\n', false],
+		['---\n# A comment\ntitle: Test\n---\n', true],
+		['---\n"quoted key": value\n---\n', true],
+	])('should only treat a leading block as frontmatter when its first line looks like YAML: %j', (input, isFrontMatter) => {
+		const output = createMarkdownIt().render(input);
+		expect(output.includes('joplin-frontmatter')).toBe(isFrontMatter);
+	});
 });

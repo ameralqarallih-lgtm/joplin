@@ -38,6 +38,10 @@ const wrappedYamlParser = (nodeTag: string): ParseWrapper => {
 // Regex to match the FrontMatter delimiter (--- at start of line)
 const frontMatterDelimiterRegex = /^---\s*$/;
 
+// The line after the opening --- must look like YAML (a key or a comment), so that a note starting with a
+// --- divider isn't treated as FrontMatter. Same rule as packages/renderer/MdToHtml/rules/frontmatter.ts.
+const yamlFirstLineRegex = /^(#|[^\s:#][^:]*:(\s|$)|["'][^"']+["']\s*:(\s|$))/;
+
 const frontMatterConfig: MarkdownConfig = {
 	defineNodes: [
 		{
@@ -63,6 +67,11 @@ const frontMatterConfig: MarkdownConfig = {
 
 			// Check if the first line is ---
 			if (!frontMatterDelimiterRegex.test(line.text)) {
+				return false;
+			}
+
+			const secondLine = cx.peekLine();
+			if (!frontMatterDelimiterRegex.test(secondLine) && !yamlFirstLineRegex.test(secondLine)) {
 				return false;
 			}
 

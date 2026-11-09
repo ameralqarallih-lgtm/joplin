@@ -5,6 +5,10 @@ import hljs from '../../highlight';
 // Regex to match the FrontMatter delimiter (--- at start of line, optionally with trailing whitespace)
 const frontMatterDelimiterRegex = /^---\s*$/;
 
+// The line after the opening --- must look like YAML (a key or a comment), so that a note starting with a
+// --- divider isn't hidden as FrontMatter. Same rule as packages/editor/CodeMirror/extensions/markdownFrontMatterExtension.ts.
+const yamlFirstLineRegex = /^(#|[^\s:#][^:]*:(\s|$)|["'][^"']+["']\s*:(\s|$))/;
+
 const plugin = (markdownIt: MarkdownIt, _ruleOptions: unknown) => {
 	// Add a block rule to parse frontmatter at the beginning of the document
 	markdownIt.block.ruler.before('fence', 'frontmatter', (state: StateBlock, startLine: number, endLine: number, silent: boolean): boolean => {
@@ -19,6 +23,14 @@ const plugin = (markdownIt: MarkdownIt, _ruleOptions: unknown) => {
 
 		// Check if the first line is ---
 		if (!frontMatterDelimiterRegex.test(startLineText)) {
+			return false;
+		}
+
+		if (startLine + 1 >= endLine) {
+			return false;
+		}
+		const secondLineText = state.src.slice(state.bMarks[startLine + 1], state.eMarks[startLine + 1]);
+		if (!frontMatterDelimiterRegex.test(secondLineText) && !yamlFirstLineRegex.test(secondLineText)) {
 			return false;
 		}
 
