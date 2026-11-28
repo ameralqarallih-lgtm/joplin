@@ -73,11 +73,22 @@
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/markdown",
+
+		"prosemirror-commands",
+		"prosemirror-dropcursor",
+		"prosemirror-example-setup",
+		"prosemirror-gapcursor",
+		"prosemirror-history",
+		"prosemirror-inputrules",
+		"prosemirror-keymap",
 		"prosemirror-model",
+		"prosemirror-schema-list",
+		"prosemirror-search",
 		"prosemirror-state",
-		"prosemirror-view",
 		"prosemirror-tables",
 		"prosemirror-transform",
+		"prosemirror-view",
+
 		// Does not use semver
 		"@dr.pogodin/react-native-fs",
 		"@fortawesome/fontawesome-svg-core",
@@ -243,11 +254,6 @@
 		"bat",
 
 		"react-test-renderer",
-
-		// Don't upgrade katex and mermaid automatically because we need to run
-		// `yarn buildAssets` after the package has been updated
-		"katex",
-		"mermaid",
 
 		// We keep using v5 for now. Upgrading to v7 would require updating the icon names.
 		"@fortawesome/fontawesome-free",

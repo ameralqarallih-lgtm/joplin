@@ -8,6 +8,8 @@ import ResourceService from '@joplin/lib/services/ResourceService';
 import KvStore from '@joplin/lib/services/KvStore';
 import Setting, { AppType, Env } from '@joplin/lib/models/Setting';
 import PoorManIntervals from '@joplin/lib/PoorManIntervals';
+import RepositoryApi, { InstallMode } from '@joplin/lib/services/plugins/RepositoryApi';
+import refreshBlockedPluginVersions from '@joplin/lib/services/plugins/refreshBlockedPluginVersions';
 import { parseNotesParent } from '@joplin/lib/reducer';
 import uuid from '@joplin/lib/uuid';
 import { loadKeychainServiceAndSettings } from '@joplin/lib/services/SettingUtils';
@@ -68,7 +70,7 @@ SyncTargetRegistry.addClass(SyncTargetJoplinCloud);
 import DecryptionWorker from '@joplin/lib/services/DecryptionWorker';
 import EncryptionService from '@joplin/lib/services/e2ee/EncryptionService';
 import MigrationService from '@joplin/lib/services/MigrationService';
-import { clearSharedFilesCache } from '../utils/ShareUtils';
+import { clearSharedFilesCache, clearUnlockedSharedFilesCache } from '../utils/ShareUtils';
 import setIgnoreTlsErrors from '../utils/TlsUtils';
 import ShareService from '@joplin/lib/services/share/ShareService';
 import { loadMasterKeysFromSettings, migrateMasterPassword, migratePpk } from '@joplin/lib/services/e2ee/utils';
@@ -360,6 +362,15 @@ const buildStartupTasks = (
 				type: 'SET_NOTE_LOCK_SESSION_UNLOCKED',
 				value: event.unlocked,
 			});
+			if (!event.unlocked) {
+				void (async () => {
+					try {
+						await clearUnlockedSharedFilesCache();
+					} catch (error) {
+						logger.error('Could not clear unlocked shared files after relocking notes:', error);
+					}
+				})();
+			}
 		};
 		eventManager.on(EventName.NoteLockSessionChange, noteLockSessionChangeListener_);
 	});
@@ -515,6 +526,21 @@ const buildStartupTasks = (
 
 		const updatedSettings = pluginService.clearUpdateState(pluginSettings);
 		Setting.setValue('plugins.states', updatedSettings);
+
+		// Running plugins that are now blocked are unloaded by PluginRunnerWebView when the setting changes
+		const repoApi = RepositoryApi.ofDefaultJoplinRepo(
+			Setting.value('tempDir'), { type: AppType.Mobile, version: platformImplementation.versionInfo.version }, InstallMode.Default,
+		);
+		const checkBlockedPlugins = async () => {
+			if (!Setting.value('plugins.pluginSupportEnabled')) return;
+			try {
+				await refreshBlockedPluginVersions(repoApi);
+			} catch (error) {
+				logger.warn('Could not refresh blocked plugin versions:', error);
+			}
+		};
+		void checkBlockedPlugins();
+		PoorManIntervals.setInterval(() => { void checkBlockedPlugins(); }, 60 * 60 * 1000);
 	});
 	addTask('buildStartupTasks/run startup tests', async () => {
 		// ----------------------------------------------------------------------------

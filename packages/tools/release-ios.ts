@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
-import { rootDir, gitPullTry, completeReleaseWithChangelog } from './tool-utils';
+import { rootDir, gitPullTry, completeReleaseWithChangelog, execCommandWithPipes } from './tool-utils';
 import { unique } from '@joplin/lib/ArrayUtils';
+import { credentialFile, readCredentialFileJson } from '@joplin/lib/utils/credentialFiles';
 import * as readline from 'readline';
 
 const mobileDir = `${rootDir}/packages/app-mobile`;
@@ -83,7 +84,67 @@ async function checkDeploymentTargets(filePath: string) {
 	if (!versions.length) throw new Error(`Could not find IPHONEOS_DEPLOYMENT_TARGET in ${filePath}`);
 }
 
+interface AppStoreConnectKey {
+	keyId: string;
+	issuerId: string;
+}
+
+// Xcode's Apple ID login periodically expires, and xcodebuild then fails instead of prompting to
+// sign in again, so prefer an App Store Connect API key when one is available.
+const authenticationArgs = () => {
+	const key = readCredentialFileJson<AppStoreConnectKey>('app-store-connect.json');
+	if (!key) {
+		console.info('No app-store-connect.json credential file - using the Apple ID signed in to Xcode');
+		return [];
+	}
+
+	return [
+		'-authenticationKeyPath', credentialFile(`AuthKey_${key.keyId}.p8`),
+		'-authenticationKeyID', key.keyId,
+		'-authenticationKeyIssuerID', key.issuerId,
+	];
+};
+
+const archiveAndUpload = async () => {
+	const iosDir = `${mobileDir}/ios`;
+	const authArgs = authenticationArgs();
+	const buildDir = `${iosDir}/build/release`;
+	const archivePath = `${buildDir}/Joplin.xcarchive`;
+
+	await fs.remove(buildDir);
+
+	// Xcode's /usr/bin/rsync spawns whichever `rsync` is first in PATH as its server side. If that's
+	// Homebrew's rsync 3.x, it rejects Apple's flags and the export fails with "Copy failed".
+	process.env.PATH = `/usr/bin:${process.env.PATH}`;
+
+	console.info('Archiving...');
+	await execCommandWithPipes('xcodebuild', [
+		'archive',
+		'-quiet',
+		'-workspace', `${iosDir}/Joplin.xcworkspace`,
+		'-scheme', 'Joplin',
+		'-configuration', 'Release',
+		'-destination', 'generic/platform=iOS',
+		'-archivePath', archivePath,
+		'-allowProvisioningUpdates',
+		...authArgs,
+	]);
+
+	// ExportOptions.plist has "destination: upload", so this sends the build to App Store Connect
+	console.info('Uploading to App Store Connect...');
+	await execCommandWithPipes('xcodebuild', [
+		'-exportArchive',
+		'-archivePath', archivePath,
+		'-exportOptionsPlist', `${iosDir}/ExportOptions.plist`,
+		'-exportPath', `${buildDir}/export`,
+		'-allowProvisioningUpdates',
+		...authArgs,
+	]);
+};
+
 async function main() {
+	const argv = require('yargs').argv;
+
 	await gitPullTry();
 
 	await warningMessage();
@@ -102,6 +163,8 @@ async function main() {
 
 	const { newVersion, newVersionId } = await updateCodeProjVersions(pbxprojFilePath);
 	console.info(`New version: ${newVersion} (${newVersionId})`);
+
+	if (argv.upload) await archiveAndUpload();
 
 	const tagName = `ios-v${newVersion}`;
 	console.info(`Tag name: ${tagName}`);
